@@ -316,6 +316,7 @@ namespace Echoes
             stereo = Program.stereoDefault;
             visualisationStyle = Program.visualisationStyleDefault;
             visualfps = Program.visualfpsDefault;
+            midiSfLocation = Program.midiSfLocationDefault;
 
             //hotkey settings
             hotkeysAllowed = Program.hotkeysAllowedDefault;
