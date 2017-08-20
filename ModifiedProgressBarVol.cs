@@ -34,7 +34,7 @@ namespace ModifiedControls
             e.Graphics.DrawImage(Echoes.Properties.Resources.vol,new Rectangle(2,2,rec.Height,rec.Height));
             string toWrite = (int)(((float)Value/(float)Maximum)*100) + "%";
             if (rec.Height < 6) return;
-            Font ft=new Font("White Rabbit", rec.Height-2, FontStyle.Regular);
+            Font ft = new Font(Program.mainWindow.secondaryFont.FontFamily, rec.Height-2, Program.mainWindow.secondaryFont.Style);
             SizeF sz=e.Graphics.MeasureString(toWrite,ft);
             /*Bitmap bmp = new Bitmap((int)sz.Width, (int)sz.Height);
             bmp.MakeTransparent();
@@ -45,7 +45,12 @@ namespace ModifiedControls
             g.DrawString(toWrite, ft, Brushes.Black, new Rectangle(0,0,(int)sz.Width,(int)sz.Height));
             g.Flush();
             e.Graphics.DrawImage(bmp, new PointF((Width - sz.Width) / 2, (Height - sz.Height) / 2 + (int)(sz.Height * 0.15)));*/
-            e.Graphics.DrawString(toWrite, ft, Brushes.Black, new PointF((Width - sz.Width) / 2, (Height - sz.Height) / 2 + (int)(sz.Height * 0.15)));
+            StringFormat sf = new StringFormat();
+            sf.LineAlignment = StringAlignment.Center;
+            sf.Alignment = StringAlignment.Center;
+            e.Graphics.DrawString(toWrite, ft, Brushes.Black, new Rectangle(2,2,Width,Height),sf);
+            //e.Graphics.DrawRectangle(Pens.Red, new Rectangle(0, 0, Width, Height));
+            //e.Graphics.DrawString(toWrite, ft, Brushes.Black, new PointF((Width - sz.Width) / 2, 0),sf);
         }
     }
 }

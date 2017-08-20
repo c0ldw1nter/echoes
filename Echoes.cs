@@ -98,6 +98,7 @@ namespace Echoes
 
         //general settings
         public Font mainFont = new Font("Courier New", 8, FontStyle.Regular);
+        public Font secondaryFont = new Font("Arial", 12, FontStyle.Regular);
         public int fontSizePercentage = 100;
         public int visualisationStyle;
         public int visualfps;
@@ -1980,7 +1981,7 @@ namespace Echoes
                 if (!String.IsNullOrWhiteSpace(t.artist)) notifyText += t.artist + Environment.NewLine;
                 
             }
-            Font ft=new Font("White Rabbit",20,FontStyle.Bold);
+            Font ft=new Font(secondaryFont.FontFamily,20,FontStyle.Bold);
             Size sz=TextRenderer.MeasureText(notifyText,ft);
             Rectangle screenSize=Screen.PrimaryScreen.WorkingArea;
             Point pt=new Point(screenSize.Width-sz.Width-10,screenSize.Height-sz.Height-10);

@@ -36,12 +36,17 @@ namespace ModifiedControls
             time2 = TimeSpan.FromSeconds(Bass.BASS_ChannelBytes2Seconds(Program.mainWindow.stream, Program.mainWindow.GetLength()));
             time2 -= time1;
             string toWrite = time1.TotalSeconds.ToTime();
-            Font ft = new Font("White Rabbit", (int)(rec.Height * 0.8), FontStyle.Regular);
+            Font ft = new Font(Program.mainWindow.secondaryFont.FontFamily, rec.Height-2, Program.mainWindow.secondaryFont.Style);
             SizeF sz = e.Graphics.MeasureString(toWrite, ft);
-            e.Graphics.DrawString(toWrite, ft, Brushes.Black, new PointF(2, (Height - sz.Height) / 2 + (int)(sz.Height * 0.15)));
+            //e.Graphics.DrawString(toWrite, ft, Brushes.Black, new PointF(2, ((float)Height-sz.Height)/2));
+            StringFormat sf = new StringFormat();
+            sf.LineAlignment = StringAlignment.Center;
+            e.Graphics.DrawString(toWrite, ft, Brushes.Black, new Rectangle(2,2,(int)sz.Width + 1, Height), sf);
             toWrite = time2.TotalSeconds.ToTime();
             sz = e.Graphics.MeasureString(toWrite, ft);
-            e.Graphics.DrawString(toWrite, ft, Brushes.Black, new PointF(Width - sz.Width, (Height - sz.Height) / 2 + (int)(sz.Height * 0.15)));
+            e.Graphics.DrawString(toWrite, ft, Brushes.Black, new Rectangle((int)Width - (int)sz.Width - 2, 2, (int)sz.Width + 1, Height), sf);
+            //sz = e.Graphics.MeasureString(toWrite, ft);
+            //e.Graphics.DrawString(toWrite, ft, Brushes.Black, new PointF(Width - sz.Width, ((float)Height-sz.Height)/2));
             /*ROLLBACKPOINT
             string toWrite = Program.mainWindow.mainStream.CurrentTime.ToString("mm\\:ss");
             Font ft = new Font("White Rabbit", (int)(rec.Height*0.8), FontStyle.Regular);
