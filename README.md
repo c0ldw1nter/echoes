@@ -3,8 +3,8 @@ An audio player written in c# with .NET and winforms.
 
 #### Used libraries:
 
-Bass.Net (http://bass.radio42.com/) <br>
-Taglib Sharp (https://github.com/mono/taglib-sharp) <br>
+[Bass.Net](http://bass.radio42.com/) <br>
+[Taglib Sharp](https://github.com/mono/taglib-sharp) <br>
 Super M3U (very basic M3U file processor I've written) <br>
 
 #### Preview screen:
