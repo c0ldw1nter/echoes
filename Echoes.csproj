@@ -1,0 +1,337 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{CD56D25C-2E40-4E9F-B3FF-DBD0B0A076FF}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Echoes</RootNamespace>
+    <AssemblyName>Echoes</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>echoesLogoWhite.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Bass.Net, Version=2.4.12.5, Culture=neutral, PublicKeyToken=b7566c273e6ef480, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\Bass.Net.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.DirectX.AudioVideoPlayback, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Windows\Microsoft.NET\DirectX for Managed Code\1.0.2902.0\Microsoft.DirectX.AudioVideoPlayback.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="SuperM3U, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\SuperM3U\SuperM3U\bin\Debug\SuperM3U.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.DirectoryServices" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="taglib-sharp, Version=2.0.3.7, Culture=neutral, PublicKeyToken=db62eba44689b5b0, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\taglib-sharp.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="App.cs" />
+    <Compile Include="ColumnInfo.cs" />
+    <Compile Include="DupeFinder.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DupeFinder.Designer.cs">
+      <DependentUpon>DupeFinder.cs</DependentUpon>
+    </Compile>
+    <Compile Include="EnterNameForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EnterNameForm.Designer.cs">
+      <DependentUpon>EnterNameForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FloatingOSDWindow.cs" />
+    <Compile Include="FloatingWindow.cs" />
+    <Compile Include="GlobalKeyboardHook.cs" />
+    <Compile Include="HotkeyData.cs" />
+    <Compile Include="ModifiedComboBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Echoes.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Echoes.Designer.cs">
+      <DependentUpon>Echoes.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ModifiedButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ModifiedPictureBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ModifiedProgressBarLoading.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ModifiedProgressBarSeek.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ModifiedProgressBarVol.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ModifiedRichTextBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Options.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Options.Designer.cs">
+      <DependentUpon>Options.cs</DependentUpon>
+    </Compile>
+    <Compile Include="OptionsHotkeyDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="OptionsHotkeyDialog.Designer.cs">
+      <DependentUpon>OptionsHotkeyDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ExtensionMethods.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="ShowSelectedInExplorer.cs" />
+    <Compile Include="SortableBindingList.cs" />
+    <Compile Include="Statistics.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Statistics.Designer.cs">
+      <DependentUpon>Statistics.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TagEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TagEditor.Designer.cs">
+      <DependentUpon>TagEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Track.cs" />
+    <Compile Include="XmlCacher.cs" />
+    <EmbeddedResource Include="DupeFinder.resx">
+      <DependentUpon>DupeFinder.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Echoes.resx">
+      <DependentUpon>Echoes.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EnterNameForm.resx">
+      <DependentUpon>EnterNameForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Options.resx">
+      <DependentUpon>Options.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="OptionsHotkeyDialog.resx">
+      <DependentUpon>OptionsHotkeyDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Statistics.resx">
+      <DependentUpon>Statistics.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TagEditor.resx">
+      <DependentUpon>TagEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="bin\Debug\icons\play.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="bin\Debug\icons\stop.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="bin\Debug\icons\pause.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="bin\Debug\icons\back.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="bin\Debug\icons\rewind.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="bin\Debug\icons\forward.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\echoesLogoWhite.ico" />
+    <None Include="Resources\echoesLogoWhite.png" />
+    <None Include="Resources\vol.png" />
+    <None Include="Resources\stop3.png" />
+    <None Include="Resources\stop2.png" />
+    <None Include="Resources\stop1.png" />
+    <None Include="Resources\shuffle3.png" />
+    <None Include="Resources\shuffle2.png" />
+    <None Include="Resources\shuffle1.png" />
+    <None Include="Resources\rewind3.png" />
+    <None Include="Resources\rewind2.png" />
+    <None Include="Resources\rewind1.png" />
+    <None Include="Resources\repeatTrack3.png" />
+    <None Include="Resources\repeatTrack2.png" />
+    <None Include="Resources\repeatTrack1.png" />
+    <None Include="Resources\repeatNone3.png" />
+    <None Include="Resources\repeatNone2.png" />
+    <None Include="Resources\repeatNone1.png" />
+    <None Include="Resources\repeatList3.png" />
+    <None Include="Resources\repeatList2.png" />
+    <None Include="Resources\repeatList1.png" />
+    <None Include="Resources\play3.png" />
+    <None Include="Resources\play2.png" />
+    <None Include="Resources\play1.png" />
+    <None Include="Resources\pause3.png" />
+    <None Include="Resources\pause2.png" />
+    <None Include="Resources\pause1.png" />
+    <None Include="Resources\options3.png" />
+    <None Include="Resources\options2.png" />
+    <None Include="Resources\options1.png" />
+    <None Include="Resources\openfile3.png" />
+    <None Include="Resources\openfile2.png" />
+    <None Include="Resources\openfile1.png" />
+    <None Include="Resources\forward3.png" />
+    <None Include="Resources\forward2.png" />
+    <None Include="Resources\forward1.png" />
+    <None Include="Resources\exportPlaylist3.png" />
+    <None Include="Resources\exportPlaylist2.png" />
+    <None Include="Resources\exportPlaylist1.png" />
+    <None Include="Resources\back3.png" />
+    <None Include="Resources\back2.png" />
+    <None Include="Resources\back1.png" />
+    <None Include="bin\Debug\icons\vol.png" />
+    <None Include="bin\Debug\icons\back1.png" />
+    <None Include="bin\Debug\icons\back2.png" />
+    <None Include="bin\Debug\icons\back3.png" />
+    <None Include="bin\Debug\icons\forward1.png" />
+    <None Include="bin\Debug\icons\forward2.png" />
+    <None Include="bin\Debug\icons\forward3.png" />
+    <None Include="bin\Debug\icons\pause1.png" />
+    <None Include="bin\Debug\icons\pause2.png" />
+    <None Include="bin\Debug\icons\pause3.png" />
+    <None Include="bin\Debug\icons\play1.png" />
+    <None Include="bin\Debug\icons\play2.png" />
+    <None Include="bin\Debug\icons\play3.png" />
+    <None Include="bin\Debug\icons\rewind1.png" />
+    <None Include="bin\Debug\icons\rewind2.png" />
+    <None Include="bin\Debug\icons\rewind3.png" />
+    <None Include="bin\Debug\icons\stop1.png" />
+    <None Include="bin\Debug\icons\stop2.png" />
+    <None Include="bin\Debug\icons\stop3.png" />
+    <None Include="bin\Debug\icons\exportPlaylist1.png" />
+    <None Include="bin\Debug\icons\exportPlaylist2.png" />
+    <None Include="bin\Debug\icons\exportPlaylist3.png" />
+    <None Include="bin\Debug\icons\openfile1.png" />
+    <None Include="bin\Debug\icons\openfile2.png" />
+    <None Include="bin\Debug\icons\openfile3.png" />
+    <None Include="bin\Debug\icons\options1.png" />
+    <None Include="bin\Debug\icons\options2.png" />
+    <None Include="bin\Debug\icons\options3.png" />
+    <None Include="bin\Debug\icons\shuffle1.png" />
+    <None Include="bin\Debug\icons\shuffle2.png" />
+    <None Include="bin\Debug\icons\shuffle3.png" />
+    <None Include="bin\Debug\icons\repeatList1.png" />
+    <None Include="bin\Debug\icons\repeatList2.png" />
+    <None Include="bin\Debug\icons\repeatList3.png" />
+    <None Include="bin\Debug\icons\repeatNone1.png" />
+    <None Include="bin\Debug\icons\repeatNone2.png" />
+    <None Include="bin\Debug\icons\repeatNone3.png" />
+    <None Include="bin\Debug\icons\repeatTrack1.png" />
+    <None Include="bin\Debug\icons\repeatTrack2.png" />
+    <None Include="bin\Debug\icons\repeatTrack3.png" />
+    <Content Include="echoesLogoWhite.ico" />
+    <None Include="bin\Debug\icons\echoesLogo.png" />
+    <None Include="bin\Debug\icons\echoesLogoWhite.png" />
+    <Content Include="echoesLogo.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.5">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.5 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
