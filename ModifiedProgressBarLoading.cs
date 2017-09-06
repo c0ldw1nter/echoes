@@ -31,7 +31,7 @@ namespace ModifiedControls
             if (HasBorder) e.Graphics.DrawRectangle(new Pen(Program.mainWindow.volBarForeColor, BorderThickness), 0, 0, Width - BorderThickness, Height - BorderThickness);
             string toWrite = (int)(((float)Value / (float)Maximum) * 100) + "%";
             if (rec.Height < 6) return;
-            Font ft = new Font(Program.mainWindow.secondaryFont.FontFamily, rec.Height - 2, Program.mainWindow.secondaryFont.Style);
+            Font ft = new Font(Program.mainWindow.font2.FontFamily, rec.Height - 2, Program.mainWindow.font2.Style);
             SizeF sz = e.Graphics.MeasureString(toWrite, ft);
             e.Graphics.DrawString(toWrite, ft, Brushes.Black, new PointF((Width - sz.Width) / 2, (Height - sz.Height) / 2 + (int)(sz.Height * 0.15)));
         }

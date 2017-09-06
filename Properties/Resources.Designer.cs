@@ -113,9 +113,9 @@ namespace Echoes.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap exportPlaylist1 {
+        internal static System.Drawing.Bitmap export1 {
             get {
-                object obj = ResourceManager.GetObject("exportPlaylist1", resourceCulture);
+                object obj = ResourceManager.GetObject("export1", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -123,9 +123,9 @@ namespace Echoes.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap exportPlaylist2 {
+        internal static System.Drawing.Bitmap export2 {
             get {
-                object obj = ResourceManager.GetObject("exportPlaylist2", resourceCulture);
+                object obj = ResourceManager.GetObject("export2", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -133,9 +133,9 @@ namespace Echoes.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap exportPlaylist3 {
+        internal static System.Drawing.Bitmap export3 {
             get {
-                object obj = ResourceManager.GetObject("exportPlaylist3", resourceCulture);
+                object obj = ResourceManager.GetObject("export3", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -173,9 +173,9 @@ namespace Echoes.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap openfile1 {
+        internal static System.Drawing.Bitmap import1 {
             get {
-                object obj = ResourceManager.GetObject("openfile1", resourceCulture);
+                object obj = ResourceManager.GetObject("import1", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -183,9 +183,9 @@ namespace Echoes.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap openfile2 {
+        internal static System.Drawing.Bitmap import2 {
             get {
-                object obj = ResourceManager.GetObject("openfile2", resourceCulture);
+                object obj = ResourceManager.GetObject("import2", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -193,9 +193,9 @@ namespace Echoes.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap openfile3 {
+        internal static System.Drawing.Bitmap import3 {
             get {
-                object obj = ResourceManager.GetObject("openfile3", resourceCulture);
+                object obj = ResourceManager.GetObject("import3", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

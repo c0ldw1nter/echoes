@@ -32,6 +32,11 @@ namespace Echoes
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Options));
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.generalPage = new System.Windows.Forms.TabPage();
+            this.showWaveformCheckbox = new System.Windows.Forms.CheckBox();
+            this.fontPctTxt = new System.Windows.Forms.TextBox();
+            this.fontSizePercentTxt = new System.Windows.Forms.Label();
+            this.fontSizePercentTrack = new System.Windows.Forms.TrackBar();
+            this.fontTxt = new System.Windows.Forms.Label();
             this.autoShuffleCheckbox = new System.Windows.Forms.CheckBox();
             this.autoAdvanceCheckbox = new System.Windows.Forms.CheckBox();
             this.saveTransposeCheckbox = new System.Windows.Forms.CheckBox();
@@ -51,10 +56,8 @@ namespace Echoes
             this.Mod = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Key = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.colorsPage = new System.Windows.Forms.TabPage();
-            this.fontTxt = new System.Windows.Forms.Label();
-            this.fontSizePercentTrack = new System.Windows.Forms.TrackBar();
-            this.fontSizePercentTxt = new System.Windows.Forms.Label();
-            this.fontPctTxt = new System.Windows.Forms.TextBox();
+            this.font2Txt = new System.Windows.Forms.Label();
+            this.font2ChangeBtn = new ModifiedControls.ModifiedButton();
             this.fontChangeBtn = new ModifiedControls.ModifiedButton();
             this.button1 = new ModifiedControls.ModifiedButton();
             this.rehookBtn = new ModifiedControls.ModifiedButton();
@@ -77,13 +80,13 @@ namespace Echoes
             this.colorSeekBtn = new ModifiedControls.ModifiedButton();
             this.tabControl1.SuspendLayout();
             this.generalPage.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.fontSizePercentTrack)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.fpsBar)).BeginInit();
             this.hotkeysPage.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.transposeIncrementChanger)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.volIncrementChanger)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.hotkeyDgv)).BeginInit();
             this.colorsPage.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.fontSizePercentTrack)).BeginInit();
             this.SuspendLayout();
             // 
             // tabControl1
@@ -103,6 +106,9 @@ namespace Echoes
             // generalPage
             // 
             this.generalPage.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(24)))), ((int)(((byte)(24)))), ((int)(((byte)(24)))));
+            this.generalPage.Controls.Add(this.font2ChangeBtn);
+            this.generalPage.Controls.Add(this.font2Txt);
+            this.generalPage.Controls.Add(this.showWaveformCheckbox);
             this.generalPage.Controls.Add(this.fontPctTxt);
             this.generalPage.Controls.Add(this.fontSizePercentTxt);
             this.generalPage.Controls.Add(this.fontSizePercentTrack);
@@ -123,6 +129,64 @@ namespace Echoes
             this.generalPage.Size = new System.Drawing.Size(434, 236);
             this.generalPage.TabIndex = 0;
             this.generalPage.Text = "General";
+            // 
+            // showWaveformCheckbox
+            // 
+            this.showWaveformCheckbox.AutoSize = true;
+            this.showWaveformCheckbox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.showWaveformCheckbox.Location = new System.Drawing.Point(5, 75);
+            this.showWaveformCheckbox.Name = "showWaveformCheckbox";
+            this.showWaveformCheckbox.Size = new System.Drawing.Size(99, 17);
+            this.showWaveformCheckbox.TabIndex = 31;
+            this.showWaveformCheckbox.Text = "Show waveform";
+            this.showWaveformCheckbox.UseVisualStyleBackColor = true;
+            this.showWaveformCheckbox.CheckedChanged += new System.EventHandler(this.showWaveformCheckbox_CheckedChanged);
+            // 
+            // fontPctTxt
+            // 
+            this.fontPctTxt.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(48)))), ((int)(((byte)(48)))));
+            this.fontPctTxt.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.fontPctTxt.Enabled = false;
+            this.fontPctTxt.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.fontPctTxt.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(200)))), ((int)(((byte)(200)))));
+            this.fontPctTxt.Location = new System.Drawing.Point(214, 89);
+            this.fontPctTxt.Name = "fontPctTxt";
+            this.fontPctTxt.ReadOnly = true;
+            this.fontPctTxt.Size = new System.Drawing.Size(212, 20);
+            this.fontPctTxt.TabIndex = 30;
+            this.fontPctTxt.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // fontSizePercentTxt
+            // 
+            this.fontSizePercentTxt.AutoSize = true;
+            this.fontSizePercentTxt.Location = new System.Drawing.Point(214, 48);
+            this.fontSizePercentTxt.Name = "fontSizePercentTxt";
+            this.fontSizePercentTxt.Size = new System.Drawing.Size(106, 13);
+            this.fontSizePercentTxt.TabIndex = 29;
+            this.fontSizePercentTxt.Text = "Font size percentage";
+            // 
+            // fontSizePercentTrack
+            // 
+            this.fontSizePercentTrack.Location = new System.Drawing.Point(213, 64);
+            this.fontSizePercentTrack.Maximum = 200;
+            this.fontSizePercentTrack.Minimum = 50;
+            this.fontSizePercentTrack.Name = "fontSizePercentTrack";
+            this.fontSizePercentTrack.Size = new System.Drawing.Size(213, 45);
+            this.fontSizePercentTrack.TabIndex = 28;
+            this.fontSizePercentTrack.TickFrequency = 50;
+            this.fontSizePercentTrack.TickStyle = System.Windows.Forms.TickStyle.None;
+            this.fontSizePercentTrack.Value = 100;
+            this.fontSizePercentTrack.ValueChanged += new System.EventHandler(this.fontSizePercentTrack_ValueChanged);
+            this.fontSizePercentTrack.MouseUp += new System.Windows.Forms.MouseEventHandler(this.fontSizePercentTrack_MouseUp);
+            // 
+            // fontTxt
+            // 
+            this.fontTxt.AutoSize = true;
+            this.fontTxt.Location = new System.Drawing.Point(214, 6);
+            this.fontTxt.Name = "fontTxt";
+            this.fontTxt.Size = new System.Drawing.Size(35, 13);
+            this.fontTxt.TabIndex = 26;
+            this.fontTxt.Text = "label5";
             // 
             // autoShuffleCheckbox
             // 
@@ -151,7 +215,7 @@ namespace Echoes
             // 
             this.saveTransposeCheckbox.AutoSize = true;
             this.saveTransposeCheckbox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.saveTransposeCheckbox.Location = new System.Drawing.Point(5, 75);
+            this.saveTransposeCheckbox.Location = new System.Drawing.Point(5, 98);
             this.saveTransposeCheckbox.Name = "saveTransposeCheckbox";
             this.saveTransposeCheckbox.Size = new System.Drawing.Size(202, 17);
             this.saveTransposeCheckbox.TabIndex = 23;
@@ -383,51 +447,27 @@ namespace Echoes
             this.colorsPage.UseVisualStyleBackColor = true;
             this.colorsPage.MouseDown += new System.Windows.Forms.MouseEventHandler(this.colorsPage_MouseDown);
             // 
-            // fontTxt
+            // font2Txt
             // 
-            this.fontTxt.AutoSize = true;
-            this.fontTxt.Location = new System.Drawing.Point(214, 6);
-            this.fontTxt.Name = "fontTxt";
-            this.fontTxt.Size = new System.Drawing.Size(35, 13);
-            this.fontTxt.TabIndex = 26;
-            this.fontTxt.Text = "label5";
+            this.font2Txt.AutoSize = true;
+            this.font2Txt.Location = new System.Drawing.Point(214, 126);
+            this.font2Txt.Name = "font2Txt";
+            this.font2Txt.Size = new System.Drawing.Size(35, 13);
+            this.font2Txt.TabIndex = 32;
+            this.font2Txt.Text = "label5";
             // 
-            // fontSizePercentTrack
+            // font2ChangeBtn
             // 
-            this.fontSizePercentTrack.Location = new System.Drawing.Point(213, 64);
-            this.fontSizePercentTrack.Maximum = 200;
-            this.fontSizePercentTrack.Minimum = 50;
-            this.fontSizePercentTrack.Name = "fontSizePercentTrack";
-            this.fontSizePercentTrack.Size = new System.Drawing.Size(213, 45);
-            this.fontSizePercentTrack.TabIndex = 28;
-            this.fontSizePercentTrack.TickFrequency = 50;
-            this.fontSizePercentTrack.TickStyle = System.Windows.Forms.TickStyle.None;
-            this.fontSizePercentTrack.Value = 100;
-            this.fontSizePercentTrack.Scroll += new System.EventHandler(this.fontSizePercentTrack_Scroll);
-            this.fontSizePercentTrack.ValueChanged += new System.EventHandler(this.fontSizePercentTrack_ValueChanged);
-            // 
-            // fontSizePercentTxt
-            // 
-            this.fontSizePercentTxt.AutoSize = true;
-            this.fontSizePercentTxt.Location = new System.Drawing.Point(214, 48);
-            this.fontSizePercentTxt.Name = "fontSizePercentTxt";
-            this.fontSizePercentTxt.Size = new System.Drawing.Size(106, 13);
-            this.fontSizePercentTxt.TabIndex = 29;
-            this.fontSizePercentTxt.Text = "Font size percentage";
-            // 
-            // fontPctTxt
-            // 
-            this.fontPctTxt.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(48)))), ((int)(((byte)(48)))));
-            this.fontPctTxt.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.fontPctTxt.Enabled = false;
-            this.fontPctTxt.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.fontPctTxt.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(200)))), ((int)(((byte)(200)))));
-            this.fontPctTxt.Location = new System.Drawing.Point(214, 89);
-            this.fontPctTxt.Name = "fontPctTxt";
-            this.fontPctTxt.ReadOnly = true;
-            this.fontPctTxt.Size = new System.Drawing.Size(212, 20);
-            this.fontPctTxt.TabIndex = 30;
-            this.fontPctTxt.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.font2ChangeBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(110)))), ((int)(((byte)(110)))), ((int)(((byte)(110)))));
+            this.font2ChangeBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.font2ChangeBtn.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.font2ChangeBtn.Location = new System.Drawing.Point(213, 142);
+            this.font2ChangeBtn.Name = "font2ChangeBtn";
+            this.font2ChangeBtn.Size = new System.Drawing.Size(59, 23);
+            this.font2ChangeBtn.TabIndex = 33;
+            this.font2ChangeBtn.Text = "Change";
+            this.font2ChangeBtn.UseVisualStyleBackColor = true;
+            this.font2ChangeBtn.Click += new System.EventHandler(this.font2ChangeBtn_Click);
             // 
             // fontChangeBtn
             // 
@@ -713,6 +753,7 @@ namespace Echoes
             this.tabControl1.ResumeLayout(false);
             this.generalPage.ResumeLayout(false);
             this.generalPage.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.fontSizePercentTrack)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.fpsBar)).EndInit();
             this.hotkeysPage.ResumeLayout(false);
             this.hotkeysPage.PerformLayout();
@@ -720,7 +761,6 @@ namespace Echoes
             ((System.ComponentModel.ISupportInitialize)(this.volIncrementChanger)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.hotkeyDgv)).EndInit();
             this.colorsPage.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.fontSizePercentTrack)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -772,5 +812,8 @@ namespace Echoes
         private System.Windows.Forms.Label fontSizePercentTxt;
         private System.Windows.Forms.TrackBar fontSizePercentTrack;
         private System.Windows.Forms.TextBox fontPctTxt;
+        private System.Windows.Forms.CheckBox showWaveformCheckbox;
+        private ModifiedButton font2ChangeBtn;
+        private System.Windows.Forms.Label font2Txt;
     }
 }

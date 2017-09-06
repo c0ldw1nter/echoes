@@ -17,7 +17,7 @@ namespace Echoes
     {
         OptionsHotkeyDialog optsDlg;
         List<string> colorSchemes;
-
+        bool txtPercentageBarChanged = false;
         public Options()
         {
             ForeColor = Program.mainWindow.ForeColor;
@@ -95,18 +95,27 @@ namespace Echoes
 
         void LoadValues()
         {
+            //disconnect checkbox event
+            showWaveformCheckbox.CheckedChanged -= showWaveformCheckbox_CheckedChanged;
+
             fpsBar.Value = Program.mainWindow.visualfps;
             popupCheckbox.Checked = Program.mainWindow.trackChangePopup;
             autoAdvanceCheckbox.Checked = Program.mainWindow.autoAdvance;
             autoShuffleCheckbox.Checked = Program.mainWindow.autoShuffle;
             saveTransposeCheckbox.Checked = Program.mainWindow.saveTranspose;
+            showWaveformCheckbox.Checked = Program.mainWindow.showWaveform;
             transposeIncrementChanger.Value = (decimal)Program.mainWindow.hotkeyTransposeIncrement;
             volIncrementChanger.Value = (decimal)Program.mainWindow.hotkeyVolumeIncrement * 100;
+            fontPctTxt.Text = Program.mainWindow.fontSizePercentage + "%";
+
+            //reconnect event
+            showWaveformCheckbox.CheckedChanged += showWaveformCheckbox_CheckedChanged;
         }
 
         void RefreshFontText()
         {
-            fontTxt.Text = "Font: "+Program.mainWindow.mainFont.FontFamily.Name;
+            fontTxt.Text = "Font 1: "+Program.mainWindow.font1.FontFamily.Name;
+            font2Txt.Text = "Font 2: " + Program.mainWindow.font2.FontFamily.Name;
         }
 
         void RefreshMidiText()
@@ -419,11 +428,11 @@ namespace Echoes
         private void fontChangeBtn_Click(object sender, EventArgs e)
         {
             FontDialog dlg = new FontDialog();
-            dlg.Font = Program.mainWindow.mainFont;
+            dlg.Font = Program.mainWindow.font1;
             try {
                 if (dlg.ShowDialog(this) == DialogResult.OK)
                 {
-                    Program.mainWindow.mainFont = new Font(dlg.Font.FontFamily, Program.mainWindow.mainFont.Size, dlg.Font.Style);
+                    Program.mainWindow.font1 = new Font(dlg.Font.FontFamily, Program.mainWindow.font1.Size, dlg.Font.Style);
                     RefreshFontText();
                     Program.mainWindow.SetFonts();
                 }
@@ -432,15 +441,47 @@ namespace Echoes
             dlg.Dispose();
         }
 
-        private void fontSizePercentTrack_Scroll(object sender, EventArgs e)
-        {
-            Program.mainWindow.fontSizePercentage = fontSizePercentTrack.Value;
-            Program.mainWindow.SetFonts();
-        }
-
         private void fontSizePercentTrack_ValueChanged(object sender, EventArgs e)
         {
             fontPctTxt.Text = "" + fontSizePercentTrack.Value+"%";
+            txtPercentageBarChanged = true;
+        }
+
+        private void showWaveformCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (showWaveformCheckbox.Checked)
+            {
+                Program.mainWindow.waveform = null;
+                Program.mainWindow.DrawWaveform();
+            }
+            Program.mainWindow.showWaveform = showWaveformCheckbox.Checked;
+        }
+
+        private void font2ChangeBtn_Click(object sender, EventArgs e)
+        {
+            FontDialog dlg = new FontDialog();
+            dlg.Font = Program.mainWindow.font2;
+            try
+            {
+                if (dlg.ShowDialog(this) == DialogResult.OK)
+                {
+                    Program.mainWindow.font2 = new Font(dlg.Font.FontFamily, Program.mainWindow.font2.Size, dlg.Font.Style);
+                    RefreshFontText();
+                    Program.mainWindow.SetFonts();
+                }
+            }
+            catch (ArgumentException) { MessageBox.Show("Font not supported.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation); }
+            dlg.Dispose();
+        }
+
+        private void fontSizePercentTrack_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (txtPercentageBarChanged)
+            {
+                Program.mainWindow.fontSizePercentage = fontSizePercentTrack.Value;
+                Program.mainWindow.SetFonts();
+                txtPercentageBarChanged = false;
+            }
         }
     }
 }

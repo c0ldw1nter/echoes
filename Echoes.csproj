@@ -236,6 +236,12 @@
     <Content Include="lib\Bass.Net.xml" />
     <Content Include="lib\SuperM3U.dll" />
     <Content Include="lib\taglib-sharp.dll" />
+    <None Include="Resources\import3.png" />
+    <None Include="Resources\export1.png" />
+    <None Include="Resources\export2.png" />
+    <None Include="Resources\export3.png" />
+    <None Include="Resources\import1.png" />
+    <None Include="Resources\import2.png" />
     <None Include="Resources\echoesLogoWhite.ico" />
     <None Include="Resources\echoesLogoWhite.png" />
     <None Include="Resources\vol.png" />

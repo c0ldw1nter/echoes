@@ -34,7 +34,7 @@ namespace ModifiedControls
             e.Graphics.DrawImage(Echoes.Properties.Resources.vol,new Rectangle(2,2,rec.Height,rec.Height));
             string toWrite = (int)(((float)Value/(float)Maximum)*100) + "%";
             if (rec.Height < 6) return;
-            Font ft = new Font(Program.mainWindow.secondaryFont.FontFamily, rec.Height-2, Program.mainWindow.secondaryFont.Style);
+            Font ft = new Font(Program.mainWindow.font2.FontFamily, rec.Height-2, Program.mainWindow.font2.Style);
             SizeF sz=e.Graphics.MeasureString(toWrite,ft);
             /*Bitmap bmp = new Bitmap((int)sz.Width, (int)sz.Height);
             bmp.MakeTransparent();

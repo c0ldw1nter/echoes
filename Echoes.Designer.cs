@@ -152,7 +152,7 @@ namespace Echoes
             0,
             0,
             65536});
-            this.transposeChangerNum.Location = new System.Drawing.Point(736, 10);
+            this.transposeChangerNum.Location = new System.Drawing.Point(539, 10);
             this.transposeChangerNum.Maximum = new decimal(new int[] {
             12,
             0,
@@ -173,7 +173,7 @@ namespace Echoes
             this.transposeTxt.AutoSize = true;
             this.transposeTxt.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.transposeTxt.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(200)))), ((int)(((byte)(200)))));
-            this.transposeTxt.Location = new System.Drawing.Point(642, 10);
+            this.transposeTxt.Location = new System.Drawing.Point(445, 10);
             this.transposeTxt.Name = "transposeTxt";
             this.transposeTxt.Size = new System.Drawing.Size(88, 16);
             this.transposeTxt.TabIndex = 23;
@@ -266,9 +266,9 @@ namespace Echoes
             // 
             // visualsPicture
             // 
-            this.visualsPicture.Location = new System.Drawing.Point(794, 10);
+            this.visualsPicture.Location = new System.Drawing.Point(595, 10);
             this.visualsPicture.Name = "visualsPicture";
-            this.visualsPicture.Size = new System.Drawing.Size(198, 60);
+            this.visualsPicture.Size = new System.Drawing.Size(397, 60);
             this.visualsPicture.TabIndex = 27;
             this.visualsPicture.TabStop = false;
             this.visualsPicture.MouseClick += new System.Windows.Forms.MouseEventHandler(this.pictureBox2_MouseClick);
@@ -288,11 +288,11 @@ namespace Echoes
             // 
             this.openBtn.BackColor = System.Drawing.Color.Transparent;
             this.openBtn.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.openBtn.Image = global::Echoes.Properties.Resources.openfile1;
+            this.openBtn.Image = global::Echoes.Properties.Resources.import1;
             this.openBtn.InitialImage = null;
             this.openBtn.Location = new System.Drawing.Point(307, 10);
             this.openBtn.Name = "openBtn";
-            this.openBtn.Size = new System.Drawing.Size(60, 60);
+            this.openBtn.Size = new System.Drawing.Size(30, 30);
             this.openBtn.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.openBtn.TabIndex = 38;
             this.openBtn.TabStop = false;
@@ -305,11 +305,11 @@ namespace Echoes
             // 
             this.exportBtn.BackColor = System.Drawing.Color.Transparent;
             this.exportBtn.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.exportBtn.Image = global::Echoes.Properties.Resources.exportPlaylist1;
+            this.exportBtn.Image = global::Echoes.Properties.Resources.export1;
             this.exportBtn.InitialImage = null;
-            this.exportBtn.Location = new System.Drawing.Point(373, 10);
+            this.exportBtn.Location = new System.Drawing.Point(307, 39);
             this.exportBtn.Name = "exportBtn";
-            this.exportBtn.Size = new System.Drawing.Size(60, 60);
+            this.exportBtn.Size = new System.Drawing.Size(30, 30);
             this.exportBtn.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.exportBtn.TabIndex = 39;
             this.exportBtn.TabStop = false;
@@ -324,9 +324,9 @@ namespace Echoes
             this.shuffleBtn.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.shuffleBtn.Image = global::Echoes.Properties.Resources.shuffle1;
             this.shuffleBtn.InitialImage = null;
-            this.shuffleBtn.Location = new System.Drawing.Point(439, 10);
+            this.shuffleBtn.Location = new System.Drawing.Point(343, 10);
             this.shuffleBtn.Name = "shuffleBtn";
-            this.shuffleBtn.Size = new System.Drawing.Size(60, 60);
+            this.shuffleBtn.Size = new System.Drawing.Size(30, 30);
             this.shuffleBtn.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.shuffleBtn.TabIndex = 40;
             this.shuffleBtn.TabStop = false;
@@ -341,9 +341,9 @@ namespace Echoes
             this.optionsBtn.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.optionsBtn.Image = global::Echoes.Properties.Resources.options1;
             this.optionsBtn.InitialImage = null;
-            this.optionsBtn.Location = new System.Drawing.Point(505, 10);
+            this.optionsBtn.Location = new System.Drawing.Point(343, 39);
             this.optionsBtn.Name = "optionsBtn";
-            this.optionsBtn.Size = new System.Drawing.Size(60, 60);
+            this.optionsBtn.Size = new System.Drawing.Size(30, 30);
             this.optionsBtn.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.optionsBtn.TabIndex = 41;
             this.optionsBtn.TabStop = false;
@@ -358,7 +358,7 @@ namespace Echoes
             this.repeatBtn.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.repeatBtn.Image = global::Echoes.Properties.Resources.repeatNone1;
             this.repeatBtn.InitialImage = null;
-            this.repeatBtn.Location = new System.Drawing.Point(571, 10);
+            this.repeatBtn.Location = new System.Drawing.Point(379, 9);
             this.repeatBtn.Name = "repeatBtn";
             this.repeatBtn.Size = new System.Drawing.Size(60, 60);
             this.repeatBtn.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -375,7 +375,7 @@ namespace Echoes
             this.modifiedButton1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.modifiedButton1.Font = new System.Drawing.Font("White Rabbit", 8.249999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.modifiedButton1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(200)))), ((int)(((byte)(200)))));
-            this.modifiedButton1.Location = new System.Drawing.Point(685, 40);
+            this.modifiedButton1.Location = new System.Drawing.Point(488, 40);
             this.modifiedButton1.Margin = new System.Windows.Forms.Padding(2);
             this.modifiedButton1.Name = "modifiedButton1";
             this.modifiedButton1.Size = new System.Drawing.Size(101, 30);

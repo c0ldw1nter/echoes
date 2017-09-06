@@ -76,8 +76,8 @@ namespace Echoes
          * 1. define here; 
          * 2. define a default in Program class; 
          * 3. set it to default in SetDefaults() and equivalent;
-         * 4. load it in LoadConfig();
-         * 5. save it in SaveConfig();
+         * 4. load it in LoadXmlConfig();
+         * 5. save it in SaveXmlConfig();
          * 6. add a control of it to Options form;
         */
 
@@ -97,8 +97,8 @@ namespace Echoes
         public Color spectrumColor;
 
         //general settings
-        public Font mainFont = new Font("Courier New", 8, FontStyle.Regular);
-        public Font secondaryFont = new Font("Arial", 12, FontStyle.Regular);
+        public Font font1;
+        public Font font2;
         public int fontSizePercentage = 100;
         public int visualisationStyle;
         public int visualfps;
@@ -110,9 +110,7 @@ namespace Echoes
         public bool autoShuffle;
         public bool autoAdvance;
         public bool trackChangePopup;
-        public bool useCache;
-        public bool saveColumns;
-        public bool saveSize;
+        public bool showWaveform;
         public bool stereo;
         public List<ColumnInfo> currentColumnInfo;
         public string midiSfLocation;
@@ -131,6 +129,7 @@ namespace Echoes
         public XmlCacher xmlCacher;
 
         public int stream;
+        public bool confirmSaveFlag = false;
         public bool streamLoaded = false;
         public SYNCPROC endSync, stallSync;
         public BASS_MIDI_FONT[] midiFonts;
@@ -140,6 +139,7 @@ namespace Echoes
         public List<Track> playlist = new List<Track>();
         public List<string> supportedModuleTypes = new List<string>() { ".mo3", ".it", ".xm", ".s3m", ".mtm", ".mod", ".umx" };
         public List<string> supportedAudioTypes = new List<string>() { ".mp3", ".mp2", ".mp1", ".wav", ".ogg", ".wma", ".m4a", ".flac" };
+        public List<string> supportedWaveformTypes = new List<String>() { ".mp3", ".mp2", ".mp1", ".wav" };
         public List<string> supportedMidiTypes = new List<string>() { ".midi",".mid" };
 
         TagEditor te;
@@ -150,6 +150,8 @@ namespace Echoes
         DataGridViewRow highlightedRow;
         DataGridViewColumn highlightedColumn;
         Stopwatch timeListenedTracker = new Stopwatch();
+        WaveForm wf;
+        public Bitmap waveformImage;
         ItemType displayedItems;
         
         List<string> knownPlaylists = new List<string>();
@@ -195,6 +197,13 @@ namespace Echoes
             xmlCacher.AddOrUpdate(trx);*/
 
             InitializeComponent();
+
+            new ToolTip().SetToolTip(openBtn, "Open file");
+            new ToolTip().SetToolTip(exportBtn, "Export playlist");
+            new ToolTip().SetToolTip(optionsBtn, "Options");
+            new ToolTip().SetToolTip(repeatBtn, "Loop (none/list/track)");
+            new ToolTip().SetToolTip(shuffleBtn, "Shuffle");
+
             theHandle = Handle;
 
             supportedAudioTypes.AddRange(supportedModuleTypes);
@@ -207,7 +216,7 @@ namespace Echoes
 
             trackGrid.AutoGenerateColumns = false;
             trackGrid.ScrollBars = ScrollBars.Both;
-            trackGrid.Font = mainFont;
+            trackGrid.Font = font1;
             trackGrid.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
             trackGrid.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             trackGrid.RowTemplate.Height = 18;
@@ -302,15 +311,14 @@ namespace Echoes
             SetDefaultColors();
 
             //general
+            font1 = Program.font1Default.Copy();
+            font2 = Program.font2Default.Copy();
             hotkeyVolumeIncrement = Program.hotkeyVolumeIncrementDefault;
             hotkeyTransposeIncrement = Program.hotkeyTransposeIncrementDefault;
             SetVolume(Program.volumeDefault);
             autoAdvance = Program.autoAdvanceDefault;
             autoShuffle = Program.autoShuffleDefault;
             trackChangePopup = Program.trackChangePopupDefault;
-            useCache = Program.useCacheDefault;
-            saveColumns = Program.saveColumnsDefault;
-            saveSize = Program.saveSizeDefault;
             currentColumnInfo = Program.defaultColumnInfo.Copy();
             saveTranspose = Program.saveTransposeDefault;
             repeat = Program.repeatDefault;
@@ -371,8 +379,8 @@ namespace Echoes
                     }
                 }
             }
-            else if (k == Hotkey.GLOBAL_VOLUMEUP) AdjustGlobalVolume(hotkeyVolumeIncrement);
-            else if (k == Hotkey.GLOBAL_VOLUMEDOWN) AdjustGlobalVolume(-hotkeyVolumeIncrement);
+            else if (k == Hotkey.GLOBAL_VOLUMEUP) AdjustGlobalVolume(0.01f);
+            else if (k == Hotkey.GLOBAL_VOLUMEDOWN) AdjustGlobalVolume(-0.01f);
         } 
 
         void ghk_KeyDown(object sender, KeyEventArgs e)
@@ -427,13 +435,15 @@ namespace Echoes
 
         public void SetFonts()
         {
-            trackText.Font = new Font(mainFont.FontFamily, 12*(float)fontSizePercentage / 100, mainFont.Style);
-            searchBox.Font = new Font(mainFont.FontFamily, 8.25f * (float)fontSizePercentage / 100, mainFont.Style);
-            playlistInfoTxt.Font=new Font(mainFont.FontFamily,8.25f*(float)fontSizePercentage / 100, mainFont.Style);
-            playlistSelectorCombo.Font = new Font(mainFont.FontFamily, 8.25f * (float)fontSizePercentage / 100, mainFont.Style);
-            trackGrid.Font = new Font(mainFont.FontFamily, 8.25f * (float)fontSizePercentage / 100, mainFont.Style);
-            trackGrid.RowTemplate.Height = trackGrid.Font.Height;
+            trackText.Font = new Font(font1.FontFamily, 12*(float)fontSizePercentage / 100, font1.Style);
+            searchBox.Font = new Font(font1.FontFamily, 8.25f * (float)fontSizePercentage / 100, font1.Style);
+            playlistInfoTxt.Font=new Font(font1.FontFamily,8.25f*(float)fontSizePercentage / 100, font1.Style);
+            playlistSelectorCombo.Font = new Font(font1.FontFamily, 8.25f * (float)fontSizePercentage / 100, font1.Style);
+            trackGrid.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
+            trackGrid.Font = new Font(font1.FontFamily, 8.25f * (float)fontSizePercentage / 100, font1.Style);
+            //trackGrid.RowTemplate.Height = (int)(trackGrid.Font.Height*1.5f);
             trackGrid.Refresh();
+            trackGrid.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.None;
             /*foreach (Control ctrl in this.Controls)
             {
                 if (!(ctrl is Button) && !(ctrl is NumericUpDown) && ctrl.Name != "transposeTxt")
@@ -489,6 +499,49 @@ namespace Echoes
             trackGrid.DefaultCellStyle = defaultCellStyle;
             trackGrid.AlternatingRowsDefaultCellStyle = alternatingCellStyle;
             trackGrid.Refresh();
+        }
+
+        void WaveFormCallback(int framesDone, int framesTotal, TimeSpan elapsedTime, bool finished) {
+            if (finished)
+            {
+                // if your playback stream uses a different resolution than the WF
+                // use this to sync them
+                wf.SyncPlayback(stream);
+                waveformImage = wf.CreateBitmap(this.seekBar.Width, this.seekBar.Height, -1, -1, true);
+                waveformImage=waveformImage.SetOpacity(0.5d);
+            }
+        }
+        public void DrawWaveform()
+        {
+            if (nowPlaying == null || !supportedWaveformTypes.Contains(Path.GetExtension(nowPlaying.filename))) { waveformImage = null; return; }
+            wf = new Un4seen.Bass.Misc.WaveForm(nowPlaying.filename, new WAVEFORMPROC(WaveFormCallback), this);
+            //wf.CallbackFrequency = 1; // every 10 seconds rendered
+            wf.ColorBackground = Color.Transparent;
+            wf.DrawWaveForm = WaveForm.WAVEFORMDRAWTYPE.Mono;
+            wf.ColorLeft = wf.ColorLeft2 = wf.ColorLeftEnvelope = Color.Black;
+            /*wf.ColorLeft = seekBarForeColor.Darken(96);
+            wf.ColorLeft2 = wf.ColorLeft;
+            wf.ColorLeftEnvelope = wf.ColorLeft;*/
+
+            // it is important to use the same resolution flags as for the playing stream
+            // e.g. if an already playing stream is 32-bit float, so this should also be
+            // or use 'SyncPlayback' as shown below
+            wf.RenderStart(true, BASSFlag.BASS_DEFAULT);
+            /*int channel = Bass.BASS_StreamCreateFile(nowPlaying.filename, 0, 0, BASSFlag.BASS_DEFAULT);
+            Bass.BASS_ChannelSetAttribute(channel, BASSAttribute.BASS_ATTRIB_VOL, 0);
+            int width = Screen.FromControl(this).Bounds.Width;
+            Bitmap ret = new Bitmap(width, height);
+            if (nowPlaying == null) return ret;
+            Graphics g = Graphics.FromImage(ret);
+            Visuals visuals = new Visuals();
+            Bass.BASS_ChannelPlay(channel, false);
+            for (int i = 0; i < width; i++)
+            {
+                Bass.BASS_ChannelSetPosition(channel, 1d * i / width);
+                visuals.CreateSpectrum3DVoicePrint(channel, g, new Rectangle(0, 0, ret.Width, ret.Height), Color.Black, Color.White, i, true, false);
+            }
+            Bass.BASS_ChannelStop(channel);
+            return ret;*/
         }
 
         public bool IsPlaying()
@@ -956,17 +1009,11 @@ namespace Echoes
             item = new XElement("trackChangePopup");
             item.Value = trackChangePopup.ToString();
             general.Add(item);
-            item = new XElement("useCache");
-            item.Value = useCache.ToString();
-            general.Add(item);
-            item = new XElement("saveColumns");
-            item.Value = saveColumns.ToString();
-            general.Add(item);
-            item = new XElement("saveSize");
-            item.Value = saveSize.ToString();
-            general.Add(item);
             item = new XElement("saveTranspose");
             item.Value = saveTranspose.ToString();
+            general.Add(item);
+            item = new XElement("showWaveform");
+            item.Value = showWaveform.ToString();
             general.Add(item);
             item = new XElement("repeat");
             item.Value = repeat.ToString();
@@ -982,6 +1029,17 @@ namespace Echoes
             general.Add(item);
             item = new XElement("midisf");
             item.Value = midiSfLocation;
+            general.Add(item);
+            item = new XElement("font1");
+            item.Value = font1.FontFamily.Name;
+            item.Add(new XAttribute("Style", (int)font1.Style));
+            general.Add(item);
+            item = new XElement("font1Size");
+            item.Value = fontSizePercentage+"";
+            general.Add(item);
+            item = new XElement("font2");
+            item.Value = font2.FontFamily.Name;
+            item.Add(new XAttribute("Style", (int)font2.Style));
             general.Add(item);
             xml.Root.Add(general);
             //colors
@@ -1089,18 +1147,12 @@ namespace Echoes
             ele = group.Element("trackChangePopup");
             if (ele != null && Boolean.TryParse(ele.Value, out trackChangePopup)) { }
             else trackChangePopup = Program.trackChangePopupDefault;
-            ele = group.Element("useCache");
-            if (ele != null && Boolean.TryParse(ele.Value, out useCache)) { }
-            else useCache = Program.useCacheDefault;
-            ele = group.Element("saveColumns");
-            if (ele != null && Boolean.TryParse(ele.Value, out saveColumns)) { }
-            else saveColumns = Program.saveColumnsDefault;
-            ele = group.Element("saveSize");
-            if (ele != null && Boolean.TryParse(ele.Value, out saveSize)) { }
-            else saveSize = Program.saveSizeDefault;
             ele = group.Element("saveTranspose");
             if (ele != null && Boolean.TryParse(ele.Value, out saveTranspose)) { }
             else saveTranspose = Program.saveTransposeDefault;
+            ele = group.Element("showWaveform");
+            if (ele != null && Boolean.TryParse(ele.Value, out showWaveform)) { }
+            else showWaveform = Program.showWaveformDefault;
             ele = group.Element("repeat");
             if (ele != null && Int32.TryParse(ele.Value, out repeat)) { }
             else repeat = Program.repeatDefault;
@@ -1119,6 +1171,16 @@ namespace Echoes
             ele = group.Element("midisf");
             if (ele != null) { midiSfLocation = ele.Value; }
             else midiSfLocation = "";
+            ele = group.Element("font1");
+            if (ele != null) { font1 = new Font(ele.Value, 8, (FontStyle)Int32.Parse(ele.Attribute("Style").Value)); }
+            else font1 = Program.font1Default.Copy();
+            ele = group.Element("font1Size");
+            if (ele != null && Int32.TryParse(ele.Value, out fontSizePercentage)) { }
+            else fontSizePercentage = 100;
+            ele = group.Element("font2");
+            if (ele != null) { font2 = new Font(ele.Value, 12, (FontStyle)Int32.Parse(ele.Attribute("Style").Value)); }
+            else font2 = Program.font2Default.Copy();
+            SetFonts();
             //colors
             group = xml.Root.Element("colors");
             ele=group.Element("background");
@@ -1622,8 +1684,6 @@ namespace Echoes
             if (!backgroundWorker1.IsBusy) try { xmlCacher.AddOrUpdate(new List<Track>() { playlist[index] }); }
                 catch (Exception) { }
             Bass.BASS_Init(-1, 44100, BASSInit.BASS_DEVICE_DEFAULT, this.Handle);
-            /*float peak=0;
-            float gainFactor=Utils.GetNormalizationGain(t.filename,0.2f,-1d,-1d,ref peak);*/
             string ext=Path.GetExtension(t.filename.ToLower());
             if (supportedModuleTypes.Contains(ext))
             {
@@ -1654,6 +1714,12 @@ namespace Echoes
             {
                 streamLoaded = false;
                 return;
+            }
+            /*float peak=0;
+            float gainFactor=Utils.GetNormalizationGain(t.filename,0.2f,-1d,-1d,ref peak);*/
+            if (showWaveform)
+            {
+                DrawWaveform();
             }
             if (Bass.BASS_ErrorGetCode() == 0 && GetLength()>0)
             {
@@ -1981,7 +2047,7 @@ namespace Echoes
                 if (!String.IsNullOrWhiteSpace(t.artist)) notifyText += t.artist + Environment.NewLine;
                 
             }
-            Font ft=new Font(secondaryFont.FontFamily,20,FontStyle.Bold);
+            Font ft=new Font(font2.FontFamily,20,FontStyle.Bold);
             Size sz=TextRenderer.MeasureText(notifyText,ft);
             Rectangle screenSize=Screen.PrimaryScreen.WorkingArea;
             Point pt=new Point(screenSize.Width-sz.Width-10,screenSize.Height-sz.Height-10);
@@ -2138,15 +2204,32 @@ namespace Echoes
             backBtn.Image = global::Echoes.Properties.Resources.back3;
         }
 
-        void LoadCacheAsPlaylist()
+        void LoadCustomPlaylist(List<Track> lst)
         {
-            playlist = xmlCacher.GetAllTracks();
+            playlist = lst;
             RenumberPlaylist(playlist);
             displayedItems = ItemType.Cache;
             RefreshPlaylistGrid();
             if (autoShuffle) Shuffle();
             RefreshTotalTimeLabel();
-            currentPlaylist = "<Cache>";
+            currentPlaylist = "";
+            playlistSelectorCombo.SelectedIndex = 0;
+        }
+
+        public void LoadEverythingFromArtist(string artist)
+        {
+            LoadCustomPlaylist(xmlCacher.GetAllTracks().Where(x => x.artist == artist).ToList());
+        }
+
+        public void LoadEverythingFromAlbum(string album)
+        {
+            LoadCustomPlaylist(xmlCacher.GetAllTracks().Where(x => x.album == album).ToList());
+        }
+
+        void LoadCacheAsPlaylist()
+        {
+            LoadCustomPlaylist(xmlCacher.GetAllTracks());
+            playlistSelectorCombo.SelectedIndex = 1;
         }
 
         private void comboBox1_SelectionChangeCommitted(object sender, EventArgs e)
@@ -2242,7 +2325,7 @@ namespace Echoes
 
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
-            if (useCache && rebuildCache==false)
+            if (rebuildCache==false)
             {
                 for(int z=0;z<playlist.Count;z++){
                     Track t = playlist[z];
@@ -2286,7 +2369,7 @@ namespace Echoes
                     backgroundWorker1.ReportProgress((int)(((float)i / (float)playlist.Count) * 100));
                     if (backgroundWorker1.CancellationPending) return;
                 }
-                if (useCache) xmlCacher.AddOrUpdate(playlist);
+                xmlCacher.AddOrUpdate(playlist);
             }
             //if(useCache) xmlCacher.AddOrUpdate(playlist);
         }
@@ -3045,43 +3128,43 @@ namespace Echoes
 
         private void openBtn_MouseDown(object sender, MouseEventArgs e)
         {
-            openBtn.Image = global::Echoes.Properties.Resources.openfile3;
+            openBtn.Image = global::Echoes.Properties.Resources.import3;
         }
 
         private void openBtn_MouseEnter(object sender, EventArgs e)
         {
-            openBtn.Image = global::Echoes.Properties.Resources.openfile2;
+            openBtn.Image = global::Echoes.Properties.Resources.import2;
         }
 
         private void openBtn_MouseLeave(object sender, EventArgs e)
         {
-            openBtn.Image = global::Echoes.Properties.Resources.openfile1;
+            openBtn.Image = global::Echoes.Properties.Resources.import1;
         }
 
         private void openBtn_MouseUp(object sender, MouseEventArgs e)
         {
-            openBtn.Image = global::Echoes.Properties.Resources.openfile2;
+            openBtn.Image = global::Echoes.Properties.Resources.import2;
             ChooseFile();
         }
 
         private void exportBtn_MouseDown(object sender, MouseEventArgs e)
         {
-            exportBtn.Image = global::Echoes.Properties.Resources.exportPlaylist3;
+            exportBtn.Image = global::Echoes.Properties.Resources.export3;
         }
 
         private void exportBtn_MouseEnter(object sender, EventArgs e)
         {
-            exportBtn.Image = global::Echoes.Properties.Resources.exportPlaylist2;
+            exportBtn.Image = global::Echoes.Properties.Resources.export2;
         }
 
         private void exportBtn_MouseLeave(object sender, EventArgs e)
         {
-            exportBtn.Image = global::Echoes.Properties.Resources.exportPlaylist1;
+            exportBtn.Image = global::Echoes.Properties.Resources.export1;
         }
 
         private void exportBtn_MouseUp(object sender, MouseEventArgs e)
         {
-            exportBtn.Image = global::Echoes.Properties.Resources.exportPlaylist2;
+            exportBtn.Image = global::Echoes.Properties.Resources.export2;
             ExportPlaylist();
         }
 

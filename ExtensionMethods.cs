@@ -9,11 +9,68 @@ using System.Reflection;
 using ModifiedControls;
 using System.ArrayExtensions;
 using Echoes;
+using System.Drawing.Imaging;
 
 namespace System
 {
     public static class ExtensionMethods
     {
+        public static Bitmap SetOpacity(this Bitmap originalImage, double opacity)
+        {
+            if ((originalImage.PixelFormat & PixelFormat.Indexed) == PixelFormat.Indexed)
+            {
+                // Cannot modify an image with indexed colors
+                return originalImage;
+            }
+
+            Bitmap bmp = (Bitmap)originalImage.Clone();
+
+            // Specify a pixel format.
+            PixelFormat pxf = PixelFormat.Format32bppArgb;
+
+            // Lock the bitmap's bits.
+            Rectangle rect = new Rectangle(0, 0, bmp.Width, bmp.Height);
+            BitmapData bmpData = bmp.LockBits(rect, ImageLockMode.ReadWrite, pxf);
+
+            // Get the address of the first line.
+            IntPtr ptr = bmpData.Scan0;
+
+            // Declare an array to hold the bytes of the bitmap.
+            // This code is specific to a bitmap with 32 bits per pixels 
+            // (32 bits = 4 bytes, 3 for RGB and 1 byte for alpha).
+            int numBytes = bmp.Width * bmp.Height * 4;
+            byte[] argbValues = new byte[numBytes];
+
+            // Copy the ARGB values into the array.
+            System.Runtime.InteropServices.Marshal.Copy(ptr, argbValues, 0, numBytes);
+
+            // Manipulate the bitmap, such as changing the
+            // RGB values for all pixels in the the bitmap.
+            for (int counter = 0; counter < argbValues.Length; counter += 4)
+            {
+                // argbValues is in format BGRA (Blue, Green, Red, Alpha)
+
+                // If 100% transparent, skip pixel
+                if (argbValues[counter + 4 - 1] == 0)
+                    continue;
+
+                int pos = 0;
+                pos++; // B value
+                pos++; // G value
+                pos++; // R value
+
+                argbValues[counter + pos] = (byte)(argbValues[counter + pos] * opacity);
+            }
+
+            // Copy the ARGB values back to the bitmap
+            System.Runtime.InteropServices.Marshal.Copy(argbValues, 0, ptr, numBytes);
+
+            // Unlock the bits.
+            bmp.UnlockBits(bmpData);
+
+            return bmp;
+        }
+
         public static void AdjustTextColor(this ModifiedButton btn)
         {
             if (btn.BackColor.R < 127 && btn.BackColor.G < 127 && btn.BackColor.B < 127) 
@@ -23,7 +80,11 @@ namespace System
         }
         public static Color Lighten(this Color c)
         {
-            byte lightenValue = 24;
+            return c.Lighten(24);
+        }
+
+        public static Color Lighten(this Color c, byte lightenValue)
+        {
             if (255 - c.R < lightenValue) lightenValue = (byte)(255 - c.R);
             if (255 - c.G < lightenValue) lightenValue = (byte)(255 - c.G);
             if (255 - c.B < lightenValue) lightenValue = (byte)(255 - c.B);
@@ -32,7 +93,11 @@ namespace System
 
         public static Color Darken(this Color c)
         {
-            byte darkenValue = 24;
+            return c.Darken(24);
+        }
+
+        public static Color Darken(this Color c, byte darkenValue)
+        {
             byte r=0, g=0, b=0;
             if (c.R > darkenValue) r = (byte)(c.R - darkenValue);
             if (c.G > darkenValue) g = (byte)(c.G - darkenValue);

@@ -95,6 +95,7 @@
             this.topTracksGrid.Location = new System.Drawing.Point(3, 3);
             this.topTracksGrid.Name = "topTracksGrid";
             this.topTracksGrid.RowHeadersVisible = false;
+            this.topTracksGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.topTracksGrid.Size = new System.Drawing.Size(605, 360);
             this.topTracksGrid.TabIndex = 0;
             this.topTracksGrid.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.topArtistsGrid_CellFormatting);
@@ -149,9 +150,11 @@
             this.topArtistsGrid.Location = new System.Drawing.Point(3, 3);
             this.topArtistsGrid.Name = "topArtistsGrid";
             this.topArtistsGrid.RowHeadersVisible = false;
+            this.topArtistsGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.topArtistsGrid.Size = new System.Drawing.Size(605, 360);
             this.topArtistsGrid.TabIndex = 1;
             this.topArtistsGrid.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.topArtistsGrid_CellFormatting);
+            this.topArtistsGrid.CellMouseDoubleClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.topArtistsGrid_CellMouseDoubleClick);
             // 
             // dataGridViewTextBoxColumn1
             // 
@@ -203,9 +206,11 @@
             this.topAlbumsGrid.Location = new System.Drawing.Point(3, 3);
             this.topAlbumsGrid.Name = "topAlbumsGrid";
             this.topAlbumsGrid.RowHeadersVisible = false;
+            this.topAlbumsGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.topAlbumsGrid.Size = new System.Drawing.Size(605, 360);
             this.topAlbumsGrid.TabIndex = 1;
             this.topAlbumsGrid.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.topArtistsGrid_CellFormatting);
+            this.topAlbumsGrid.CellMouseDoubleClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.topAlbumsGrid_CellMouseDoubleClick);
             // 
             // dataGridViewTextBoxColumn4
             // 

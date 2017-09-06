@@ -146,5 +146,19 @@ namespace Echoes
                 }
             }
         }
+
+        private void topArtistsGrid_CellMouseDoubleClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (e.RowIndex < 0) return;
+            DataGridViewRow rw = topArtistsGrid.Rows[e.RowIndex];
+            Program.mainWindow.LoadEverythingFromArtist(((StatsItem)rw.DataBoundItem).name);
+        }
+
+        private void topAlbumsGrid_CellMouseDoubleClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (e.RowIndex < 0) return;
+            DataGridViewRow rw = topAlbumsGrid.Rows[e.RowIndex];
+            Program.mainWindow.LoadEverythingFromAlbum(((StatsItem)rw.DataBoundItem).name);
+        }
     }
 }

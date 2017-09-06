@@ -38,14 +38,14 @@ namespace Echoes
         public readonly static bool autoShuffleDefault = false;
         public readonly static bool autoAdvanceDefault = true;
         public readonly static bool trackChangePopupDefault = false;
-        public readonly static bool useCacheDefault = true;
-        public readonly static bool saveColumnsDefault = true;
-        public readonly static bool saveSizeDefault = false;
         public readonly static bool saveTransposeDefault = true;
         public readonly static bool stereoDefault = true;
+        public readonly static bool showWaveformDefault = false;
         public readonly static float hotkeyVolumeIncrementDefault = 0.03f;
         public readonly static float hotkeyTransposeIncrementDefault = 0.5f;
         public readonly static string midiSfLocationDefault = "";
+        public readonly static Font font1Default = new Font("Courier New", 8, FontStyle.Regular);
+        public readonly static Font font2Default = new Font("Consolas", 12, FontStyle.Regular);
 
         //hotkeys
         public readonly static bool hotkeysAllowedDefault = true;

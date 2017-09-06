@@ -64,13 +64,13 @@ namespace Echoes
                 HeaderText = "Value"
             });
 
-            bottomOfGrid = 7 * dgv.RowTemplate.Height + dgv.ColumnHeadersHeight + (int)(Owner as Echoes).mainFont.Size + 5;
+            bottomOfGrid = 7 * dgv.RowTemplate.Height + dgv.ColumnHeadersHeight + (int)(Owner as Echoes).font1.Size + 5;
             this.Text = "Tag Editor: " + tracks.Count + " files loaded";
             this.tracks = tracks;
             ControlBox = false;
 
             btnSave = new ModifiedButton();
-            btnSave.Font = (Owner as Echoes).mainFont;
+            btnSave.Font = (Owner as Echoes).font1;
             btnSave.Size = new Size(60, 30);
             btnSave.Location = new Point(5, bottomOfGrid);
             btnSave.Dock = DockStyle.None;
@@ -83,7 +83,7 @@ namespace Echoes
             };
 
             btnCancel = new ModifiedButton();
-            btnCancel.Font = (Owner as Echoes).mainFont;
+            btnCancel.Font = (Owner as Echoes).font1;
             btnCancel.Size = new Size(60, 30);
             btnCancel.Location = new Point(350, bottomOfGrid);
             btnCancel.Dock = DockStyle.None;
@@ -99,7 +99,7 @@ namespace Echoes
                 modWarning.Location = new Point(btnSave.Location.X+btnSave.Width+5, bottomOfGrid+7);
                 modWarning.BackColor = Program.mainWindow.backgroundColor;
                 modWarning.ForeColor = Program.mainWindow.controlForeColor;
-                modWarning.Font = (Owner as Echoes).mainFont;
+                modWarning.Font = (Owner as Echoes).font1;
                 modWarning.Dock = DockStyle.None;
                 modWarning.Text = "Module file tag writing not supported.";
                 Controls.Add(modWarning);
