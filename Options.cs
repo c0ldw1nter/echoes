@@ -44,7 +44,6 @@ namespace Echoes
             LoadValues();
             LoadColorSchemes();
             RefreshMidiText();
-            RefreshFontText();
             LoadHotkeys();
             LoadColors();
         }
@@ -99,6 +98,7 @@ namespace Echoes
             showWaveformCheckbox.CheckedChanged -= showWaveformCheckbox_CheckedChanged;
 
             fpsBar.Value = Program.mainWindow.visualfps;
+            fpsText.Text = "" + fpsBar.Value;
             popupCheckbox.Checked = Program.mainWindow.trackChangePopup;
             autoAdvanceCheckbox.Checked = Program.mainWindow.autoAdvance;
             autoShuffleCheckbox.Checked = Program.mainWindow.autoShuffle;
@@ -107,6 +107,7 @@ namespace Echoes
             transposeIncrementChanger.Value = (decimal)Program.mainWindow.hotkeyTransposeIncrement;
             volIncrementChanger.Value = (decimal)Program.mainWindow.hotkeyVolumeIncrement * 100;
             fontPctTxt.Text = Program.mainWindow.fontSizePercentage + "%";
+            RefreshFontText();
 
             //reconnect event
             showWaveformCheckbox.CheckedChanged += showWaveformCheckbox_CheckedChanged;
@@ -481,6 +482,15 @@ namespace Echoes
                 Program.mainWindow.fontSizePercentage = fontSizePercentTrack.Value;
                 Program.mainWindow.SetFonts();
                 txtPercentageBarChanged = false;
+            }
+        }
+
+        private void setDefaultsBtn_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show("Set default settings? This can't be undone.", "Confirm", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.Yes)
+            {
+                Program.mainWindow.SetDefaultGeneral();
+                LoadValues();
             }
         }
     }

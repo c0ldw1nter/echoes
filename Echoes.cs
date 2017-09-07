@@ -304,15 +304,12 @@ namespace Echoes
             Refresh();
         }
 
-
-        public void SetDefaults()
+        public void SetDefaultGeneral()
         {
-            //colors
-            SetDefaultColors();
-
-            //general
             font1 = Program.font1Default.Copy();
             font2 = Program.font2Default.Copy();
+            fontSizePercentage = 100;
+            SetFonts();
             hotkeyVolumeIncrement = Program.hotkeyVolumeIncrementDefault;
             hotkeyTransposeIncrement = Program.hotkeyTransposeIncrementDefault;
             SetVolume(Program.volumeDefault);
@@ -326,6 +323,16 @@ namespace Echoes
             visualisationStyle = Program.visualisationStyleDefault;
             visualfps = Program.visualfpsDefault;
             midiSfLocation = Program.midiSfLocationDefault;
+        }
+
+
+        public void SetDefaults()
+        {
+            //colors
+            SetDefaultColors();
+
+            //general
+            SetDefaultGeneral();
 
             //hotkey settings
             hotkeysAllowed = Program.hotkeysAllowedDefault;
