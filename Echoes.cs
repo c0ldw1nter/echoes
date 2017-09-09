@@ -739,8 +739,28 @@ namespace Echoes
                 trackGrid.Columns.Add(clmn);
             }
             SortableBindingList<Track> source;
-            if (String.IsNullOrEmpty(searchBox.Text)) source = new SortableBindingList<Track>(playlist);
-            else source = new SortableBindingList<Track>(playlist.Where(x => x.title.ContainsIgnoreCase(searchBox.Text) || x.album.ContainsIgnoreCase(searchBox.Text) || x.artist.ContainsIgnoreCase(searchBox.Text)).ToList());
+            string searchWord = searchBox.Text;
+            bool invertSearch = false;
+            if (searchWord.StartsWith("!"))
+            {
+                searchWord = searchBox.Text.Substring(1);
+                invertSearch = true;
+            }
+            if (String.IsNullOrEmpty(searchWord))
+            {
+                source = new SortableBindingList<Track>(playlist);
+            }
+            else
+            {
+                if (invertSearch)
+                {
+                    source = new SortableBindingList<Track>(playlist.Where(x => !x.title.ContainsIgnoreCase(searchWord) && !x.album.ContainsIgnoreCase(searchWord) && !x.artist.ContainsIgnoreCase(searchWord)).ToList());
+                }
+                else
+                {
+                    source = new SortableBindingList<Track>(playlist.Where(x => x.title.ContainsIgnoreCase(searchWord) || x.album.ContainsIgnoreCase(searchWord) || x.artist.ContainsIgnoreCase(searchWord)).ToList());
+                }
+            }
             trackGrid.DataSource = source;
             trackGrid.ClearSelection();
             HighlightPlayingTrack();
