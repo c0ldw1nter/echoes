@@ -17,6 +17,7 @@ namespace Echoes
             public int num { get; set; }
             public int listened { get; set; }
             public string name { get; set; }
+            [Browsable(false)] public Track track { get; set; }
             public StatsItem(string name)
             {
                 this.name = name;
@@ -47,6 +48,7 @@ namespace Echoes
             {
                 StatsItem itm=new StatsItem(t.title);
                 if(t.artist!=null) itm.name+= " - "+t.artist;
+                itm.track = t;
                 itm.listened = t.listened;
                 stats.Add(itm);
             }
@@ -159,6 +161,15 @@ namespace Echoes
             if (e.RowIndex < 0) return;
             DataGridViewRow rw = topAlbumsGrid.Rows[e.RowIndex];
             Program.mainWindow.LoadEverythingFromAlbum(((StatsItem)rw.DataBoundItem).name);
+        }
+
+        private void topTracksGrid_CellMouseDoubleClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (e.RowIndex < 0) return;
+            DataGridViewRow rw = topTracksGrid.Rows[e.RowIndex];
+            Program.mainWindow.StopPlayer();
+            Program.mainWindow.LoadAudioFile(((StatsItem)rw.DataBoundItem).track);
+            Program.mainWindow.Play();
         }
     }
 }

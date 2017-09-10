@@ -1703,12 +1703,19 @@ namespace Echoes
                 PointToMissingFile(t);
                 return;
             }
-            int numzor = t.num;
-            int index = playlist.IndexOf(playlist.First(x => x.num == t.num));
+            if (playlist != null && playlist.Contains(t))
+            {
+                int numzor = t.num;
+                int index = playlist.IndexOf(playlist.First(x => x.num == t.num));
+                //t.gettags
+                playlist[index].num = numzor;
+                //nowPlaying = playlist[index];
+
+                
+            }
             t.GetTags();
-            playlist[index].num = numzor;
-            nowPlaying = playlist[index];
-            if (!backgroundWorker1.IsBusy) try { xmlCacher.AddOrUpdate(new List<Track>() { playlist[index] }); }
+            nowPlaying = t;
+            if (!backgroundWorker1.IsBusy) try { xmlCacher.AddOrUpdate(new List<Track>() { t }); }
                 catch (Exception) { }
             Bass.BASS_Init(-1, 44100, BASSInit.BASS_DEVICE_DEFAULT, this.Handle);
             string ext=Path.GetExtension(t.filename.ToLower());

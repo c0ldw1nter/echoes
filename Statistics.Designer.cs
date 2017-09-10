@@ -99,6 +99,7 @@
             this.topTracksGrid.Size = new System.Drawing.Size(605, 360);
             this.topTracksGrid.TabIndex = 0;
             this.topTracksGrid.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.topArtistsGrid_CellFormatting);
+            this.topTracksGrid.CellMouseDoubleClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.topTracksGrid_CellMouseDoubleClick);
             // 
             // num
             // 
