@@ -146,7 +146,7 @@ namespace Echoes
         DupeFinder df;
         Statistics stats;
         Options opts;
-        FloatingOSDWindow floatingWindow = new FloatingOSDWindow();
+        FloatingOSDWindow popupWindow = new FloatingOSDWindow();
         DataGridViewRow highlightedRow;
         DataGridViewColumn highlightedColumn;
         Stopwatch timeListenedTracker = new Stopwatch();
@@ -1287,6 +1287,7 @@ namespace Echoes
             else if(getVol+increment<0) getVol=0;
             else getVol=getVol+increment;
             Bass.BASS_SetVolume(getVol);
+            ShowVolumePopup();
         }
 
         public void SetVolume(float vol)
@@ -1769,7 +1770,7 @@ namespace Echoes
                 DisplayTrackInfo(nowPlaying);
                 ScrollGridTo(HighlightPlayingTrack());
                 RefreshPlayIcon();
-                if (trackChangePopup) ShowTrackChangedFloat();
+                if (trackChangePopup) ShowTrackChangedPopup();
             }
             else
             {
@@ -2062,7 +2063,7 @@ namespace Echoes
             }
         }
 
-        void ShowTrackChangedFloat()
+        void ShowTrackChangedPopup()
         {
             if (nowPlaying == null) return;
             string notifyText = "";
@@ -2085,7 +2086,17 @@ namespace Echoes
             Size sz=TextRenderer.MeasureText(notifyText,ft);
             Rectangle screenSize=Screen.PrimaryScreen.WorkingArea;
             Point pt=new Point(screenSize.Width-sz.Width-10,screenSize.Height-sz.Height-10);
-            floatingWindow.Show(pt, 255, trackTitleColor, ft, 5000, FloatingWindow.AnimateMode.Blend, 3500, notifyText);
+            popupWindow.Show(pt, 255, trackTitleColor, ft, 5000, FloatingWindow.AnimateMode.Blend, 3500, notifyText);
+        }
+
+        void ShowVolumePopup()
+        {
+            var str = "Volume: " + (int)(Bass.BASS_GetVolume() * 100)+"%";
+            Font ft = new Font(font2.FontFamily, 20, FontStyle.Bold);
+            Size sz = TextRenderer.MeasureText(str, ft);
+            Rectangle screenSize = Screen.PrimaryScreen.WorkingArea;
+            Point pt = new Point(screenSize.Width - sz.Width - 10, screenSize.Height - sz.Height - 10);
+            popupWindow.Show(pt, 255, trackTitleColor, ft, 5000, FloatingWindow.AnimateMode.Blend, 0, str);
         }
 
         private void progressBar1_MouseDown(object sender, MouseEventArgs e)
