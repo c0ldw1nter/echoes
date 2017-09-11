@@ -63,7 +63,7 @@ namespace Echoes
             foreach (Track t in tracks)
             {
                 if (String.IsNullOrWhiteSpace(t.artist)) continue;
-                StatsItem itm = stats.FirstOrDefault(x => x.name == t.artist);
+                StatsItem itm = stats.FirstOrDefault(x => x.name.Equals(t.artist,StringComparison.InvariantCultureIgnoreCase));
                 if (itm == null)
                 {
                     itm = new StatsItem(t.artist);
@@ -86,7 +86,7 @@ namespace Echoes
             foreach (Track t in tracks)
             {
                 if (String.IsNullOrWhiteSpace(t.album)) continue;
-                StatsItem itm = stats.FirstOrDefault(x => x.name == t.album);
+                StatsItem itm = stats.FirstOrDefault(x => x.name.Equals(t.album, StringComparison.InvariantCultureIgnoreCase));
                 if (itm == null)
                 {
                     itm = new StatsItem(t.album);
