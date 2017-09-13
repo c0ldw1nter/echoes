@@ -432,6 +432,7 @@ namespace Echoes
             seekBar.Location = new Point(seekBar.Location.X, trackText.Location.Y + trackText.Height + 5);
             searchBox.Location = new Point(searchBox.Location.X, seekBar.Location.Y + seekBar.Height + 5);
             playlistInfoTxt.Location = new Point(playlistInfoTxt.Location.X, seekBar.Location.Y + seekBar.Height + 5);
+            playlistInfoTxt.Height = playlistSelectorCombo.Height;
             playlistSelectorCombo.Location = new Point(playlistSelectorCombo.Location.X, seekBar.Location.Y + seekBar.Height + 5);
             volumeBar.Location = new Point(volumeBar.Location.X, seekBar.Location.Y + seekBar.Height + 5);
             volumeBar.Height = playlistSelectorCombo.Height;
@@ -446,11 +447,16 @@ namespace Echoes
             searchBox.Font = new Font(font1.FontFamily, 8.25f * (float)fontSizePercentage / 100, font1.Style);
             playlistInfoTxt.Font=new Font(font1.FontFamily,8.25f*(float)fontSizePercentage / 100, font1.Style);
             playlistSelectorCombo.Font = new Font(font1.FontFamily, 8.25f * (float)fontSizePercentage / 100, font1.Style);
-            trackGrid.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
+            //trackGrid.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
             trackGrid.Font = new Font(font1.FontFamily, 8.25f * (float)fontSizePercentage / 100, font1.Style);
+            trackGrid.RowTemplate.Height = (int)(trackGrid.Font.Height * 1.5);
+            foreach (DataGridViewRow rw in trackGrid.Rows)
+            {
+                rw.Height = trackGrid.RowTemplate.Height;
+            }
+            trackGrid.Invalidate();
             //trackGrid.RowTemplate.Height = (int)(trackGrid.Font.Height*1.5f);
-            trackGrid.Refresh();
-            trackGrid.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.None;
+            //trackGrid.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.None;
             /*foreach (Control ctrl in this.Controls)
             {
                 if (!(ctrl is Button) && !(ctrl is NumericUpDown) && ctrl.Name != "transposeTxt")
