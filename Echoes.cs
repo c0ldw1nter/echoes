@@ -1295,6 +1295,7 @@ namespace Echoes
 
         public void AdjustGlobalVolume(float increment)
         {
+            if (Bass.BASS_GetDevice() == -1) InitSoundDevice();
             float getVol=Bass.BASS_GetVolume();
             if(getVol+increment>1) getVol=1;
             else if(getVol+increment<0) getVol=0;
@@ -1707,6 +1708,11 @@ namespace Echoes
             }
         }
 
+        public void InitSoundDevice()
+        {
+            Bass.BASS_Init(-1, 44100, BASSInit.BASS_DEVICE_DEFAULT, this.Handle);
+        }
+
         public void LoadAudioFile(Track t)
         {
             if (streamLoaded) Bass.BASS_ChannelStop(stream);
@@ -1724,14 +1730,12 @@ namespace Echoes
                 //t.gettags
                 playlist[index].num = numzor;
                 //nowPlaying = playlist[index];
-
-                
             }
             t.GetTags();
             nowPlaying = t;
             if (!backgroundWorker1.IsBusy) try { xmlCacher.AddOrUpdate(new List<Track>() { t }); }
                 catch (Exception) { }
-            Bass.BASS_Init(-1, 44100, BASSInit.BASS_DEVICE_DEFAULT, this.Handle);
+            InitSoundDevice();
             string ext=Path.GetExtension(t.filename.ToLower());
             if (supportedModuleTypes.Contains(ext))
             {

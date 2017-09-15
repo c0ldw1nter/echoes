@@ -32,7 +32,7 @@ namespace Echoes
         //general
         public readonly static Font defaultFont = new Font("Courier New", 8, FontStyle.Regular);
         public readonly static int visualisationStyleDefault = 1;
-        public readonly static int visualfpsDefault = 30;
+        public readonly static int visualfpsDefault = 40;
         public readonly static int repeatDefault = 1;
         public readonly static float volumeDefault = 1f;
         public readonly static bool autoShuffleDefault = false;
