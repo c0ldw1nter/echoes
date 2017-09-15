@@ -46,6 +46,12 @@ namespace ModifiedControls
             rec.Height = rec.Height - 4;
             e.Graphics.FillRectangle(new SolidBrush((Parent as Echoes.Echoes).seekBarBackColor), 0, 0, Width, Height);
             e.Graphics.FillRectangle(new SolidBrush((Parent as Echoes.Echoes).seekBarForeColor), 2, 2, rec.Width, rec.Height);
+
+            /*draw tracker
+            /Image traker = Echoes.Properties.Resources.tracker;
+            int trakerWidth = traker.Width * e.ClipRectangle.Height / traker.Height;
+            e.Graphics.DrawImage(traker, rec.Width - trakerWidth / 2, 0, trakerWidth, e.ClipRectangle.Height);*/
+
             if (Program.mainWindow.showWaveform && Program.mainWindow.waveformImage != null)
             {
                 GraphicsUnit unit=GraphicsUnit.Pixel;

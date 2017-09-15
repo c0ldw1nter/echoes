@@ -236,6 +236,7 @@
     <Content Include="lib\Bass.Net.xml" />
     <Content Include="lib\SuperM3U.dll" />
     <Content Include="lib\taglib-sharp.dll" />
+    <None Include="Resources\tracker.png" />
     <None Include="Resources\import3.png" />
     <None Include="Resources\export1.png" />
     <None Include="Resources\export2.png" />

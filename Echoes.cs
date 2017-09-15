@@ -744,32 +744,39 @@ namespace Echoes
             {
                 trackGrid.Columns.Add(clmn);
             }
+
+            //filter with searchbox
             SortableBindingList<Track> source;
             string searchWord = searchBox.Text;
-            bool invertSearch = false;
-            if (searchWord.StartsWith("!"))
-            {
-                searchWord = searchBox.Text.Substring(1);
-                invertSearch = true;
-            }
             if (String.IsNullOrEmpty(searchWord))
             {
                 source = new SortableBindingList<Track>(playlist);
             }
             else
             {
-                if (invertSearch)
+                var sourceList = new List<Track>(playlist);
+                var searchKeywords = searchWord.Split(new char[]{'&'}, StringSplitOptions.RemoveEmptyEntries);
+                foreach (string s in searchKeywords)
                 {
-                    source = new SortableBindingList<Track>(playlist.Where(x => !x.title.ContainsIgnoreCase(searchWord) && !x.album.ContainsIgnoreCase(searchWord) && !x.artist.ContainsIgnoreCase(searchWord)).ToList());
+                    bool invertSearch = false;
+                    string searchWrd = s.TrimStart();
+                    if (searchWrd.StartsWith("!"))
+                    {
+                        searchWrd = searchWrd.Substring(1);
+                        invertSearch = true;
+                    }
+                    searchWrd=searchWrd.Trim();
+                    if (invertSearch) sourceList = sourceList.Where(x => !x.title.ContainsIgnoreCase(searchWrd) && !x.album.ContainsIgnoreCase(searchWrd) && !x.artist.ContainsIgnoreCase(searchWrd)).ToList();
+                    else sourceList = sourceList.Where(x => x.title.ContainsIgnoreCase(searchWrd) || x.album.ContainsIgnoreCase(searchWrd) || x.artist.ContainsIgnoreCase(searchWrd)).ToList();
                 }
-                else
-                {
-                    source = new SortableBindingList<Track>(playlist.Where(x => x.title.ContainsIgnoreCase(searchWord) || x.album.ContainsIgnoreCase(searchWord) || x.artist.ContainsIgnoreCase(searchWord)).ToList());
-                }
+                source = new SortableBindingList<Track>(sourceList);
             }
             trackGrid.DataSource = source;
+            //
+
             trackGrid.ClearSelection();
             HighlightPlayingTrack();
+            RefreshTotalTimeLabel();
             if(displayedItems!=ItemType.Cache) displayedItems = ItemType.Track;
         }
 
@@ -2439,7 +2446,7 @@ namespace Echoes
             trackGrid.Refresh();
         }
 
-        public TimeSpan TotalPlaylistListened(List<Track> list)
+        public TimeSpan TotalPlaylistListened(SortableBindingList<Track> list)
         {
             TimeSpan ret = new TimeSpan();
             int kount=0;
@@ -2451,7 +2458,7 @@ namespace Echoes
             return ret;
         }
 
-        public TimeSpan TotalPlaylistTime(List<Track> list)
+        public TimeSpan TotalPlaylistTime(SortableBindingList<Track> list)
         {
             TimeSpan ret = new TimeSpan();
             foreach (Track t in list)
@@ -2475,10 +2482,11 @@ namespace Echoes
 
         void RefreshTotalTimeLabel()
         {
+            SortableBindingList <Track> tehList= (SortableBindingList<Track>)(trackGrid.DataSource);
             if (displayedItems != ItemType.Playlist)
             {
-                playlistInfoTxt.Text = playlist.Count + " tracks, " + TotalPlaylistTime(playlist).ProperTimeFormat();
-                playlistInfoTxt.Text += " [" + TotalPlaylistListened(playlist).ProperTimeFormat()+" listened]";
+                playlistInfoTxt.Text = tehList.Count + " tracks, " + TotalPlaylistTime(tehList).ProperTimeFormat();
+                playlistInfoTxt.Text += " [" + TotalPlaylistListened(tehList).ProperTimeFormat() + " listened]";
             }
         }
 
