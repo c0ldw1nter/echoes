@@ -9,6 +9,7 @@ using System.Drawing;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml;
@@ -48,7 +49,7 @@ namespace Echoes
     #region Enums
     public enum Hotkey
     {
-        ADVANCEPLAYER, PREVIOUSPLAYER, PLAYPAUSE, VOLUMEUP, VOLUMEDOWN, TRANSPOSEUP, TRANSPOSEDOWN, DELETE, GLOBAL_VOLUMEUP, GLOBAL_VOLUMEDOWN
+        ADVANCEPLAYER, PREVIOUSPLAYER, PLAYPAUSE, VOLUMEUP, VOLUMEDOWN, TRANSPOSEUP, TRANSPOSEDOWN, DELETE, GLOBAL_VOLUMEUP, GLOBAL_VOLUMEDOWN, NEXTLIST, PREVLIST
     }
     public enum ItemType
     {
@@ -164,7 +165,6 @@ namespace Echoes
         
         bool draggingSeek = false;
         bool draggingVolume = false;
-        bool rebuildCache = false;
         bool wasPlaying = false;
         bool advanceFlag = false;
         bool gridSearchFirstStroke = true;
@@ -177,6 +177,7 @@ namespace Echoes
         int gridSearchReset = 30;
         public int waveformCompleted=0;
         public short[] waveform;
+        private AutoResetEvent ResetEvent = new AutoResetEvent(false);
 
         public DataGridViewCellStyle defaultCellStyle = new DataGridViewCellStyle();
         public DataGridViewCellStyle alternatingCellStyle = new DataGridViewCellStyle();
@@ -404,6 +405,31 @@ namespace Echoes
             }
             else if (k == Hotkey.GLOBAL_VOLUMEUP) AdjustGlobalVolume(0.01f);
             else if (k == Hotkey.GLOBAL_VOLUMEDOWN) AdjustGlobalVolume(-0.01f);
+            else if (k == Hotkey.NEXTLIST && !tagsLoaderWorker.IsBusy)
+            {
+                if (playlistSelectorCombo.SelectedIndex < playlistSelectorCombo.Items.Count - 1) {
+                    playlistSelectorCombo.SelectedIndex++;
+                }
+                else
+                {
+                    playlistSelectorCombo.SelectedIndex = 0;
+                }
+                comboBox1_SelectionChangeCommitted(null, null);
+                if (displayedItems != ItemType.Playlist) Play();
+            }
+            else if (k == Hotkey.PREVLIST && !tagsLoaderWorker.IsBusy)
+            {
+                if (playlistSelectorCombo.SelectedIndex>0)
+                {
+                    playlistSelectorCombo.SelectedIndex--;
+                }
+                else
+                {
+                    playlistSelectorCombo.SelectedIndex = playlistSelectorCombo.Items.Count-1;
+                }
+                comboBox1_SelectionChangeCommitted(null, null);
+                if (displayedItems != ItemType.Playlist) Play();
+            }
         }
 
         void RepositionControls()
@@ -1480,16 +1506,6 @@ namespace Echoes
             return ret;
         }
 
-        void RebuildCache()
-        {
-            if (backgroundWorker1.IsBusy) return;
-            AllowSorting(false);
-            //XmlCacher.CleanupCache();
-            rebuildCache = true;
-            trackText.Text = "Loading...";
-            backgroundWorker1.RunWorkerAsync();
-        }
-
         private void ImportM3u(string filename)
         {
             if (!File.Exists(filename))
@@ -1497,10 +1513,10 @@ namespace Echoes
                 MessageBox.Show("File doesn't exist.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 return;
             }
-            if (backgroundWorker1.IsBusy)
+            if (tagsLoaderWorker.IsBusy)
             {
-                backgroundWorker1.CancelAsync();
-                //ImportM3u(filename);
+                tagsLoaderWorker.CancelAsync();
+                ImportM3u(filename);
                 return;
             }
             searchBox.Text = "";
@@ -1529,11 +1545,11 @@ namespace Echoes
                 if (autoShuffle) Shuffle();
                 RefreshPlaylistGrid();
                 AllowSorting(false);
-                if (backgroundWorker1.IsBusy) backgroundWorker1.CancelAsync();
+                if (tagsLoaderWorker.IsBusy) tagsLoaderWorker.CancelAsync();
                 else
                 {
                     trackText.Text = "Loading...";
-                    backgroundWorker1.RunWorkerAsync();
+                    tagsLoaderWorker.RunWorkerAsync();
                 }
             }
             else
@@ -1717,7 +1733,7 @@ namespace Echoes
             }
             t.GetTags();
             nowPlaying = t;
-            if (!backgroundWorker1.IsBusy) try { xmlCacher.AddOrUpdate(new List<Track>() { t }); }
+            if (!tagsLoaderWorker.IsBusy) try { xmlCacher.AddOrUpdate(new List<Track>() { t }); }
                 catch (Exception) { }
             InitSoundDevice();
             string ext=Path.GetExtension(t.filename.ToLower());
@@ -1939,7 +1955,7 @@ namespace Echoes
 
         void PlayFirst()
         {
-            if (trackGrid.SelectedRows.Count > 0)
+            if (trackGrid.Rows.Count > 0)
             {
                 Track t = (Track)trackGrid.SelectedRows[0].DataBoundItem;
                 OpenFile(t);
@@ -2371,9 +2387,11 @@ namespace Echoes
 
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
-            if (rebuildCache==false)
-            {
+            /*if (rebuildCache==false)
+            {*/
                 for(int z=0;z<playlist.Count;z++){
+                    if (e.Cancel) break;
+
                     Track t = playlist[z];
                     if (!xmlCacher.GetCacheInfo(t))
                     {
@@ -2381,30 +2399,9 @@ namespace Echoes
                         xmlCacher.AddOrUpdate(new List<Track>(){t});
                     }
                     trackGrid.InvalidateRow(z);
-                    backgroundWorker1.ReportProgress((int)(((float)z / (float)playlist.Count) * 100));
+                    tagsLoaderWorker.ReportProgress((int)(((float)z / (float)playlist.Count) * 100));
                 }
-                /*try
-                {
-                    uncachedTracks = xmlCacher.LoadTagsToPlaylist(playlist);
-                }
-                catch (Exception)
-                {
-                    uncachedTracks = playlist;
-                }
-                //MessageBox.Show(uncachedTracks.Count + " uncached tracks");
-                for (int i = 0; i < uncachedTracks.Count; i++)
-                {
-                    Track t = uncachedTracks[i];
-                    //int numzor = t.num;
-                    int index = playlist.IndexOf(t);
-                    t.GetTags();//playlist[index] = GetTrackInfo(t.filename);
-                    //playlist[index].num = numzor;
-                    dataGridView1.InvalidateRow(index);
-                    backgroundWorker1.ReportProgress((int)(((float)i / (float)uncachedTracks.Count) * 100));
-                    if (backgroundWorker1.CancellationPending) return;
-                }
-                uncachedTracks.Clear();*/
-            }
+            /*}
             else
             {
                 for (int i = 0; i < trackGrid.Rows.Count; i++)
@@ -2416,8 +2413,7 @@ namespace Echoes
                     if (backgroundWorker1.CancellationPending) return;
                 }
                 xmlCacher.AddOrUpdate(playlist);
-            }
-            //if(useCache) xmlCacher.AddOrUpdate(playlist);
+            }*/
         }
 
         private void backgroundWorker1_ProgressChanged(object sender, ProgressChangedEventArgs e)
@@ -2426,7 +2422,6 @@ namespace Echoes
         }
         private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            rebuildCache = false;
             RefreshTotalTimeLabel();
             AllowSorting(true);
             if (nowPlaying == null) trackText.Text = "100% Loaded";

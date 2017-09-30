@@ -60,6 +60,8 @@ namespace Echoes
             new HotkeyData(Hotkey.DELETE, Keys.Delete, true, false, false, false),
             new HotkeyData(Hotkey.VOLUMEUP, Keys.Home, true, false, false, true),
             new HotkeyData(Hotkey.VOLUMEDOWN, Keys.End, true, false, false, true),
+            new HotkeyData(Hotkey.NEXTLIST, Keys.Right, false, false, true, true),
+            new HotkeyData(Hotkey.PREVLIST, Keys.Left, false, false, true, true)
         };
 
         public readonly static Color backgroundColorDefault = Color.FromArgb(24, 24, 24);

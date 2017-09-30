@@ -34,7 +34,7 @@ namespace Echoes
             this.trackGrid = new System.Windows.Forms.DataGridView();
             this.progressRefreshTimer = new System.Windows.Forms.Timer(this.components);
             this.trackText = new System.Windows.Forms.RichTextBox();
-            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            this.tagsLoaderWorker = new System.ComponentModel.BackgroundWorker();
             this.gridSearchTimer = new System.Windows.Forms.Timer(this.components);
             this.searchBox = new System.Windows.Forms.TextBox();
             this.transposeChangerNum = new System.Windows.Forms.NumericUpDown();
@@ -117,13 +117,13 @@ namespace Echoes
             this.trackText.Text = "No track";
             this.trackText.FontChanged += new System.EventHandler(this.trackText_FontChanged);
             // 
-            // backgroundWorker1
+            // tagsLoaderWorker
             // 
-            this.backgroundWorker1.WorkerReportsProgress = true;
-            this.backgroundWorker1.WorkerSupportsCancellation = true;
-            this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
-            this.backgroundWorker1.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorker1_ProgressChanged);
-            this.backgroundWorker1.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker1_RunWorkerCompleted);
+            this.tagsLoaderWorker.WorkerReportsProgress = true;
+            this.tagsLoaderWorker.WorkerSupportsCancellation = true;
+            this.tagsLoaderWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
+            this.tagsLoaderWorker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorker1_ProgressChanged);
+            this.tagsLoaderWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker1_RunWorkerCompleted);
             // 
             // gridSearchTimer
             // 
@@ -505,7 +505,7 @@ namespace Echoes
         private System.Windows.Forms.RichTextBox trackText;
         private System.Windows.Forms.PictureBox echoesLogo;
         private ModifiedComboBox playlistSelectorCombo;
-        private System.ComponentModel.BackgroundWorker backgroundWorker1;
+        private System.ComponentModel.BackgroundWorker tagsLoaderWorker;
         private System.Windows.Forms.Timer gridSearchTimer;
         private System.Windows.Forms.TextBox searchBox;
         private System.Windows.Forms.NumericUpDown transposeChangerNum;
