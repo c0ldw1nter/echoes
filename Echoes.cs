@@ -49,7 +49,7 @@ namespace Echoes
     #region Enums
     public enum Hotkey
     {
-        ADVANCEPLAYER, PREVIOUSPLAYER, PLAYPAUSE, VOLUMEUP, VOLUMEDOWN, TRANSPOSEUP, TRANSPOSEDOWN, DELETE, GLOBAL_VOLUMEUP, GLOBAL_VOLUMEDOWN, NEXTLIST, PREVLIST
+        ADVANCEPLAYER, PREVIOUSPLAYER, PLAYPAUSE, VOLUMEUP, VOLUMEDOWN, TRANSPOSEUP, TRANSPOSEDOWN, DELETE, GLOBAL_VOLUMEUP, GLOBAL_VOLUMEDOWN, NEXTLIST, PREVLIST, SHUFFLE
     }
     public enum ItemType
     {
@@ -430,6 +430,7 @@ namespace Echoes
                 comboBox1_SelectionChangeCommitted(null, null);
                 if (displayedItems != ItemType.Playlist) Play();
             }
+            else if (k == Hotkey.SHUFFLE) Shuffle();
         }
 
         void RepositionControls()
