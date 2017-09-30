@@ -32,6 +32,7 @@ namespace Echoes
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Options));
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.generalPage = new System.Windows.Forms.TabPage();
+            this.setDefaultsBtn = new ModifiedControls.ModifiedButton();
             this.font2ChangeBtn = new ModifiedControls.ModifiedButton();
             this.font2Txt = new System.Windows.Forms.Label();
             this.showWaveformCheckbox = new System.Windows.Forms.CheckBox();
@@ -50,7 +51,6 @@ namespace Echoes
             this.midiTxt = new System.Windows.Forms.Label();
             this.popupCheckbox = new System.Windows.Forms.CheckBox();
             this.hotkeysPage = new System.Windows.Forms.TabPage();
-            this.rehookBtn = new ModifiedControls.ModifiedButton();
             this.label4 = new System.Windows.Forms.Label();
             this.transposeIncrementChanger = new System.Windows.Forms.NumericUpDown();
             this.label3 = new System.Windows.Forms.Label();
@@ -78,7 +78,6 @@ namespace Echoes
             this.colorVisualsBtn = new ModifiedControls.ModifiedButton();
             this.colorVolBarBtn = new ModifiedControls.ModifiedButton();
             this.colorSeekBtn = new ModifiedControls.ModifiedButton();
-            this.setDefaultsBtn = new ModifiedControls.ModifiedButton();
             this.tabControl1.SuspendLayout();
             this.generalPage.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.fontSizePercentTrack)).BeginInit();
@@ -131,6 +130,19 @@ namespace Echoes
             this.generalPage.Size = new System.Drawing.Size(434, 236);
             this.generalPage.TabIndex = 0;
             this.generalPage.Text = "General";
+            // 
+            // setDefaultsBtn
+            // 
+            this.setDefaultsBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(110)))), ((int)(((byte)(110)))), ((int)(((byte)(110)))));
+            this.setDefaultsBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.setDefaultsBtn.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.setDefaultsBtn.Location = new System.Drawing.Point(367, 205);
+            this.setDefaultsBtn.Name = "setDefaultsBtn";
+            this.setDefaultsBtn.Size = new System.Drawing.Size(59, 23);
+            this.setDefaultsBtn.TabIndex = 34;
+            this.setDefaultsBtn.Text = "Defaults";
+            this.setDefaultsBtn.UseVisualStyleBackColor = true;
+            this.setDefaultsBtn.Click += new System.EventHandler(this.setDefaultsBtn_Click);
             // 
             // font2ChangeBtn
             // 
@@ -333,7 +345,6 @@ namespace Echoes
             // hotkeysPage
             // 
             this.hotkeysPage.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(24)))), ((int)(((byte)(24)))), ((int)(((byte)(24)))));
-            this.hotkeysPage.Controls.Add(this.rehookBtn);
             this.hotkeysPage.Controls.Add(this.label4);
             this.hotkeysPage.Controls.Add(this.transposeIncrementChanger);
             this.hotkeysPage.Controls.Add(this.label3);
@@ -347,21 +358,6 @@ namespace Echoes
             this.hotkeysPage.Size = new System.Drawing.Size(434, 236);
             this.hotkeysPage.TabIndex = 1;
             this.hotkeysPage.Text = "Hotkeys";
-            // 
-            // rehookBtn
-            // 
-            this.rehookBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(48)))), ((int)(((byte)(48)))));
-            this.rehookBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.rehookBtn.Font = new System.Drawing.Font("White Rabbit", 8.249999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.rehookBtn.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(200)))), ((int)(((byte)(200)))));
-            this.rehookBtn.Location = new System.Drawing.Point(362, 2);
-            this.rehookBtn.Margin = new System.Windows.Forms.Padding(2);
-            this.rehookBtn.Name = "rehookBtn";
-            this.rehookBtn.Size = new System.Drawing.Size(65, 23);
-            this.rehookBtn.TabIndex = 32;
-            this.rehookBtn.Text = "Rehook";
-            this.rehookBtn.UseVisualStyleBackColor = false;
-            this.rehookBtn.Click += new System.EventHandler(this.rehookBtn_Click);
             // 
             // label4
             // 
@@ -742,19 +738,6 @@ namespace Echoes
             this.colorSeekBtn.UseVisualStyleBackColor = true;
             this.colorSeekBtn.Click += new System.EventHandler(this.colorSeekBtn_Click);
             // 
-            // setDefaultsBtn
-            // 
-            this.setDefaultsBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(110)))), ((int)(((byte)(110)))), ((int)(((byte)(110)))));
-            this.setDefaultsBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.setDefaultsBtn.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.setDefaultsBtn.Location = new System.Drawing.Point(367, 205);
-            this.setDefaultsBtn.Name = "setDefaultsBtn";
-            this.setDefaultsBtn.Size = new System.Drawing.Size(59, 23);
-            this.setDefaultsBtn.TabIndex = 34;
-            this.setDefaultsBtn.Text = "Defaults";
-            this.setDefaultsBtn.UseVisualStyleBackColor = true;
-            this.setDefaultsBtn.Click += new System.EventHandler(this.setDefaultsBtn_Click);
-            // 
             // Options
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -812,7 +795,6 @@ namespace Echoes
         private System.Windows.Forms.NumericUpDown transposeIncrementChanger;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.NumericUpDown volIncrementChanger;
-        private ModifiedButton rehookBtn;
         private ModifiedButton colorControlFrontBtn;
         private ModifiedButton colorControlBackBtn;
         private ModifiedButton colorBackgroundBtn;

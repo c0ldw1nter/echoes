@@ -56,20 +56,19 @@ namespace Echoes
     }
     public enum Modifier
     {
-        NONE, ALT, CTRL, SHIFT, WIN
+        NONE, CTRL, ALT, SHIFT
     }
     #endregion
 
     public partial class Echoes : Form
     {
-        //GlobalKeyboardHook ghk = new GlobalKeyboardHook();
-        #region DLL libraries used to manage hotkeys
+        /*#region DLL libraries used to manage hotkeys
         [DllImport("user32.dll")]
         public static extern bool RegisterHotKey(IntPtr hWnd, int id, int fsModifiers, int vlc);
         [DllImport("user32.dll")]
         public static extern bool UnregisterHotKey(IntPtr hWnd, int id);
-        #endregion
-        public int[] modValues = { 0, 1, 2, 4, 8 };
+        #endregion*/
+        //public int[] modValues = { 0, 1, 2, 4, 8 };
 
         #region Settings values
         /*To add a new setting value:
@@ -147,6 +146,7 @@ namespace Echoes
         Statistics stats;
         Options opts;
         FloatingOSDWindow popupWindow = new FloatingOSDWindow();
+        KeyboardHook kh;
         DataGridViewRow highlightedRow;
         DataGridViewColumn highlightedColumn;
         Stopwatch timeListenedTracker = new Stopwatch();
@@ -198,6 +198,10 @@ namespace Echoes
 
             InitializeComponent();
 
+            kh = new KeyboardHook();
+            kh.Install();
+            kh.KeyDown += kh_KeyDown;
+
             new ToolTip().SetToolTip(openBtn, "Open file");
             new ToolTip().SetToolTip(exportBtn, "Export playlist");
             new ToolTip().SetToolTip(optionsBtn, "Options");
@@ -235,6 +239,19 @@ namespace Echoes
             SetColors();
             LoadPlaylistDb();
             StartupLoadProcedure();
+        }
+
+        void kh_KeyDown(KeyEventArgs e)
+        {
+            //System.Media.SystemSounds.Beep.Play();
+            //if (e == null) return;
+            foreach (HotkeyData hk in hotkeys)
+            {
+                if (hk.key == e.KeyCode && hk.ctrl == e.Control && hk.alt == e.Alt && hk.shift == e.Shift)
+                {
+                    DoHotkeyEvent(hk.hotkey);
+                }
+            }
         }
 
         void PointToMissingFile(Track t)
@@ -337,7 +354,6 @@ namespace Echoes
             //hotkey settings
             hotkeysAllowed = Program.hotkeysAllowedDefault;
             hotkeys = Program.defaultHotkeys.Copy();
-            SetHotkeys();
         }
 
         void DoHotkeyEvent(Hotkey k)
@@ -388,42 +404,6 @@ namespace Echoes
             }
             else if (k == Hotkey.GLOBAL_VOLUMEUP) AdjustGlobalVolume(0.01f);
             else if (k == Hotkey.GLOBAL_VOLUMEDOWN) AdjustGlobalVolume(-0.01f);
-        } 
-
-        void ghk_KeyDown(object sender, KeyEventArgs e)
-        {
-            //MessageBox.Show("Clicked" + e.KeyCode.ToString());
-            foreach (HotkeyData hk in hotkeys)
-            {
-                if (hk.key == e.KeyCode)
-                {
-                    if (hk.mod.IsModRequired(Modifier.ALT) == e.Alt &&
-                        hk.mod.IsModRequired(Modifier.SHIFT) == e.Shift &&
-                        hk.mod.IsModRequired(Modifier.CTRL) == e.Control)
-                    {
-                        DoHotkeyEvent(hk.hotkey);
-                    }
-                }
-            }
-        }
-
-        public void SetHotkeys()
-        {
-            //ghk.HookedKeys.Clear();
-            foreach(HotkeyData hk in hotkeys) {
-                //ghk.HookedKeys.Add(hk.key);
-                if (hk.enabled && hotkeysAllowed && !hk.registered)
-                {
-                    RegisterHotKey(theHandle, (int)hk.hotkey, hk.mod, (int)hk.key);
-                    hk.registered = true;
-                }
-                else if (hk.registered)
-                {
-                    UnregisterHotKey(theHandle, (int)hk.hotkey);
-                    hk.registered = false;
-                }
-            }
-            //ghk.KeyDown += new KeyEventHandler(ghk_KeyDown);
         }
 
         void RepositionControls()
@@ -562,14 +542,14 @@ namespace Echoes
             return Bass.BASS_ChannelIsActive(stream) == BASSActive.BASS_ACTIVE_PLAYING;
         }
 
-        protected override void WndProc(ref Message m)
+        /*protected override void WndProc(ref Message m)
         {
             if (m.Msg == 0x0312) {
                 Hotkey k=(Hotkey)m.WParam.ToInt32();
                 DoHotkeyEvent(k);
             }
             base.WndProc(ref m);
-        }
+        }*/
 
         int PitchFreq(int cents, int freq)
         {
@@ -652,7 +632,6 @@ namespace Echoes
                         Track t = new Track(file, "");
                         t.GetTags();
                         playlist.Insert(0,t);
-
                         //add to current playlist
                     }
                     displayedItems = ItemType.Track;
@@ -1131,7 +1110,9 @@ namespace Echoes
             {
                 item = new XElement(hk.hotkey.ToString());
                 item.Add(new XAttribute("key", hk.key.ToString()));
-                item.Add(new XAttribute("mod", hk.mod.ToString()));
+                item.Add(new XAttribute("ctrl", hk.ctrl.ToString()));
+                item.Add(new XAttribute("alt", hk.alt.ToString()));
+                item.Add(new XAttribute("shift", hk.shift.ToString()));
                 item.Add(new XAttribute("enabled", hk.enabled.ToString()));
                 hotkeyz.Add(item);
             }
@@ -1267,16 +1248,17 @@ namespace Echoes
             hotkeys = new List<HotkeyData>();
             foreach (XElement elem in group.Elements())
             {
-                Hotkey hk; Keys k; int mod; bool enabled;
-                if (elem.Name != null && elem.Attribute("key") != null && elem.Attribute("mod") != null && elem.Attribute("enabled") != null)
+                Hotkey hk; Keys k; bool ctrl; bool alt; bool shift; bool enabled;
+                if (elem.Name != null && elem.Attribute("key") != null && elem.Attribute("enabled") != null)
                 if(Enum.TryParse<Hotkey>(elem.Name.ToString(),out hk) &&
                    Enum.TryParse<Keys>(elem.Attribute("key").Value, out k) &&
-                   Int32.TryParse(elem.Attribute("mod").Value, out mod) &&
+                   Boolean.TryParse(elem.Attribute("ctrl").Value, out ctrl) &&
+                   Boolean.TryParse(elem.Attribute("alt").Value, out alt) &&
+                   Boolean.TryParse(elem.Attribute("shift").Value, out shift) &&
                    Boolean.TryParse(elem.Attribute("enabled").Value, out enabled)) {
-                       hotkeys.Add(new HotkeyData(hk, k, mod, enabled));
+                       hotkeys.Add(new HotkeyData(hk, k, ctrl, alt, shift, enabled));
                 }
             }
-            SetHotkeys();
             //columns
             group = xml.Root.Element("columns");
             currentColumnInfo = new List<ColumnInfo>();
@@ -1715,6 +1697,7 @@ namespace Echoes
 
         public void LoadAudioFile(Track t)
         {
+            
             if (streamLoaded) Bass.BASS_ChannelStop(stream);
             FlushTimeListened();
             Bass.BASS_Free();

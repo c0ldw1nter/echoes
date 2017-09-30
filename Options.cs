@@ -131,7 +131,7 @@ namespace Echoes
             hotkeyDgv.Rows.Clear();
             foreach (HotkeyData hkd in Program.mainWindow.hotkeys)
             {
-                hotkeyDgv.Rows.Add(new object[] {hkd.enabled, hkd.hotkey.ToString(), hkd.mod.ToModText(), hkd.key.ToString()});
+                hotkeyDgv.Rows.Add(new object[] {hkd.enabled, hkd.hotkey.ToString(), hkd.ToModText(), hkd.key.ToString()});
             }
         }
 
@@ -186,12 +186,11 @@ namespace Echoes
             int rowNum=hotkeyDgv.HitTest(e.Location.X,e.Location.Y).RowIndex;
             if (rowNum < 0) return;
             if (optsDlg != null) optsDlg.Dispose();
-            optsDlg = new OptionsHotkeyDialog(Program.mainWindow.hotkeys[rowNum].hotkey, (int)Program.mainWindow.hotkeys[rowNum].mod, (int)Program.mainWindow.hotkeys[rowNum].key, Program.mainWindow.hotkeys[rowNum].enabled);
+            optsDlg = new OptionsHotkeyDialog(Program.mainWindow.hotkeys[rowNum].hotkey, Program.mainWindow.hotkeys[rowNum].ctrl, Program.mainWindow.hotkeys[rowNum].alt, Program.mainWindow.hotkeys[rowNum].shift, (int)Program.mainWindow.hotkeys[rowNum].key, Program.mainWindow.hotkeys[rowNum].enabled);
             if (optsDlg.ShowDialog(this) == DialogResult.OK)
             {
                 Program.mainWindow.hotkeys[rowNum] = optsDlg.returnedData;
                 LoadHotkeys();
-                Program.mainWindow.SetHotkeys();
             }
             optsDlg.Hide();
             optsDlg.Dispose();
@@ -202,7 +201,6 @@ namespace Echoes
             if (e.ColumnIndex == 0 && e.RowIndex >= 0)
             {
                 Program.mainWindow.hotkeys[e.RowIndex].enabled = (bool)(hotkeyDgv.Rows[e.RowIndex].Cells[0].Value);
-                Program.mainWindow.SetHotkeys();
             }
         }
 
@@ -214,7 +212,6 @@ namespace Echoes
             miDefaultHotkeys.Click += (theSender, eventArgs) =>
             {
                 Program.mainWindow.hotkeys = Program.defaultHotkeys.Copy();
-                Program.mainWindow.SetHotkeys();
                 LoadHotkeys();
             };
             cm.MenuItems.Add(miDefaultHotkeys);
@@ -301,12 +298,11 @@ namespace Echoes
         private void addHotkeyBtn_Click(object sender, EventArgs e)
         {
             if (optsDlg != null) optsDlg.Dispose();
-            optsDlg = new OptionsHotkeyDialog(Hotkey.PLAYPAUSE, 0, -1, true);
+            optsDlg = new OptionsHotkeyDialog(Hotkey.PLAYPAUSE, false, false, false, 0, true);
             if (optsDlg.ShowDialog(this) == DialogResult.OK)
             {
                 Program.mainWindow.hotkeys.Add(optsDlg.returnedData);
                 LoadHotkeys();
-                Program.mainWindow.SetHotkeys();
             }
             optsDlg.Hide();
             optsDlg.Dispose();
@@ -321,7 +317,6 @@ namespace Echoes
             }
             foreach (HotkeyData hk in toremove) Program.mainWindow.hotkeys.Remove(hk);
             LoadHotkeys();
-            Program.mainWindow.SetHotkeys();
         }
 
         private void hotkeyDgv_KeyDown(object sender, KeyEventArgs e)
@@ -341,7 +336,6 @@ namespace Echoes
 
         private void rehookBtn_Click(object sender, EventArgs e)
         {
-            Program.mainWindow.SetHotkeys();
         }
 
         private void colorControlBackBtn_Click(object sender, EventArgs e)
@@ -394,6 +388,7 @@ namespace Echoes
         private void colorSchemeSelectorCombo_SelectedValueChanged(object sender, EventArgs e)
         {
             Program.mainWindow.LoadXmlColorScheme(colorSchemeSelectorCombo.SelectedValue.ToString());
+            LoadColors();
         }
 
         private void addColorSchemeBtn_Click(object sender, EventArgs e)

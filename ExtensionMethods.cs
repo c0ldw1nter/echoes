@@ -116,15 +116,13 @@ namespace System
             return false;
         }
 
-        public static string ToModText(this int z)
-        {
-            if (z == 0) return "NONE";
-            List<string> btns=new List<string>();
+        public static string ToModText(this HotkeyData hkd) {
+            if (hkd.alt == hkd.shift == hkd.ctrl == false) return "NONE";
+            List<string> btns = new List<string>();
             string ret = "";
-            if (z >= 8) { btns.Add("WIN"); z -= 8; }
-            if (z >= 4) { btns.Add("SHIFT"); z -= 4; }
-            if (z >= 2) { btns.Add("CTRL"); z -= 2; }
-            if (z >= 1) { btns.Add("ALT"); z -= 1; }
+            if (hkd.ctrl) btns.Add("CTRL");
+            if (hkd.alt) btns.Add("ALT");
+            if (hkd.shift) btns.Add("SHIFT");
             for (int i = 0; i < btns.Count; i++)
             {
                 ret += btns[i];

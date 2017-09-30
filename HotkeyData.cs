@@ -11,14 +11,17 @@ namespace Echoes
     {
         public Hotkey hotkey;
         public Keys key;
-        public int mod;
+        //public int mod;
+        public bool alt, shift, ctrl;
         public bool enabled;
         public bool registered = false;
-        public HotkeyData(Hotkey hotkey, Keys key, int mod, bool enabled)
+        public HotkeyData(Hotkey hotkey, Keys key, bool ctrl, bool alt, bool shift, bool enabled)
         {
             this.hotkey = hotkey;
             this.key = key;
-            this.mod = mod;
+            this.alt = alt;
+            this.shift = shift;
+            this.ctrl = ctrl;
             this.enabled = enabled;
         }
     }

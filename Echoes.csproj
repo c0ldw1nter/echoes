@@ -99,6 +99,7 @@
     <Compile Include="FloatingOSDWindow.cs" />
     <Compile Include="FloatingWindow.cs" />
     <Compile Include="HotkeyData.cs" />
+    <Compile Include="KeyboardHook.cs" />
     <Compile Include="ModifiedComboBox.cs">
       <SubType>Component</SubType>
     </Compile>

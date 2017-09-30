@@ -31,20 +31,21 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(OptionsHotkeyDialog));
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.funcCombo = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.comboBox2 = new System.Windows.Forms.ComboBox();
-            this.comboBox3 = new System.Windows.Forms.ComboBox();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.textBox1 = new System.Windows.Forms.TextBox();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.enabledCheck = new System.Windows.Forms.CheckBox();
+            this.ctrlCheck = new System.Windows.Forms.CheckBox();
+            this.altCheck = new System.Windows.Forms.CheckBox();
+            this.shiftCheck = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(117, 121);
+            this.button1.Location = new System.Drawing.Point(160, 121);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 0;
@@ -62,14 +63,14 @@
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
-            // comboBox1
+            // funcCombo
             // 
-            this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(66, 12);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(126, 21);
-            this.comboBox1.TabIndex = 2;
+            this.funcCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.funcCombo.FormattingEnabled = true;
+            this.funcCombo.Location = new System.Drawing.Point(66, 12);
+            this.funcCombo.Name = "funcCombo";
+            this.funcCombo.Size = new System.Drawing.Size(169, 21);
+            this.funcCombo.TabIndex = 2;
             // 
             // label1
             // 
@@ -88,24 +89,6 @@
             this.label2.Size = new System.Drawing.Size(31, 13);
             this.label2.TabIndex = 4;
             this.label2.Text = "Mod:";
-            // 
-            // comboBox2
-            // 
-            this.comboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBox2.FormattingEnabled = true;
-            this.comboBox2.Location = new System.Drawing.Point(66, 39);
-            this.comboBox2.Name = "comboBox2";
-            this.comboBox2.Size = new System.Drawing.Size(60, 21);
-            this.comboBox2.TabIndex = 5;
-            // 
-            // comboBox3
-            // 
-            this.comboBox3.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBox3.FormattingEnabled = true;
-            this.comboBox3.Location = new System.Drawing.Point(132, 39);
-            this.comboBox3.Name = "comboBox3";
-            this.comboBox3.Size = new System.Drawing.Size(60, 21);
-            this.comboBox3.TabIndex = 6;
             // 
             // label3
             // 
@@ -134,29 +117,60 @@
             this.textBox1.TabIndex = 11;
             this.textBox1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox1_KeyDown);
             // 
-            // checkBox1
+            // enabledCheck
             // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(66, 96);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(15, 14);
-            this.checkBox1.TabIndex = 12;
-            this.checkBox1.UseVisualStyleBackColor = true;
+            this.enabledCheck.AutoSize = true;
+            this.enabledCheck.Location = new System.Drawing.Point(66, 96);
+            this.enabledCheck.Name = "enabledCheck";
+            this.enabledCheck.Size = new System.Drawing.Size(15, 14);
+            this.enabledCheck.TabIndex = 12;
+            this.enabledCheck.UseVisualStyleBackColor = true;
+            // 
+            // ctrlCheck
+            // 
+            this.ctrlCheck.AutoSize = true;
+            this.ctrlCheck.Location = new System.Drawing.Point(66, 41);
+            this.ctrlCheck.Name = "ctrlCheck";
+            this.ctrlCheck.Size = new System.Drawing.Size(54, 17);
+            this.ctrlCheck.TabIndex = 13;
+            this.ctrlCheck.Text = "CTRL";
+            this.ctrlCheck.UseVisualStyleBackColor = true;
+            // 
+            // altCheck
+            // 
+            this.altCheck.AutoSize = true;
+            this.altCheck.Location = new System.Drawing.Point(126, 41);
+            this.altCheck.Name = "altCheck";
+            this.altCheck.Size = new System.Drawing.Size(46, 17);
+            this.altCheck.TabIndex = 14;
+            this.altCheck.Text = "ALT";
+            this.altCheck.UseVisualStyleBackColor = true;
+            // 
+            // shiftCheck
+            // 
+            this.shiftCheck.AutoSize = true;
+            this.shiftCheck.Location = new System.Drawing.Point(178, 41);
+            this.shiftCheck.Name = "shiftCheck";
+            this.shiftCheck.Size = new System.Drawing.Size(57, 17);
+            this.shiftCheck.TabIndex = 15;
+            this.shiftCheck.Text = "SHIFT";
+            this.shiftCheck.UseVisualStyleBackColor = true;
             // 
             // OptionsHotkeyDialog
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(201, 152);
-            this.Controls.Add(this.checkBox1);
+            this.ClientSize = new System.Drawing.Size(244, 152);
+            this.Controls.Add(this.shiftCheck);
+            this.Controls.Add(this.altCheck);
+            this.Controls.Add(this.ctrlCheck);
+            this.Controls.Add(this.enabledCheck);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
-            this.Controls.Add(this.comboBox3);
-            this.Controls.Add(this.comboBox2);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.comboBox1);
+            this.Controls.Add(this.funcCombo);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -171,14 +185,15 @@
 
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button2;
-        public System.Windows.Forms.ComboBox comboBox1;
+        public System.Windows.Forms.ComboBox funcCombo;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
-        public System.Windows.Forms.ComboBox comboBox2;
-        public System.Windows.Forms.ComboBox comboBox3;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
         public System.Windows.Forms.TextBox textBox1;
-        public System.Windows.Forms.CheckBox checkBox1;
+        public System.Windows.Forms.CheckBox enabledCheck;
+        private System.Windows.Forms.CheckBox ctrlCheck;
+        private System.Windows.Forms.CheckBox altCheck;
+        private System.Windows.Forms.CheckBox shiftCheck;
     }
 }

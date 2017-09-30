@@ -50,16 +50,16 @@ namespace Echoes
         //hotkeys
         public readonly static bool hotkeysAllowedDefault = true;
         public readonly static List<HotkeyData> defaultHotkeys = new List<HotkeyData>() {
-            new HotkeyData(Hotkey.ADVANCEPLAYER, Keys.Right, 2, true),
-            new HotkeyData(Hotkey.PREVIOUSPLAYER, Keys.Left, 2, true),
-            new HotkeyData(Hotkey.PLAYPAUSE, Keys.Down, 2, true),
-            new HotkeyData(Hotkey.GLOBAL_VOLUMEUP, Keys.Add, 2, true),
-            new HotkeyData(Hotkey.GLOBAL_VOLUMEDOWN, Keys.Subtract, 2, true),
-            new HotkeyData(Hotkey.TRANSPOSEUP, Keys.PageUp, 2, true),
-            new HotkeyData(Hotkey.TRANSPOSEDOWN, Keys.PageDown, 2, true),
-            new HotkeyData(Hotkey.DELETE, Keys.Delete, 2, false),
-            new HotkeyData(Hotkey.VOLUMEUP, Keys.Home, 2, true),
-            new HotkeyData(Hotkey.VOLUMEDOWN, Keys.End, 2, true),
+            new HotkeyData(Hotkey.ADVANCEPLAYER, Keys.Right, true, false, false, true),
+            new HotkeyData(Hotkey.PREVIOUSPLAYER, Keys.Left, true, false, false, true),
+            new HotkeyData(Hotkey.PLAYPAUSE, Keys.Down, true, false, false, true),
+            new HotkeyData(Hotkey.GLOBAL_VOLUMEUP, Keys.Add, true, false, false, true),
+            new HotkeyData(Hotkey.GLOBAL_VOLUMEDOWN, Keys.Subtract, true, false, false, true),
+            new HotkeyData(Hotkey.TRANSPOSEUP, Keys.PageUp, true, false, false, true),
+            new HotkeyData(Hotkey.TRANSPOSEDOWN, Keys.PageDown, true, false, false, true),
+            new HotkeyData(Hotkey.DELETE, Keys.Delete, true, false, false, false),
+            new HotkeyData(Hotkey.VOLUMEUP, Keys.Home, true, false, false, true),
+            new HotkeyData(Hotkey.VOLUMEDOWN, Keys.End, true, false, false, true),
         };
 
         public readonly static Color backgroundColorDefault = Color.FromArgb(24, 24, 24);

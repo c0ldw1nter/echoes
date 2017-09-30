@@ -14,24 +14,17 @@ namespace Echoes
     {
         Keys enteredKey;
         public HotkeyData returnedData;
-        public OptionsHotkeyDialog(Hotkey fnc, int mod, int key, bool enabled)
+        public OptionsHotkeyDialog(Hotkey fnc, bool ctrl, bool alt, bool shift, int key, bool enabled)
         {
             InitializeComponent();
-            comboBox1.DataSource = Enum.GetValues(typeof(Hotkey));
-            comboBox2.DataSource = Enum.GetValues(typeof(Modifier));
-            comboBox3.DataSource = Enum.GetValues(typeof(Modifier));
-            for (int i = Program.mainWindow.modValues.Length-1; i >= 0 ; i--)
-            {
-                if (mod >= Program.mainWindow.modValues[i]) { comboBox2.SelectedIndex = i; mod -= Program.mainWindow.modValues[i]; break; }
-            }
-            for (int i = Program.mainWindow.modValues.Length-1; i >= 0; i--)
-            {
-                if (mod >= Program.mainWindow.modValues[i]) { comboBox3.SelectedIndex = i; break; }
-            }
-            comboBox1.SelectedIndex = (int)fnc;
+            funcCombo.DataSource = Enum.GetValues(typeof(Hotkey));
+            funcCombo.SelectedIndex = (int)fnc;
+            ctrlCheck.Checked = ctrl;
+            altCheck.Checked = alt;
+            shiftCheck.Checked = shift;
             textBox1.Text = ((Keys)key).ToString();
             enteredKey = (Keys)key;
-            checkBox1.Checked = enabled;
+            enabledCheck.Checked = enabled;
         }
 
         private void textBox1_KeyDown(object sender, KeyEventArgs e)
@@ -48,7 +41,7 @@ namespace Echoes
 
         HotkeyData ReturnData()
         {
-            return new HotkeyData((Hotkey)comboBox1.SelectedValue, enteredKey, Program.mainWindow.modValues[(int)comboBox2.SelectedValue] + Program.mainWindow.modValues[(int)comboBox3.SelectedValue], checkBox1.Checked);
+            return new HotkeyData((Hotkey)funcCombo.SelectedValue, enteredKey, ctrlCheck.Checked, altCheck.Checked, shiftCheck.Checked, enabledCheck.Checked);
         }
 
         private void button2_Click(object sender, EventArgs e)
