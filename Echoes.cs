@@ -1745,7 +1745,6 @@ namespace Echoes
 
         public void LoadAudioFile(Track t)
         {
-            
             if (streamLoaded) Bass.BASS_ChannelStop(stream);
             FlushTimeListened();
             Bass.BASS_Free();
@@ -1986,17 +1985,32 @@ namespace Echoes
 
         void PlayFirst()
         {
+            Track t;
             if (trackGrid.SelectedRows.Count > 0)
             {
-                Track t = (Track)trackGrid.SelectedRows[0].DataBoundItem;
-                OpenFile(t);
-                Play();
+                foreach (DataGridViewRow rw in trackGrid.SelectedRows)
+                {
+                    t = (Track)rw.DataBoundItem;
+                    if (File.Exists(t.filename))
+                    {
+                        OpenFile(t);
+                        Play();
+                        break;
+                    }
+                }
             }
             else if (trackGrid.Rows[0] != null)
             {
-                Track t = (Track)trackGrid.Rows[0].DataBoundItem;
-                OpenFile(t);
-                Play();
+                foreach (DataGridViewRow rw in trackGrid.Rows)
+                {
+                    t = (Track)rw.DataBoundItem;
+                    if (File.Exists(t.filename))
+                    {
+                        OpenFile(t);
+                        Play();
+                        break;
+                    }
+                }
             }
         }
 
