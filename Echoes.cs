@@ -1249,7 +1249,8 @@ namespace Echoes
             foreach (XElement elem in group.Elements())
             {
                 Hotkey hk; Keys k; bool ctrl; bool alt; bool shift; bool enabled;
-                if (elem.Name != null && elem.Attribute("key") != null && elem.Attribute("enabled") != null)
+                if (elem.Name != null && elem.Attribute("key") != null && elem.Attribute("ctrl") != null && elem.Attribute("shift") != null
+                    && elem.Attribute("alt") != null && elem.Attribute("enabled") != null)
                 if(Enum.TryParse<Hotkey>(elem.Name.ToString(),out hk) &&
                    Enum.TryParse<Keys>(elem.Attribute("key").Value, out k) &&
                    Boolean.TryParse(elem.Attribute("ctrl").Value, out ctrl) &&
