@@ -1090,6 +1090,9 @@ namespace Echoes
             item.Value = font2.FontFamily.Name;
             item.Add(new XAttribute("Style", (int)font2.Style));
             general.Add(item);
+            item = new XElement("suppressHotkeys");
+            item.Value = suppressHotkeys.ToString();
+            general.Add(item);
             xml.Root.Add(general);
             //colors
             XElement colors = new XElement("colors");
