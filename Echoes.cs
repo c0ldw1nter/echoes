@@ -112,6 +112,7 @@ namespace Echoes
         public bool trackChangePopup;
         public bool showWaveform;
         public bool stereo;
+        public bool suppressHotkeys;
         public List<ColumnInfo> currentColumnInfo;
         public string midiSfLocation;
 
@@ -354,7 +355,9 @@ namespace Echoes
 
             //hotkey settings
             hotkeysAllowed = Program.hotkeysAllowedDefault;
+            suppressHotkeys = Program.suppressHotkeysDefault;
             hotkeys = Program.defaultHotkeys.Copy();
+            SetHotkeySuppression();
         }
 
         void DoHotkeyEvent(Hotkey k)
@@ -1229,6 +1232,9 @@ namespace Echoes
             if (ele != null) { font2 = new Font(ele.Value, 12, (FontStyle)Int32.Parse(ele.Attribute("Style").Value)); }
             else font2 = Program.font2Default.Copy();
             SetFonts();
+            ele = group.Element("suppressHotkeys");
+            if (ele != null && Boolean.TryParse(ele.Value, out suppressHotkeys)) { }
+            else suppressHotkeys = Program.suppressHotkeysDefault;
             //colors
             group = xml.Root.Element("colors");
             ele=group.Element("background");
@@ -1287,6 +1293,7 @@ namespace Echoes
                        hotkeys.Add(new HotkeyData(hk, k, ctrl, alt, shift, enabled));
                 }
             }
+            SetHotkeySuppression();
             //columns
             group = xml.Root.Element("columns");
             currentColumnInfo = new List<ColumnInfo>();
@@ -1301,6 +1308,26 @@ namespace Echoes
                     }
                 }
             }
+        }
+
+        public void SetHotkeySuppression()
+        {
+            kh.suppressedKeys.Clear();
+            if (suppressHotkeys)
+            {
+                foreach (HotkeyData hk in hotkeys)
+                {
+                    kh.suppressedKeys.Add(AddKeyModifiers(hk.key, hk.ctrl, hk.alt, hk.shift));
+                }
+            }
+        }
+
+        private Keys AddKeyModifiers(Keys key, bool ctrl, bool alt, bool shift)
+        {
+            if (ctrl) key = key | Keys.Control;
+            if (alt) key = key | Keys.Alt;
+            if (shift) key = key | Keys.Shift;
+            return key;
         }
 
         public void AdjustGlobalVolume(float increment)

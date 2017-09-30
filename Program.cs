@@ -41,6 +41,7 @@ namespace Echoes
         public readonly static bool saveTransposeDefault = true;
         public readonly static bool stereoDefault = true;
         public readonly static bool showWaveformDefault = false;
+        public readonly static bool suppressHotkeysDefault = true;
         public readonly static float hotkeyVolumeIncrementDefault = 0.03f;
         public readonly static float hotkeyTransposeIncrementDefault = 0.5f;
         public readonly static string midiSfLocationDefault = "";

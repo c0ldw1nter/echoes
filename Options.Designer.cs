@@ -78,6 +78,7 @@ namespace Echoes
             this.colorVisualsBtn = new ModifiedControls.ModifiedButton();
             this.colorVolBarBtn = new ModifiedControls.ModifiedButton();
             this.colorSeekBtn = new ModifiedControls.ModifiedButton();
+            this.suppressHotkeyCheck = new System.Windows.Forms.CheckBox();
             this.tabControl1.SuspendLayout();
             this.generalPage.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.fontSizePercentTrack)).BeginInit();
@@ -345,6 +346,7 @@ namespace Echoes
             // hotkeysPage
             // 
             this.hotkeysPage.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(24)))), ((int)(((byte)(24)))), ((int)(((byte)(24)))));
+            this.hotkeysPage.Controls.Add(this.suppressHotkeyCheck);
             this.hotkeysPage.Controls.Add(this.label4);
             this.hotkeysPage.Controls.Add(this.transposeIncrementChanger);
             this.hotkeysPage.Controls.Add(this.label3);
@@ -362,7 +364,7 @@ namespace Echoes
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(201, 5);
+            this.label4.Location = new System.Drawing.Point(144, 36);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(111, 13);
             this.label4.TabIndex = 31;
@@ -376,7 +378,7 @@ namespace Echoes
             0,
             0,
             65536});
-            this.transposeIncrementChanger.Location = new System.Drawing.Point(316, 2);
+            this.transposeIncrementChanger.Location = new System.Drawing.Point(259, 33);
             this.transposeIncrementChanger.Maximum = new decimal(new int[] {
             12,
             0,
@@ -401,7 +403,7 @@ namespace Echoes
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(63, 5);
+            this.label3.Location = new System.Drawing.Point(6, 36);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(96, 13);
             this.label3.TabIndex = 29;
@@ -409,7 +411,7 @@ namespace Echoes
             // 
             // volIncrementChanger
             // 
-            this.volIncrementChanger.Location = new System.Drawing.Point(160, 3);
+            this.volIncrementChanger.Location = new System.Drawing.Point(103, 34);
             this.volIncrementChanger.Minimum = new decimal(new int[] {
             1,
             0,
@@ -441,11 +443,11 @@ namespace Echoes
             this.Key});
             this.hotkeyDgv.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.hotkeyDgv.EnableHeadersVisualStyles = false;
-            this.hotkeyDgv.Location = new System.Drawing.Point(3, 28);
+            this.hotkeyDgv.Location = new System.Drawing.Point(3, 60);
             this.hotkeyDgv.Name = "hotkeyDgv";
             this.hotkeyDgv.RowHeadersVisible = false;
             this.hotkeyDgv.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.hotkeyDgv.Size = new System.Drawing.Size(428, 205);
+            this.hotkeyDgv.Size = new System.Drawing.Size(428, 173);
             this.hotkeyDgv.TabIndex = 0;
             this.hotkeyDgv.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.hotkeyDgv_CellContentClick);
             this.hotkeyDgv.KeyDown += new System.Windows.Forms.KeyEventHandler(this.hotkeyDgv_KeyDown);
@@ -738,6 +740,17 @@ namespace Echoes
             this.colorSeekBtn.UseVisualStyleBackColor = true;
             this.colorSeekBtn.Click += new System.EventHandler(this.colorSeekBtn_Click);
             // 
+            // suppressHotkeyCheck
+            // 
+            this.suppressHotkeyCheck.AutoSize = true;
+            this.suppressHotkeyCheck.Location = new System.Drawing.Point(103, 6);
+            this.suppressHotkeyCheck.Name = "suppressHotkeyCheck";
+            this.suppressHotkeyCheck.Size = new System.Drawing.Size(95, 17);
+            this.suppressHotkeyCheck.TabIndex = 32;
+            this.suppressHotkeyCheck.Text = "Suppress keys";
+            this.suppressHotkeyCheck.UseVisualStyleBackColor = true;
+            this.suppressHotkeyCheck.CheckedChanged += new System.EventHandler(this.suppressHotkeyCheck_CheckedChanged);
+            // 
             // Options
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -813,5 +826,6 @@ namespace Echoes
         private ModifiedButton font2ChangeBtn;
         private System.Windows.Forms.Label font2Txt;
         private ModifiedButton setDefaultsBtn;
+        private System.Windows.Forms.CheckBox suppressHotkeyCheck;
     }
 }

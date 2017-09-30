@@ -104,6 +104,7 @@ namespace Echoes
             autoShuffleCheckbox.Checked = Program.mainWindow.autoShuffle;
             saveTransposeCheckbox.Checked = Program.mainWindow.saveTranspose;
             showWaveformCheckbox.Checked = Program.mainWindow.showWaveform;
+            suppressHotkeyCheck.Checked = Program.mainWindow.suppressHotkeys;
             transposeIncrementChanger.Value = (decimal)Program.mainWindow.hotkeyTransposeIncrement;
             volIncrementChanger.Value = (decimal)Program.mainWindow.hotkeyVolumeIncrement * 100;
             fontPctTxt.Text = Program.mainWindow.fontSizePercentage + "%";
@@ -201,6 +202,7 @@ namespace Echoes
             if (e.ColumnIndex == 0 && e.RowIndex >= 0)
             {
                 Program.mainWindow.hotkeys[e.RowIndex].enabled = (bool)(hotkeyDgv.Rows[e.RowIndex].Cells[0].Value);
+                Program.mainWindow.SetHotkeySuppression();
             }
         }
 
@@ -212,6 +214,7 @@ namespace Echoes
             miDefaultHotkeys.Click += (theSender, eventArgs) =>
             {
                 Program.mainWindow.hotkeys = Program.defaultHotkeys.Copy();
+                Program.mainWindow.SetHotkeySuppression();
                 LoadHotkeys();
             };
             cm.MenuItems.Add(miDefaultHotkeys);
@@ -302,6 +305,7 @@ namespace Echoes
             if (optsDlg.ShowDialog(this) == DialogResult.OK)
             {
                 Program.mainWindow.hotkeys.Add(optsDlg.returnedData);
+                Program.mainWindow.SetHotkeySuppression();
                 LoadHotkeys();
             }
             optsDlg.Hide();
@@ -316,6 +320,7 @@ namespace Echoes
                 toremove.Add(Program.mainWindow.hotkeys[rw.Index]);
             }
             foreach (HotkeyData hk in toremove) Program.mainWindow.hotkeys.Remove(hk);
+            Program.mainWindow.SetHotkeySuppression();
             LoadHotkeys();
         }
 
@@ -487,6 +492,12 @@ namespace Echoes
                 Program.mainWindow.SetDefaultGeneral();
                 LoadValues();
             }
+        }
+
+        private void suppressHotkeyCheck_CheckedChanged(object sender, EventArgs e)
+        {
+            Program.mainWindow.suppressHotkeys = suppressHotkeyCheck.Checked;
+            Program.mainWindow.SetHotkeySuppression();
         }
     }
 }

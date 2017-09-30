@@ -2,6 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Diagnostics;
 using System.Windows.Forms;
+using System.Collections.Generic;
 
 namespace Echoes
 {
@@ -15,6 +16,8 @@ namespace Echoes
         private const int VK_CONTROL = 0x11;
         private const int VK_MENU = 0x12;
         private const int VK_CAPITAL = 0x14;
+
+        public List<Keys> suppressedKeys = new List<Keys>();
 
         /// <summary>
         /// Internal callback processing function
@@ -83,8 +86,8 @@ namespace Echoes
                 if ((iwParam == WM_KEYUP || iwParam == WM_SYSKEYUP))
                     if (KeyUp != null)
                         KeyUp(new KeyEventArgs(key));
+                if (suppressedKeys.Contains(key)) return (System.IntPtr)1;
             }
-
             return CallNextHookEx(hookID, nCode, wParam, lParam);
         }
 
