@@ -418,7 +418,7 @@ namespace Echoes
                     playlistSelectorCombo.SelectedIndex = 0;
                 }
                 comboBox1_SelectionChangeCommitted(null, null);
-                if (displayedItems != ItemType.Playlist) Play();
+                if (displayedItems != ItemType.Playlist) PlayFirst();
             }
             else if (k == Hotkey.PREVLIST && !tagsLoaderWorker.IsBusy)
             {
@@ -431,7 +431,7 @@ namespace Echoes
                     playlistSelectorCombo.SelectedIndex = playlistSelectorCombo.Items.Count-1;
                 }
                 comboBox1_SelectionChangeCommitted(null, null);
-                if (displayedItems != ItemType.Playlist) Play();
+                if (displayedItems != ItemType.Playlist) PlayFirst();
             }
             else if (k == Hotkey.SHUFFLE) Shuffle();
         }
@@ -1986,15 +1986,17 @@ namespace Echoes
 
         void PlayFirst()
         {
-            if (trackGrid.Rows.Count > 0)
+            if (trackGrid.SelectedRows.Count > 0)
             {
                 Track t = (Track)trackGrid.SelectedRows[0].DataBoundItem;
                 OpenFile(t);
+                Play();
             }
             else if (trackGrid.Rows[0] != null)
             {
                 Track t = (Track)trackGrid.Rows[0].DataBoundItem;
                 OpenFile(t);
+                Play();
             }
         }
 
