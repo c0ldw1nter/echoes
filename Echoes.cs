@@ -2735,7 +2735,7 @@ namespace Echoes
                         for (int i = 0; i < knownPlaylists.Count; i++)
                         {
                             int z = i;
-                            if (knownPlaylists[i] == knownPlaylists[playlistSelectorCombo.SelectedIndex - 1])
+                            if (knownPlaylists[i] == knownPlaylists[playlistSelectorCombo.SelectedIndex - 2])
                                 continue;
                             MenuItem itm = new MenuItem(knownPlaylists[z]);
                             itm.Click += (theSender, eventArgs) =>

@@ -15,10 +15,30 @@ namespace ModifiedControls
         public bool HasBorder=true;
         public float BorderThickness = 1f;
         public TimeSpan time1, time2;
+        ToolTip seekTimeTooltip = new ToolTip();
+        Point lastTipLocation;
+        int trig = 0;
+        
         public ModifiedProgressBarSeek()
         {
             this.SetStyle(ControlStyles.UserPaint, true);
             this.DoubleBuffered = true;
+            //this.MouseMove += ModifiedProgressBarSeek_MouseMove;
+            //this.MouseLeave += ModifiedProgressBarSeek_MouseLeave;
+        }
+
+        void ModifiedProgressBarSeek_MouseLeave(object sender, EventArgs e)
+        {
+            seekTimeTooltip.Hide(this);
+        }
+
+        void ModifiedProgressBarSeek_MouseMove(object sender, MouseEventArgs e)
+        {
+            if(lastTipLocation==e.Location) return;
+            double time=(Program.mainWindow.GetLength() * (int)((float)e.X / (float)this.Width*this.Maximum)) / this.Maximum;
+            seekTimeTooltip.Show(time.ToTime()+" ;; "+trig,this);
+            trig++;
+            lastTipLocation = e.Location;
         }
 
         public Bitmap CropImage(Bitmap source, Rectangle section)
