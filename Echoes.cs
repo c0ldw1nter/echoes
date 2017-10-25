@@ -21,6 +21,7 @@ using Un4seen.Bass.Misc;
 using Un4seen.Bass.AddOn.Midi;
 using Un4seen.Bass.AddOn.Flac;
 using Un4seen.Bass.AddOn.Wma;
+using Un4seen.Bass.AddOn.Mix;
 
 namespace Echoes
 {
@@ -115,6 +116,7 @@ namespace Echoes
         public bool suppressHotkeys;
         public List<ColumnInfo> currentColumnInfo;
         public string midiSfLocation;
+        public float[] eqGains = { 8f, -8f, 14f };
 
         //hotkey settings
         public bool hotkeysAllowed;
@@ -130,11 +132,14 @@ namespace Echoes
         public XmlCacher xmlCacher;
 
         public int stream;
+        public int mixer;
         public bool confirmSaveFlag = false;
         public bool streamLoaded = false;
         public SYNCPROC endSync, stallSync;
         public BASS_MIDI_FONT[] midiFonts;
         public Visuals vs = new Un4seen.Bass.Misc.Visuals();
+        int[] _fxEQ = { 0, 0, 0 };
+        public bool eqEnabled = false;
 
         public Track nowPlaying = null;
         public List<Track> playlist = new List<Track>();
@@ -147,6 +152,7 @@ namespace Echoes
         DupeFinder df;
         Statistics stats;
         Options opts;
+        Equalizer eqWindow;
         FloatingOSDWindow popupWindow = new FloatingOSDWindow();
         KeyboardHook kh;
         DataGridViewRow highlightedRow;
@@ -241,6 +247,50 @@ namespace Echoes
             SetColors();
             LoadPlaylistDb();
             StartupLoadProcedure();
+        }
+
+        public void RemoveEQ()
+        {
+            foreach (int i in _fxEQ)
+            {
+                Bass.BASS_ChannelRemoveFX(stream, i);
+            }
+        }
+
+        public void DefineEQ()
+        {
+            if (!eqEnabled) return;
+            BASS_DX8_PARAMEQ eq = new BASS_DX8_PARAMEQ();
+            _fxEQ[0] = Bass.BASS_ChannelSetFX(stream, BASSFXType.BASS_FX_DX8_PARAMEQ, 0);
+            _fxEQ[1] = Bass.BASS_ChannelSetFX(stream, BASSFXType.BASS_FX_DX8_PARAMEQ, 0);
+            _fxEQ[2] = Bass.BASS_ChannelSetFX(stream, BASSFXType.BASS_FX_DX8_PARAMEQ, 0);
+            eq.fBandwidth = 18f;
+            eq.fCenter = 100f;
+            eq.fGain = 0f;
+            Bass.BASS_FXSetParameters(_fxEQ[0], eq);
+            eq.fCenter = 1000f;
+            Bass.BASS_FXSetParameters(_fxEQ[1], eq);
+            eq.fCenter = 8000f;
+            Bass.BASS_FXSetParameters(_fxEQ[2], eq);
+        }
+
+        public void ApplyEQ()
+        {
+            if (!eqEnabled) return;
+            for (int i=0;i<eqGains.Length;i++)
+            {
+                UpdateEQ(i, eqGains[i]);
+            }
+        }
+
+        void UpdateEQ(int band, float gain)
+        {
+            BASS_DX8_PARAMEQ eq = new BASS_DX8_PARAMEQ();
+            if (Bass.BASS_FXGetParameters(_fxEQ[band], eq))
+            {
+                eq.fGain = gain;
+                Bass.BASS_FXSetParameters(_fxEQ[band], eq);
+            }
         }
 
         void kh_KeyDown(KeyEventArgs e)
@@ -1348,8 +1398,6 @@ namespace Echoes
         {
             if (vol > 1) vol = 1;
             else if (vol < 0) vol = 0;
-            /*ROLLBACKPOINT
-             * soundOutput.Volume = vol;*/
             Bass.BASS_ChannelSetAttribute(stream, BASSAttribute.BASS_ATTRIB_VOL, vol);
             volume = vol;
             volumeBar.Value = (int)(volumeBar.Maximum * vol);
@@ -1797,8 +1845,12 @@ namespace Echoes
                 streamLoaded = false;
                 return;
             }
+            /*mixer = BassMix.BASS_Mixer_StreamCreate(44100, 2, BASSFlag.BASS_DEFAULT);
+            BassMix.BASS_Mixer_StreamAddChannel(mixer, stream, BASSFlag.BASS_DEFAULT);*/
             /*float peak=0;
             float gainFactor=Utils.GetNormalizationGain(t.filename,0.2f,-1d,-1d,ref peak);*/
+            DefineEQ();
+            ApplyEQ();
             if (showWaveform)
             {
                 DrawWaveform();
@@ -3095,6 +3147,13 @@ namespace Echoes
             stats.Show(this);
         }
 
+        void ShowEq()
+        {
+            if (eqWindow != null) eqWindow.Dispose();
+            eqWindow = new Equalizer();
+            eqWindow.Show();
+        }
+
         private void pictureBox1_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             ShowStats();
@@ -3389,6 +3448,11 @@ namespace Echoes
         {
             ((RichTextBox)sender).Height = ((RichTextBox)sender).Font.Height;
             RepositionControls();
+        }
+
+        private void eqButton_Click(object sender, EventArgs e)
+        {
+            ShowEq();
         }
     }
 }

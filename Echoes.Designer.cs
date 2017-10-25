@@ -56,6 +56,7 @@ namespace Echoes
             this.volumeBar = new ModifiedControls.ModifiedProgressBarVol();
             this.seekBar = new ModifiedControls.ModifiedProgressBarSeek();
             this.playlistInfoTxt = new System.Windows.Forms.Label();
+            this.eqButton = new ModifiedControls.ModifiedButton();
             ((System.ComponentModel.ISupportInitialize)(this.trackGrid)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.transposeChangerNum)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.fwdBtn)).BeginInit();
@@ -375,10 +376,10 @@ namespace Echoes
             this.modifiedButton1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.modifiedButton1.Font = new System.Drawing.Font("White Rabbit", 8.249999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.modifiedButton1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(200)))), ((int)(((byte)(200)))));
-            this.modifiedButton1.Location = new System.Drawing.Point(488, 40);
+            this.modifiedButton1.Location = new System.Drawing.Point(513, 40);
             this.modifiedButton1.Margin = new System.Windows.Forms.Padding(2);
             this.modifiedButton1.Name = "modifiedButton1";
-            this.modifiedButton1.Size = new System.Drawing.Size(101, 30);
+            this.modifiedButton1.Size = new System.Drawing.Size(76, 30);
             this.modifiedButton1.TabIndex = 24;
             this.modifiedButton1.Text = "Save Playlist";
             this.modifiedButton1.UseVisualStyleBackColor = false;
@@ -434,6 +435,21 @@ namespace Echoes
             this.playlistInfoTxt.TabIndex = 43;
             this.playlistInfoTxt.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
+            // eqButton
+            // 
+            this.eqButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(48)))), ((int)(((byte)(48)))));
+            this.eqButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.eqButton.Font = new System.Drawing.Font("White Rabbit", 8.249999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.eqButton.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(200)))), ((int)(((byte)(200)))));
+            this.eqButton.Location = new System.Drawing.Point(460, 40);
+            this.eqButton.Margin = new System.Windows.Forms.Padding(2);
+            this.eqButton.Name = "eqButton";
+            this.eqButton.Size = new System.Drawing.Size(38, 30);
+            this.eqButton.TabIndex = 44;
+            this.eqButton.Text = "EQ";
+            this.eqButton.UseVisualStyleBackColor = false;
+            this.eqButton.Click += new System.EventHandler(this.eqButton_Click);
+            // 
             // Echoes
             // 
             this.AllowDrop = true;
@@ -442,6 +458,7 @@ namespace Echoes
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(24)))), ((int)(((byte)(24)))), ((int)(((byte)(24)))));
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(1070, 562);
+            this.Controls.Add(this.eqButton);
             this.Controls.Add(this.playlistInfoTxt);
             this.Controls.Add(this.repeatBtn);
             this.Controls.Add(this.optionsBtn);
@@ -523,6 +540,7 @@ namespace Echoes
         private System.Windows.Forms.PictureBox optionsBtn;
         private System.Windows.Forms.PictureBox repeatBtn;
         private System.Windows.Forms.Label playlistInfoTxt;
+        private ModifiedButton eqButton;
     }
 }
 
