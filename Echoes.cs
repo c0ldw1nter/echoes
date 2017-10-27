@@ -2787,7 +2787,7 @@ namespace Echoes
                         for (int i = 0; i < knownPlaylists.Count; i++)
                         {
                             int z = i;
-                            if (knownPlaylists[i] == knownPlaylists[playlistSelectorCombo.SelectedIndex - 2])
+                            if (playlistSelectorCombo.SelectedIndex>2 && knownPlaylists[i] == knownPlaylists[playlistSelectorCombo.SelectedIndex - 2])
                                 continue;
                             MenuItem itm = new MenuItem(knownPlaylists[z]);
                             itm.Click += (theSender, eventArgs) =>
@@ -2870,7 +2870,9 @@ namespace Echoes
                     }
                     cm.Show(trackGrid, e.Location);
                 }
-                catch (Exception) { }
+                catch (Exception ea) {
+                    MessageBox.Show(trackGrid.HitTest(e.X, e.Y).RowIndex+"");
+                }
             }
         }
 
@@ -3151,7 +3153,7 @@ namespace Echoes
         {
             if (eqWindow != null) eqWindow.Dispose();
             eqWindow = new Equalizer();
-            eqWindow.Show();
+            eqWindow.Show(this);
         }
 
         private void pictureBox1_MouseDoubleClick(object sender, MouseEventArgs e)
