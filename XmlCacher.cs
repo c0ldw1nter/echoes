@@ -71,7 +71,7 @@ namespace Echoes
             {
                 return;
             }
-            var toRem = xml.Root.Elements().Where(x => !File.Exists(x.Attribute("filename").Value));
+            var toRem = xml.Root.Descendants().Where(x => !File.Exists(x.Attribute("filename").Value));
             int removeNum = toRem.Count();
             toRem.Remove();
             xml.Save(Program.mainWindow.tagsCacheLocation);

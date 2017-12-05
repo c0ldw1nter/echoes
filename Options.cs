@@ -102,6 +102,7 @@ namespace Echoes
             popupCheckbox.Checked = Program.mainWindow.trackChangePopup;
             autoAdvanceCheckbox.Checked = Program.mainWindow.autoAdvance;
             autoShuffleCheckbox.Checked = Program.mainWindow.autoShuffle;
+            normalizeCheckbox.Checked = Program.mainWindow.normalize;
             saveTransposeCheckbox.Checked = Program.mainWindow.saveTranspose;
             showWaveformCheckbox.Checked = Program.mainWindow.showWaveform;
             suppressHotkeyCheck.Checked = Program.mainWindow.suppressHotkeys;
@@ -498,6 +499,12 @@ namespace Echoes
         {
             Program.mainWindow.suppressHotkeys = suppressHotkeyCheck.Checked;
             Program.mainWindow.SetHotkeySuppression();
+        }
+
+        private void normalizeCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            Program.mainWindow.normalize = normalizeCheckbox.Checked;
+            if (normalizeCheckbox.Checked) Program.mainWindow.Normalize();
         }
     }
 }

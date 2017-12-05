@@ -75,7 +75,7 @@ namespace ModifiedControls
             if (Program.mainWindow.showWaveform && Program.mainWindow.waveformImage != null)
             {
                 GraphicsUnit unit=GraphicsUnit.Pixel;
-                e.Graphics.DrawImage(Program.mainWindow.waveformImage, new Rectangle(0,2,Width,rec.Height), Rectangle.Round(Program.mainWindow.waveformImage.GetBounds(ref unit)), GraphicsUnit.Pixel);
+                e.Graphics.DrawImage(Program.mainWindow.waveformImage, new Rectangle(-2,2,Width,rec.Height), Rectangle.Round(Program.mainWindow.waveformImage.GetBounds(ref unit)), GraphicsUnit.Pixel);
                 /*try
                 {
                     e.Graphics.DrawImage(CropImage(Program.mainWindow.waveformImage, new Rectangle(0, 0, rec.Width, Height)), 2, 2);

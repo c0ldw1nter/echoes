@@ -51,6 +51,7 @@ namespace Echoes
             this.midiTxt = new System.Windows.Forms.Label();
             this.popupCheckbox = new System.Windows.Forms.CheckBox();
             this.hotkeysPage = new System.Windows.Forms.TabPage();
+            this.suppressHotkeyCheck = new System.Windows.Forms.CheckBox();
             this.label4 = new System.Windows.Forms.Label();
             this.transposeIncrementChanger = new System.Windows.Forms.NumericUpDown();
             this.label3 = new System.Windows.Forms.Label();
@@ -78,7 +79,7 @@ namespace Echoes
             this.colorVisualsBtn = new ModifiedControls.ModifiedButton();
             this.colorVolBarBtn = new ModifiedControls.ModifiedButton();
             this.colorSeekBtn = new ModifiedControls.ModifiedButton();
-            this.suppressHotkeyCheck = new System.Windows.Forms.CheckBox();
+            this.normalizeCheckbox = new System.Windows.Forms.CheckBox();
             this.tabControl1.SuspendLayout();
             this.generalPage.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.fontSizePercentTrack)).BeginInit();
@@ -107,6 +108,7 @@ namespace Echoes
             // generalPage
             // 
             this.generalPage.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(24)))), ((int)(((byte)(24)))), ((int)(((byte)(24)))));
+            this.generalPage.Controls.Add(this.normalizeCheckbox);
             this.generalPage.Controls.Add(this.setDefaultsBtn);
             this.generalPage.Controls.Add(this.font2ChangeBtn);
             this.generalPage.Controls.Add(this.font2Txt);
@@ -290,7 +292,7 @@ namespace Echoes
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(5, 126);
+            this.label2.Location = new System.Drawing.Point(211, 174);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(125, 13);
             this.label2.TabIndex = 7;
@@ -298,7 +300,7 @@ namespace Echoes
             // 
             // fpsBar
             // 
-            this.fpsBar.Location = new System.Drawing.Point(5, 142);
+            this.fpsBar.Location = new System.Drawing.Point(211, 190);
             this.fpsBar.Maximum = 60;
             this.fpsBar.Minimum = 1;
             this.fpsBar.Name = "fpsBar";
@@ -335,7 +337,7 @@ namespace Echoes
             // 
             this.popupCheckbox.AutoSize = true;
             this.popupCheckbox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.popupCheckbox.Location = new System.Drawing.Point(5, 52);
+            this.popupCheckbox.Location = new System.Drawing.Point(5, 121);
             this.popupCheckbox.Name = "popupCheckbox";
             this.popupCheckbox.Size = new System.Drawing.Size(164, 17);
             this.popupCheckbox.TabIndex = 1;
@@ -360,6 +362,17 @@ namespace Echoes
             this.hotkeysPage.Size = new System.Drawing.Size(434, 236);
             this.hotkeysPage.TabIndex = 1;
             this.hotkeysPage.Text = "Hotkeys";
+            // 
+            // suppressHotkeyCheck
+            // 
+            this.suppressHotkeyCheck.AutoSize = true;
+            this.suppressHotkeyCheck.Location = new System.Drawing.Point(103, 6);
+            this.suppressHotkeyCheck.Name = "suppressHotkeyCheck";
+            this.suppressHotkeyCheck.Size = new System.Drawing.Size(95, 17);
+            this.suppressHotkeyCheck.TabIndex = 32;
+            this.suppressHotkeyCheck.Text = "Suppress keys";
+            this.suppressHotkeyCheck.UseVisualStyleBackColor = true;
+            this.suppressHotkeyCheck.CheckedChanged += new System.EventHandler(this.suppressHotkeyCheck_CheckedChanged);
             // 
             // label4
             // 
@@ -740,16 +753,17 @@ namespace Echoes
             this.colorSeekBtn.UseVisualStyleBackColor = true;
             this.colorSeekBtn.Click += new System.EventHandler(this.colorSeekBtn_Click);
             // 
-            // suppressHotkeyCheck
+            // normalizeCheckbox
             // 
-            this.suppressHotkeyCheck.AutoSize = true;
-            this.suppressHotkeyCheck.Location = new System.Drawing.Point(103, 6);
-            this.suppressHotkeyCheck.Name = "suppressHotkeyCheck";
-            this.suppressHotkeyCheck.Size = new System.Drawing.Size(95, 17);
-            this.suppressHotkeyCheck.TabIndex = 32;
-            this.suppressHotkeyCheck.Text = "Suppress keys";
-            this.suppressHotkeyCheck.UseVisualStyleBackColor = true;
-            this.suppressHotkeyCheck.CheckedChanged += new System.EventHandler(this.suppressHotkeyCheck_CheckedChanged);
+            this.normalizeCheckbox.AutoSize = true;
+            this.normalizeCheckbox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.normalizeCheckbox.Location = new System.Drawing.Point(5, 52);
+            this.normalizeCheckbox.Name = "normalizeCheckbox";
+            this.normalizeCheckbox.Size = new System.Drawing.Size(114, 17);
+            this.normalizeCheckbox.TabIndex = 35;
+            this.normalizeCheckbox.Text = "Normalize loudness";
+            this.normalizeCheckbox.UseVisualStyleBackColor = true;
+            this.normalizeCheckbox.CheckedChanged += new System.EventHandler(this.normalizeCheckbox_CheckedChanged);
             // 
             // Options
             // 
@@ -827,5 +841,6 @@ namespace Echoes
         private System.Windows.Forms.Label font2Txt;
         private ModifiedButton setDefaultsBtn;
         private System.Windows.Forms.CheckBox suppressHotkeyCheck;
+        private System.Windows.Forms.CheckBox normalizeCheckbox;
     }
 }

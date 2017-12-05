@@ -112,7 +112,7 @@ namespace Echoes
         public bool autoAdvance;
         public bool trackChangePopup;
         public bool showWaveform;
-        public bool stereo;
+        public bool normalize;
         public bool suppressHotkeys;
         public List<ColumnInfo> currentColumnInfo;
         public string midiSfLocation;
@@ -140,6 +140,14 @@ namespace Echoes
         public Visuals vs = new Un4seen.Bass.Misc.Visuals();
         int[] _fxEQ = { 0, 0, 0 };
         public bool eqEnabled = false;
+        int peak = 0;
+        public float normGain = 0;
+        bool normalizerRestart = false;
+        public DSP_Gain DSPGain;
+        Track toNormalize;
+        System.Timers.Timer normalizeSmoother;
+        bool normalizeSmoothingStop = false;
+        float normalizeSmoothingTickSize;
 
         public Track nowPlaying = null;
         public List<Track> playlist = new List<Track>();
@@ -388,7 +396,7 @@ namespace Echoes
             currentColumnInfo = Program.defaultColumnInfo.Copy();
             saveTranspose = Program.saveTransposeDefault;
             repeat = Program.repeatDefault;
-            stereo = Program.stereoDefault;
+            normalize = Program.normalizeDefault;
             visualisationStyle = Program.visualisationStyleDefault;
             visualfps = Program.visualfpsDefault;
             midiSfLocation = Program.midiSfLocationDefault;
@@ -580,13 +588,15 @@ namespace Echoes
                 // if your playback stream uses a different resolution than the WF
                 // use this to sync them
                 wf.SyncPlayback(stream);
-                waveformImage = wf.CreateBitmap(this.seekBar.Width, this.seekBar.Height, -1, -1, true);
+                waveformImage = wf.CreateBitmap(Screen.FromControl(this).WorkingArea.Width*2, this.seekBar.Height, -1, -1, true);
                 waveformImage=waveformImage.SetOpacity(0.5d);
+                waveformImage.Save("C:\\Users\\Sat\\Desktop\\asdf.bmp");
             }
         }
         public void DrawWaveform()
         {
-            if (nowPlaying == null || !supportedWaveformTypes.Contains(Path.GetExtension(nowPlaying.filename))) { waveformImage = null; return; }
+            waveformImage = null;
+            if (nowPlaying == null || !supportedWaveformTypes.Contains(Path.GetExtension(nowPlaying.filename))) { return; }
             wf = new Un4seen.Bass.Misc.WaveForm(nowPlaying.filename, new WAVEFORMPROC(WaveFormCallback), this);
             //wf.CallbackFrequency = 1; // every 10 seconds rendered
             wf.ColorBackground = Color.Transparent;
@@ -1117,8 +1127,8 @@ namespace Echoes
             item = new XElement("repeat");
             item.Value = repeat.ToString();
             general.Add(item);
-            item = new XElement("stereo");
-            item.Value = stereo.ToString();
+            item = new XElement("normalize");
+            item.Value = normalize.ToString();
             general.Add(item);
             item = new XElement("visualisationStyle");
             item.Value = visualisationStyle.ToString();
@@ -1262,10 +1272,9 @@ namespace Echoes
             else repeat = Program.repeatDefault;
             repeatBtn_MouseLeave(null, null);
             SetLooping();
-            ele = group.Element("stereo");
-            if (ele != null && Boolean.TryParse(ele.Value, out stereo)) { }
-            else stereo = Program.stereoDefault;
-            SetChannels(stereo);
+            ele = group.Element("normalize");
+            if (ele != null && Boolean.TryParse(ele.Value, out normalize)) { }
+            else normalize = Program.normalizeDefault;
             ele = group.Element("visualisationStyle");
             if (ele != null && Int32.TryParse(ele.Value, out visualisationStyle)) { }
             else visualisationStyle = Program.visualisationStyleDefault;
@@ -1630,6 +1639,7 @@ namespace Echoes
                     trackText.Text = "Loading...";
                     tagsLoaderWorker.RunWorkerAsync();
                 }
+                displayedItems = ItemType.Track;
             }
             else
             {
@@ -1793,6 +1803,12 @@ namespace Echoes
 
         public void LoadAudioFile(Track t)
         {
+            if (DSPGain != null)
+            {
+                DSPGain.Stop();
+                DSPGain.Dispose();
+            }
+            volumeBar.Refresh();
             if (streamLoaded) Bass.BASS_ChannelStop(stream);
             FlushTimeListened();
             Bass.BASS_Free();
@@ -1814,7 +1830,7 @@ namespace Echoes
             if (!tagsLoaderWorker.IsBusy) try { xmlCacher.AddOrUpdate(new List<Track>() { t }); }
                 catch (Exception) { }
             InitSoundDevice();
-            string ext=Path.GetExtension(t.filename.ToLower());
+            /*string ext=Path.GetExtension(t.filename.ToLower());
             if (supportedModuleTypes.Contains(ext))
             {
                 stream = Bass.BASS_MusicLoad(t.filename, 0, 0, 
@@ -1844,11 +1860,18 @@ namespace Echoes
             {
                 streamLoaded = false;
                 return;
+            }*/
+            if (!LoadStream(t.filename, out stream, BASSFlag.BASS_DEFAULT | BASSFlag.BASS_SAMPLE_SOFTWARE))
+            {
+                streamLoaded = false;
+                return;
             }
             /*mixer = BassMix.BASS_Mixer_StreamCreate(44100, 2, BASSFlag.BASS_DEFAULT);
             BassMix.BASS_Mixer_StreamAddChannel(mixer, stream, BASSFlag.BASS_DEFAULT);*/
             /*float peak=0;
             float gainFactor=Utils.GetNormalizationGain(t.filename,0.2f,-1d,-1d,ref peak);*/
+            //Bass.BASS_ChannelSetDSP(stream, gainProc, IntPtr.Zero, 0);
+            if(normalize) Normalize();
             DefineEQ();
             ApplyEQ();
             if (showWaveform)
@@ -1857,12 +1880,12 @@ namespace Echoes
             }
             if (Bass.BASS_ErrorGetCode() == 0 && GetLength()>0)
             {
+                Bass.BASS_ChannelSetPosition(stream, 0d);
                 SetVolume(volume);
                 if (!saveTranspose) transposeChangerNum.Value = 0m;
                 SetFrequency();
                 streamLoaded = true;
                 SetLooping();
-                SetChannels(stereo);
                 endSync = new SYNCPROC(playbackEnded);
                 stallSync = new SYNCPROC(playbackStalled);
                 Bass.BASS_ChannelSetSync(stream, BASSSync.BASS_SYNC_END, 0, endSync, IntPtr.Zero);
@@ -1874,6 +1897,74 @@ namespace Echoes
             else
             {
                 AdvancePlayer();
+            }
+        }
+
+        public void Normalize()
+        {
+            if (normalizerWorker.IsBusy)
+            {
+                Console.WriteLine("Cancelling normalization of " + toNormalize.title);
+                normalizerRestart = true;
+                normalizerWorker.CancelAsync();
+                while (normalizerWorker.IsBusy)
+                Application.DoEvents();
+                toNormalize = nowPlaying;
+                normalizerWorker.RunWorkerAsync();
+            }
+            else
+            {
+                if (nowPlaying == null) return;
+                toNormalize = nowPlaying;
+                normalizerWorker.RunWorkerAsync();
+            }
+            volumeBar.Refresh();
+            Console.WriteLine("Normalizing "+toNormalize.title);
+            //Console.WriteLine("Peak: " + GetPeak(t.filename));
+        }
+
+        bool LoadStream(string filename, out int outStream, BASSFlag flags)
+        {
+            string ext = Path.GetExtension(filename.ToLower());
+            if (supportedModuleTypes.Contains(ext))
+            {
+                outStream = Bass.BASS_MusicLoad(filename, 0, 0,
+                    BASSFlag.BASS_MUSIC_SINCINTER |
+                    BASSFlag.BASS_MUSIC_PRESCAN |
+                    BASSFlag.BASS_MIXER_DOWNMIX |
+                    BASSFlag.BASS_MUSIC_RAMPS |
+                    flags, 0);
+                return true;
+            }
+            else if (supportedMidiTypes.Contains(ext))
+            {
+                if (!InitMidi()) {
+                    outStream = -1;
+                    return false; 
+                }
+                BassMidi.BASS_MIDI_StreamSetFonts(0, midiFonts, midiFonts.Length);
+                outStream = BassMidi.BASS_MIDI_StreamCreateFile(filename, 0, 0, flags, 0);
+                return true;
+            }
+            else if (ext == ".flac")
+            {
+                outStream = BassFlac.BASS_FLAC_StreamCreateFile(filename, 0, 0, flags);
+                return true;
+            }
+            else if (ext == ".wma")
+            {
+                outStream = BassWma.BASS_WMA_StreamCreateFile(filename, 0, 0, flags);
+                return true;
+            }
+            else if (supportedAudioTypes.Contains(ext))
+            {
+                outStream = Bass.BASS_StreamCreateFile(filename, 0, 0, flags);
+                return true;
+            }
+            else
+            {
+                outStream = -1;
+                return false;
             }
         }
 
@@ -2739,10 +2830,11 @@ namespace Echoes
         }
         void OpenDupeFinder()
         {
-                df = new DupeFinder(playlist);
+            df = new DupeFinder(playlist);
             df.Show(this);
             df.Location = new Point(this.Location.X + this.Width / 2 - df.Width / 2, this.Location.Y + this.Height / 2 - df.Height / 2);
         }
+
         private void dataGridView1_MouseDown(object sender, MouseEventArgs e)
         {
             if (trackGrid.HitTest(e.X, e.Y).Type == DataGridViewHitTestType.None)
@@ -2810,6 +2902,11 @@ namespace Echoes
                         {
                             LaunchTagEditor();
                         };
+                        /*MenuItem miConvert = new MenuItem("Convert to 192k MP3");
+                        miConvert.Click += (theSender, eventArgs) =>
+                        {
+                            Convert();
+                        };*/
                         MenuItem miRenumber = new MenuItem("Save this order");
                         miRenumber.Click += (theSender, eventArgs) =>
                         {
@@ -2860,6 +2957,7 @@ namespace Echoes
                         };
                         cm.MenuItems.Add(miAddToPlaylist);
                         cm.MenuItems.Add(miEditTags);
+                        //cm.MenuItems.Add(miConvert);
                         cm.MenuItems.Add(miRenumber);
                         cm.MenuItems.Add(miDupes);
                         cm.MenuItems.Add(miUnexisting);
@@ -2870,11 +2968,49 @@ namespace Echoes
                     }
                     cm.Show(trackGrid, e.Location);
                 }
-                catch (Exception ea) {
-                    MessageBox.Show(trackGrid.HitTest(e.X, e.Y).RowIndex+"");
+                catch (Exception) {
                 }
             }
         }
+
+        /*void Convert()
+        {
+            //Converter cvt = new Converter();
+            //cvt.Show();
+
+            if(trackGrid.SelectedRows.Count==0) return;
+            Track toConvert=((Track)trackGrid.SelectedRows[0].DataBoundItem);
+            if (!File.Exists(toConvert.filename)) return;
+
+            int convertStream=20;
+
+            if (!LoadStream(toConvert.filename, out convertStream, BASSFlag.BASS_STREAM_DECODE | BASSFlag.BASS_MUSIC_DECODE)) return;
+
+            if (Bass.BASS_ErrorGetCode() == 0 && GetLength() > 0)
+            {
+                EncoderLAME l = new EncoderLAME(convertStream);
+                l.InputFile = null;
+                l.OutputFile = "converted.mp3";
+                l.LAME_Bitrate = (int)EncoderLAME.BITRATE.kbps_192;
+                l.LAME_Mode = EncoderLAME.LAMEMode.Default;
+                l.LAME_Quality = EncoderLAME.LAMEQuality.Quality;
+                //if(!Un4seen.Bass.AddOn.Tags.BassTags.BASS_TAG_GetFromFile(convertStream, l.TAGs)) Console.WriteLine("no tags");
+                l.TAGs = Un4seen.Bass.AddOn.Tags.BassTags.BASS_TAG_GetFromFile(toConvert.filename);
+                l.Start(null, IntPtr.Zero, false);
+                byte[] encBuffer = new byte[65536];
+                while (Bass.BASS_ChannelIsActive(convertStream) == BASSActive.BASS_ACTIVE_PLAYING)
+                {
+                    // getting sample data will automatically feed the encoder
+                    int len = Bass.BASS_ChannelGetData(convertStream, encBuffer, encBuffer.Length);
+                }
+                l.Stop();  // finish
+                Bass.BASS_StreamFree(convertStream);
+            }
+            else
+            {
+                Console.WriteLine("Error converting: " + Bass.BASS_ErrorGetCode());
+            }
+        }*/
 
         void MoveSelectedDown()
         {
@@ -3455,6 +3591,75 @@ namespace Echoes
         private void eqButton_Click(object sender, EventArgs e)
         {
             ShowEq();
+        }
+
+        DateTime normalizationBenchmark;
+
+        private void normalizerWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            normalizationBenchmark = DateTime.Now;
+            int strm;
+            if (!LoadStream(toNormalize.filename, out strm, BASSFlag.BASS_STREAM_DECODE | BASSFlag.BASS_MUSIC_DECODE)) return;
+            Bass.BASS_ChannelSetPosition(strm, 0d);
+            if ((Bass.BASS_ChannelFlags(strm, BASSFlag.BASS_DEFAULT, BASSFlag.BASS_DEFAULT) & BASSFlag.BASS_MUSIC_LOOP) == BASSFlag.BASS_MUSIC_LOOP)
+            {
+                Bass.BASS_ChannelFlags(strm, BASSFlag.BASS_DEFAULT, BASSFlag.BASS_SAMPLE_LOOP);
+            }
+            peak = 0;
+
+            while (System.Convert.ToBoolean(Bass.BASS_ChannelIsActive(strm)))
+            {
+                if (((BackgroundWorker)sender).CancellationPending)
+                {
+                    e.Cancel = true;
+                    Console.WriteLine("Normalization abandoned.");
+                    return;
+                }
+                int level = Bass.BASS_ChannelGetLevel(strm);
+                int left = Utils.LowWord32(level); // the left level
+                int right = Utils.HighWord32(level); // the right level
+
+                if (peak < left) peak = left;
+                if (peak < right) peak = right;
+            }
+            float divideFrom = 32768f;
+            if (peak > 32768) divideFrom = 65536f;
+            normGain = (divideFrom/(float)peak);
+        }
+
+        private void normalizerWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            if (DSPGain!=null && DSPGain.IsAssigned) DSPGain.Stop();
+            DateTime normBenchmarkEnd = DateTime.Now;
+            //Console.WriteLine("----------------------------");
+            Console.Write("Peak: " + peak);
+            Console.Write(" | Gain: " + normGain);
+            Console.Write(" | Processed in " + (normBenchmarkEnd - normalizationBenchmark).TotalSeconds + " seconds.");
+            if (!e.Cancelled)
+            {
+                try
+                {
+                    if (Math.Abs(1 - (decimal)normGain) > 0.03m)
+                    {
+                        DSPGain = new DSP_Gain();
+                        DSPGain.ChannelHandle = stream;
+                        DSPGain.Gain = normGain;
+                        DSPGain.Start();
+                        Console.WriteLine(" | Applied gain of " + (normGain));
+                    }
+                    else
+                    {
+                        normGain = 0;
+                        Console.WriteLine(" | Gain not applied");
+                    }
+                }
+                catch (Exception) { }
+            }
+            else
+            {
+                Console.WriteLine("Normalizing of " + toNormalize.title + " cancelled.");
+            }
+            volumeBar.Refresh();
         }
     }
 }

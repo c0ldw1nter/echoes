@@ -31,26 +31,32 @@ namespace ModifiedControls
             e.Graphics.FillRectangle(new SolidBrush((Parent as Echoes.Echoes).volBarBackColor), 0, 0, Width, Height);
             e.Graphics.FillRectangle(new SolidBrush((Parent as Echoes.Echoes).volBarForeColor), 2, 2, rec.Width, rec.Height);
             if (HasBorder) e.Graphics.DrawRectangle(new Pen((Parent as Echoes.Echoes).volBarForeColor, BorderThickness), 0, 0, Width - BorderThickness, Height - BorderThickness);
+            
+            //draw volume icon
             e.Graphics.DrawImage(Echoes.Properties.Resources.vol,new Rectangle(2,2,rec.Height,rec.Height));
+
+            //draw strings
             string toWrite = (int)(((float)Value/(float)Maximum)*100) + "%";
             if (rec.Height < 6) return;
             Font ft = new Font(Program.mainWindow.font2.FontFamily, rec.Height-2, Program.mainWindow.font2.Style);
             SizeF sz=e.Graphics.MeasureString(toWrite,ft);
-            /*Bitmap bmp = new Bitmap((int)sz.Width, (int)sz.Height);
-            bmp.MakeTransparent();
-            Graphics g = Graphics.FromImage(bmp);
-            g.SmoothingMode = SmoothingMode.AntiAlias;
-            g.InterpolationMode = InterpolationMode.HighQualityBicubic;
-            g.PixelOffsetMode = PixelOffsetMode.HighQuality;
-            g.DrawString(toWrite, ft, Brushes.Black, new Rectangle(0,0,(int)sz.Width,(int)sz.Height));
-            g.Flush();
-            e.Graphics.DrawImage(bmp, new PointF((Width - sz.Width) / 2, (Height - sz.Height) / 2 + (int)(sz.Height * 0.15)));*/
             StringFormat sf = new StringFormat();
             sf.LineAlignment = StringAlignment.Center;
             sf.Alignment = StringAlignment.Center;
             e.Graphics.DrawString(toWrite, ft, Brushes.Black, new Rectangle(2,2,Width,Height),sf);
-            //e.Graphics.DrawRectangle(Pens.Red, new Rectangle(0, 0, Width, Height));
-            //e.Graphics.DrawString(toWrite, ft, Brushes.Black, new PointF((Width - sz.Width) / 2, 0),sf);
+
+            //normalizer stuff
+            toWrite = "";
+            if (Program.mainWindow.normalizerWorker.IsBusy)
+            {
+                toWrite = "---";
+            }
+            else if (Program.mainWindow.DSPGain == null || !Program.mainWindow.DSPGain.IsAssigned || Program.mainWindow.DSPGain.Gain_dBV <= 0) return;
+            else toWrite = "+" + String.Format("{0:0.0}", Program.mainWindow.DSPGain.Gain_dBV);
+            if (String.IsNullOrEmpty(toWrite)) return;
+            sf.Alignment = StringAlignment.Far;
+            ft = new Font(Program.mainWindow.font2.FontFamily, ft.Size*0.8f, Program.mainWindow.font2.Style);
+            e.Graphics.DrawString(toWrite, ft, Brushes.Black, new Rectangle(2, 2, Width-4, Height), sf);
         }
     }
 }

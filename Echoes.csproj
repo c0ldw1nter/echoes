@@ -39,7 +39,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -84,6 +84,12 @@
   <ItemGroup>
     <Compile Include="App.cs" />
     <Compile Include="ColumnInfo.cs" />
+    <Compile Include="Converter.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Converter.Designer.cs">
+      <DependentUpon>Converter.cs</DependentUpon>
+    </Compile>
     <Compile Include="DupeFinder.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -109,7 +115,7 @@
     <Compile Include="EqualizerTrackbar.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="ModifiedToolTip.cs">
+    <Compile Include="ModifiedProgressBar.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="ModifiedComboBox.cs">
@@ -175,6 +181,9 @@
     </Compile>
     <Compile Include="Track.cs" />
     <Compile Include="XmlCacher.cs" />
+    <EmbeddedResource Include="Converter.resx">
+      <DependentUpon>Converter.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="DupeFinder.resx">
       <DependentUpon>DupeFinder.cs</DependentUpon>
     </EmbeddedResource>

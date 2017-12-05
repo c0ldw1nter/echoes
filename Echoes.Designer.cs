@@ -57,6 +57,7 @@ namespace Echoes
             this.seekBar = new ModifiedControls.ModifiedProgressBarSeek();
             this.playlistInfoTxt = new System.Windows.Forms.Label();
             this.eqButton = new ModifiedControls.ModifiedButton();
+            this.normalizerWorker = new System.ComponentModel.BackgroundWorker();
             ((System.ComponentModel.ISupportInitialize)(this.trackGrid)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.transposeChangerNum)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.fwdBtn)).BeginInit();
@@ -450,6 +451,13 @@ namespace Echoes
             this.eqButton.UseVisualStyleBackColor = false;
             this.eqButton.Click += new System.EventHandler(this.eqButton_Click);
             // 
+            // normalizerWorker
+            // 
+            this.normalizerWorker.WorkerReportsProgress = true;
+            this.normalizerWorker.WorkerSupportsCancellation = true;
+            this.normalizerWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.normalizerWorker_DoWork);
+            this.normalizerWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.normalizerWorker_RunWorkerCompleted);
+            // 
             // Echoes
             // 
             this.AllowDrop = true;
@@ -541,6 +549,7 @@ namespace Echoes
         private System.Windows.Forms.PictureBox repeatBtn;
         private System.Windows.Forms.Label playlistInfoTxt;
         private ModifiedButton eqButton;
+        public System.ComponentModel.BackgroundWorker normalizerWorker;
     }
 }
 
