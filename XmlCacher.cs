@@ -75,7 +75,6 @@ namespace Echoes
             int removeNum = toRem.Count();
             toRem.Remove();
             xml.Save(Program.mainWindow.tagsCacheLocation);
-            xml = null;
             if (removeNum > 0)
             {
                 MessageBox.Show(removeNum + "  entries were removed from cache.");

@@ -1720,7 +1720,6 @@ namespace Echoes
                     int indexToPlay = currentRow.Index + 1;
                     if (currentRow.Index >= trackGrid.Rows.Count - 1) indexToPlay = 0;
                     Track t = (Track)trackGrid.Rows[indexToPlay].DataBoundItem;
-                    FlushTimeListened();
                     nowPlaying = t;
                     if (File.Exists(t.filename))
                     {
@@ -1812,11 +1811,11 @@ namespace Echoes
             if (streamLoaded) Bass.BASS_ChannelStop(stream);
             FlushTimeListened();
             Bass.BASS_Free();
-            if (!File.Exists(t.filename))
+            /*if (!File.Exists(t.filename))
             {
                 PointToMissingFile(t);
                 return;
-            }
+            }*/
             if (playlist != null && playlist.Contains(t))
             {
                 int numzor = t.num;
@@ -2437,6 +2436,11 @@ namespace Echoes
             Track t = (Track)trackGrid.Rows[e.RowIndex].DataBoundItem;
             if (streamLoaded) SetPosition(0);
             StopPlayer();
+            if (!File.Exists(t.filename))
+            {
+                PointToMissingFile(t);
+                return;
+            }
             OpenFile(t);
             if (nowPlaying != null) Play();
         }
