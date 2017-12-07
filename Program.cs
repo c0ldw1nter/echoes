@@ -65,7 +65,23 @@ namespace Echoes
             new HotkeyData(Hotkey.PREVLIST, Keys.Left, false, false, true, true)
         };
 
-        public readonly static Color backgroundColorDefault = Color.FromArgb(24, 24, 24);
+        public readonly static Color backgroundColorDefault = ColorTranslator.FromHtml("#181818");
+        public readonly static Color controlBackColorDefault = ColorTranslator.FromHtml("#303030");
+        public readonly static Color controlForeColorDefault = ColorTranslator.FromHtml("#96E6FF");
+        public readonly static Color highlightBackColorDefault = ColorTranslator.FromHtml("#CCD7D9");
+        public readonly static Color highlightForeColorDefault = ColorTranslator.FromHtml("#313131");
+        public readonly static Color seekBarBackColorDefault = ColorTranslator.FromHtml("#484848");
+        public readonly static Color seekBarForeColorDefault = ColorTranslator.FromHtml("#96E6FF");
+        public readonly static Color volBarBackColorDefault = ColorTranslator.FromHtml("#484848");
+        public readonly static Color volBarForeColorDefault = ColorTranslator.FromHtml("#96E6FF");
+        public readonly static Color trackTitleColorDefault = ColorTranslator.FromHtml("#96E6FF");
+        public readonly static Color trackArtistColorDefault = ColorTranslator.FromHtml("#CAFDFF");
+        public readonly static Color trackAlbumColorDefault = ColorTranslator.FromHtml("#FFFFFF");
+        public readonly static Color spectrumColorDefault = ColorTranslator.FromHtml("#96E6FF");
+
+        //old default colors
+
+        /*public readonly static Color backgroundColorDefault = Color.FromArgb(24, 24, 24);
         public readonly static Color controlBackColorDefault = Color.FromArgb(48, 48, 48);
         public readonly static Color controlForeColorDefault = Color.FromArgb(200, 200, 200);
         public readonly static Color highlightBackColorDefault = Color.FromArgb(180, 255, 153);
@@ -77,11 +93,14 @@ namespace Echoes
         public readonly static Color trackTitleColorDefault = Color.FromArgb(150, 230, 255);
         public readonly static Color trackArtistColorDefault = Color.FromArgb(180, 255, 153);
         public readonly static Color trackAlbumColorDefault = Color.FromArgb(255, 181, 79);
-        public readonly static Color spectrumColorDefault = Color.FromArgb(255, 100, 100);
+        public readonly static Color spectrumColorDefault = Color.FromArgb(255, 100, 100);*/
+
 
         #endregion
         public static List<string> filesToOpen = new List<string>();
         public static Echoes mainWindow;
+
+
 
         [STAThread]
         static void Main(string[] args)
