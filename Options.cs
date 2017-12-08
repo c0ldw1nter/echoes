@@ -454,7 +454,7 @@ namespace Echoes
             if (showWaveformCheckbox.Checked)
             {
                 Program.mainWindow.waveform = null;
-                Program.mainWindow.DrawWaveform();
+                Program.mainWindow.CreateWaveform();
             }
             Program.mainWindow.showWaveform = showWaveformCheckbox.Checked;
         }

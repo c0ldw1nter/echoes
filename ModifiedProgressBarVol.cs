@@ -47,7 +47,8 @@ namespace ModifiedControls
 
             //normalizer stuff
             toWrite = "";
-            if (Program.mainWindow.normalizerWorker.IsBusy)
+            if (Program.mainWindow.wf == null) return;
+            if (Program.mainWindow.wf.IsRenderingInProgress)
             {
                 toWrite = "---";
             }

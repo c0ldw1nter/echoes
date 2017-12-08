@@ -72,10 +72,12 @@ namespace ModifiedControls
             int trakerWidth = traker.Width * e.ClipRectangle.Height / traker.Height;
             e.Graphics.DrawImage(traker, rec.Width - trakerWidth / 2, 0, trakerWidth, e.ClipRectangle.Height);*/
 
+
+            //waveform
             if (Program.mainWindow.showWaveform && Program.mainWindow.waveformImage != null)
             {
                 GraphicsUnit unit=GraphicsUnit.Pixel;
-                e.Graphics.DrawImage(Program.mainWindow.waveformImage, new Rectangle(-2,2,Width,rec.Height), Rectangle.Round(Program.mainWindow.waveformImage.GetBounds(ref unit)), GraphicsUnit.Pixel);
+                e.Graphics.DrawImage(Program.mainWindow.waveformImage, new Rectangle(-4,2,Width,rec.Height), Rectangle.Round(Program.mainWindow.waveformImage.GetBounds(ref unit)), GraphicsUnit.Pixel);
                 /*try
                 {
                     e.Graphics.DrawImage(CropImage(Program.mainWindow.waveformImage, new Rectangle(0, 0, rec.Width, Height)), 2, 2);
@@ -84,12 +86,13 @@ namespace ModifiedControls
             }
             if (HasBorder) e.Graphics.DrawRectangle(new Pen((Parent as Echoes.Echoes).seekBarForeColor, BorderThickness), 0, 0, Width - BorderThickness, Height - BorderThickness);
 
+            //text
+
             if (!Program.mainWindow.streamLoaded) return;
             time1 = TimeSpan.FromSeconds(Bass.BASS_ChannelBytes2Seconds(Program.mainWindow.stream, Program.mainWindow.GetPosition()));
             time2 = TimeSpan.FromSeconds(Bass.BASS_ChannelBytes2Seconds(Program.mainWindow.stream, Program.mainWindow.GetLength()));
             time2 -= time1;
 
-            //text
             string toWrite = time1.TotalSeconds.ToTime();
             Font ft = new Font(Program.mainWindow.font2.FontFamily, rec.Height - 2, Program.mainWindow.font2.Style);
             SizeF sz = e.Graphics.MeasureString(toWrite, ft);

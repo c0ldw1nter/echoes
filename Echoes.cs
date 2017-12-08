@@ -166,7 +166,7 @@ namespace Echoes
         DataGridViewRow highlightedRow;
         DataGridViewColumn highlightedColumn;
         Stopwatch timeListenedTracker = new Stopwatch();
-        WaveForm wf;
+        public WaveForm wf;
         public Bitmap waveformImage;
         ItemType displayedItems;
         
@@ -583,48 +583,45 @@ namespace Echoes
         }
 
         void WaveFormCallback(int framesDone, int framesTotal, TimeSpan elapsedTime, bool finished) {
-            if (finished)
+            if (finished && wf.FileName == nowPlaying.filename)
             {
+                Invoke((MethodInvoker)delegate
+                {
+                    wf.SyncPlayback(stream);
+                    if (showWaveform)
+                    {
+                        waveformImage = wf.CreateBitmap(Screen.FromControl(this).WorkingArea.Width * 2, this.seekBar.Height, -1, -1, true);
+                        waveformImage = waveformImage.SetOpacity(0.5d);
+                    }
+
+                    if (normalize) Normalize();
+                    volumeBar.Refresh();
+                });
                 // if your playback stream uses a different resolution than the WF
                 // use this to sync them
-                wf.SyncPlayback(stream);
-                waveformImage = wf.CreateBitmap(Screen.FromControl(this).WorkingArea.Width*2, this.seekBar.Height, -1, -1, true);
-                waveformImage=waveformImage.SetOpacity(0.5d);
-                waveformImage.Save("C:\\Users\\Sat\\Desktop\\asdf.bmp");
             }
         }
-        public void DrawWaveform()
+        public void CreateWaveform()
         {
+            if (wf != null && wf.IsRenderingInProgress) wf.RenderStop();
             waveformImage = null;
-            if (nowPlaying == null || !supportedWaveformTypes.Contains(Path.GetExtension(nowPlaying.filename))) { return; }
-            wf = new Un4seen.Bass.Misc.WaveForm(nowPlaying.filename, new WAVEFORMPROC(WaveFormCallback), this);
-            //wf.CallbackFrequency = 1; // every 10 seconds rendered
+            if (nowPlaying == null) { return; }
+            wf = new Un4seen.Bass.Misc.WaveForm();
+            wf.FileName = nowPlaying.filename;
+            wf.CallbackFrequency = 0;
+            var handler = new WAVEFORMPROC(WaveFormCallback);
+            wf.NotifyHandler = handler;
             wf.ColorBackground = Color.Transparent;
             wf.DrawWaveForm = WaveForm.WAVEFORMDRAWTYPE.Mono;
             wf.ColorLeft = wf.ColorLeft2 = wf.ColorLeftEnvelope = Color.Black;
-            /*wf.ColorLeft = seekBarForeColor.Darken(96);
-            wf.ColorLeft2 = wf.ColorLeft;
-            wf.ColorLeftEnvelope = wf.ColorLeft;*/
 
             // it is important to use the same resolution flags as for the playing stream
             // e.g. if an already playing stream is 32-bit float, so this should also be
             // or use 'SyncPlayback' as shown below
-            wf.RenderStart(true, BASSFlag.BASS_DEFAULT);
-            /*int channel = Bass.BASS_StreamCreateFile(nowPlaying.filename, 0, 0, BASSFlag.BASS_DEFAULT);
-            Bass.BASS_ChannelSetAttribute(channel, BASSAttribute.BASS_ATTRIB_VOL, 0);
-            int width = Screen.FromControl(this).Bounds.Width;
-            Bitmap ret = new Bitmap(width, height);
-            if (nowPlaying == null) return ret;
-            Graphics g = Graphics.FromImage(ret);
-            Visuals visuals = new Visuals();
-            Bass.BASS_ChannelPlay(channel, false);
-            for (int i = 0; i < width; i++)
-            {
-                Bass.BASS_ChannelSetPosition(channel, 1d * i / width);
-                visuals.CreateSpectrum3DVoicePrint(channel, g, new Rectangle(0, 0, ret.Width, ret.Height), Color.Black, Color.White, i, true, false);
-            }
-            Bass.BASS_ChannelStop(channel);
-            return ret;*/
+            int strm;
+            if (!LoadStream(wf.FileName, out strm, BASSFlag.BASS_STREAM_DECODE | BASSFlag.BASS_MUSIC_DECODE | BASSFlag.BASS_MUSIC_PRESCAN)) return;
+            wf.RenderStart(strm, true);
+            volumeBar.Refresh();
         }
 
         public bool IsPlaying()
@@ -1870,13 +1867,16 @@ namespace Echoes
             /*float peak=0;
             float gainFactor=Utils.GetNormalizationGain(t.filename,0.2f,-1d,-1d,ref peak);*/
             //Bass.BASS_ChannelSetDSP(stream, gainProc, IntPtr.Zero, 0);
-            if(normalize) Normalize();
+
+            if (showWaveform || normalize) CreateWaveform();
+
+            //if(normalize) Normalize();
             DefineEQ();
             ApplyEQ();
-            if (showWaveform)
+            /*if (showWaveform)
             {
-                DrawWaveform();
-            }
+                CreateWaveform();
+            }*/
             if (Bass.BASS_ErrorGetCode() == 0 && GetLength()>0)
             {
                 Bass.BASS_ChannelSetPosition(stream, 0d);
@@ -1901,7 +1901,29 @@ namespace Echoes
 
         public void Normalize()
         {
-            if (normalizerWorker.IsBusy)
+            if (DSPGain != null && DSPGain.IsAssigned) DSPGain.Stop();
+            if (wf == null || !wf.IsRendered) return;
+            float peak=0;
+            normGain = wf.GetNormalizationGain(-1, -1, ref peak);
+            try
+            {
+                if (Math.Abs(1 - (decimal)normGain) > 0.03m)
+                {
+                    DSPGain = new DSP_Gain();
+                    DSPGain.ChannelHandle = stream;
+                    DSPGain.Gain = normGain;
+                    DSPGain.Start();
+                    Console.WriteLine(" | Applied gain of " + (normGain));
+                }
+                else
+                {
+                    normGain = 0;
+                    Console.WriteLine(" | Gain not applied");
+                }
+            }
+            catch (Exception) { }
+            volumeBar.Refresh();
+            /*if (normalizerWorker.IsBusy)
             {
                 Console.WriteLine("Cancelling normalization of " + toNormalize.title);
                 normalizerRestart = true;
@@ -1919,7 +1941,7 @@ namespace Echoes
             }
             volumeBar.Refresh();
             Console.WriteLine("Normalizing "+toNormalize.title);
-            //Console.WriteLine("Peak: " + GetPeak(t.filename));
+            //Console.WriteLine("Peak: " + GetPeak(t.filename));*/
         }
 
         bool LoadStream(string filename, out int outStream, BASSFlag flags)
@@ -3601,34 +3623,40 @@ namespace Echoes
 
         private void normalizerWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            normalizationBenchmark = DateTime.Now;
+
+            /*normalizationBenchmark = DateTime.Now;
             int strm;
-            if (!LoadStream(toNormalize.filename, out strm, BASSFlag.BASS_STREAM_DECODE | BASSFlag.BASS_MUSIC_DECODE)) return;
+            if (!LoadStream(toNormalize.filename, out strm, BASSFlag.BASS_STREAM_DECODE | BASSFlag.BASS_MUSIC_DECODE | BASSFlag.BASS_MUSIC_PRESCAN)) return;
             Bass.BASS_ChannelSetPosition(strm, 0d);
+            long len = Bass.BASS_ChannelGetLength(strm);
+            long totaltimeFrames = (long)((Bass.BASS_ChannelBytes2Seconds(strm, len)+1)*1000)/20;
             if ((Bass.BASS_ChannelFlags(strm, BASSFlag.BASS_DEFAULT, BASSFlag.BASS_DEFAULT) & BASSFlag.BASS_MUSIC_LOOP) == BASSFlag.BASS_MUSIC_LOOP)
             {
-                Bass.BASS_ChannelFlags(strm, BASSFlag.BASS_DEFAULT, BASSFlag.BASS_SAMPLE_LOOP);
+                Bass.BASS_ChannelFlags(strm, BASSFlag.BASS_DEFAULT, BASSFlag.BASS_MUSIC_LOOP);
             }
             peak = 0;
-
-            while (System.Convert.ToBoolean(Bass.BASS_ChannelIsActive(strm)))
+            for (int i = 0; i < totaltimeFrames; i++)
             {
-                if (((BackgroundWorker)sender).CancellationPending)
+                if (System.Convert.ToBoolean(Bass.BASS_ChannelIsActive(strm)))
                 {
-                    e.Cancel = true;
-                    Console.WriteLine("Normalization abandoned.");
-                    return;
-                }
-                int level = Bass.BASS_ChannelGetLevel(strm);
-                int left = Utils.LowWord32(level); // the left level
-                int right = Utils.HighWord32(level); // the right level
+                    if (((BackgroundWorker)sender).CancellationPending)
+                    {
+                        e.Cancel = true;
+                        Console.WriteLine("Normalization abandoned.");
+                        return;
+                    }
+                    int level = Bass.BASS_ChannelGetLevel(strm);
+                    int left = Utils.LowWord32(level); // the left level
+                    int right = Utils.HighWord32(level); // the right level
 
-                if (peak < left) peak = left;
-                if (peak < right) peak = right;
+                    if (peak < left) peak = left;
+                    if (peak < right) peak = right;
+                }
+                else break;
             }
             float divideFrom = 32768f;
             if (peak > 32768) divideFrom = 65536f;
-            normGain = (divideFrom/(float)peak);
+            normGain = (divideFrom/(float)peak);/*/
         }
 
         private void normalizerWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
