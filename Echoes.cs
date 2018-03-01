@@ -50,7 +50,7 @@ namespace Echoes
     #region Enums
     public enum Hotkey
     {
-        ADVANCEPLAYER, PREVIOUSPLAYER, PLAYPAUSE, VOLUMEUP, VOLUMEDOWN, TRANSPOSEUP, TRANSPOSEDOWN, DELETE, GLOBAL_VOLUMEUP, GLOBAL_VOLUMEDOWN, NEXTLIST, PREVLIST, SHUFFLE
+        ADVANCEPLAYER, PREVIOUSPLAYER, PLAYPAUSE, VOLUMEUP, VOLUMEDOWN, TRANSPOSEUP, TRANSPOSEDOWN, DELETE, GLOBAL_VOLUMEUP, GLOBAL_VOLUMEDOWN, NEXTLIST, PREVLIST, SHUFFLE, REWIND
     }
     public enum ItemType
     {
@@ -128,6 +128,7 @@ namespace Echoes
         public string playlistDbLocation = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), "known_playlists.dat");
         public string tagsCacheLocation = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), "track_cache.xml");
         public string configXmlFileLocation = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), "config.xml");
+        public string lameExeLocation = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), "lame.exe");
 
         public XmlCacher xmlCacher;
 
@@ -156,6 +157,7 @@ namespace Echoes
         public List<string> supportedWaveformTypes = new List<String>() { ".mp3", ".mp2", ".mp1", ".wav" };
         public List<string> supportedMidiTypes = new List<string>() { ".midi",".mid" };
 
+        Converter theConverter;
         TagEditor te;
         DupeFinder df;
         Statistics stats;
@@ -468,7 +470,8 @@ namespace Echoes
             else if (k == Hotkey.GLOBAL_VOLUMEDOWN) AdjustGlobalVolume(-0.01f);
             else if (k == Hotkey.NEXTLIST && !tagsLoaderWorker.IsBusy)
             {
-                if (playlistSelectorCombo.SelectedIndex < playlistSelectorCombo.Items.Count - 1) {
+                if (playlistSelectorCombo.SelectedIndex < playlistSelectorCombo.Items.Count - 1)
+                {
                     playlistSelectorCombo.SelectedIndex++;
                 }
                 else
@@ -480,18 +483,19 @@ namespace Echoes
             }
             else if (k == Hotkey.PREVLIST && !tagsLoaderWorker.IsBusy)
             {
-                if (playlistSelectorCombo.SelectedIndex>0)
+                if (playlistSelectorCombo.SelectedIndex > 0)
                 {
                     playlistSelectorCombo.SelectedIndex--;
                 }
                 else
                 {
-                    playlistSelectorCombo.SelectedIndex = playlistSelectorCombo.Items.Count-1;
+                    playlistSelectorCombo.SelectedIndex = playlistSelectorCombo.Items.Count - 1;
                 }
                 comboBox1_SelectionChangeCommitted(null, null);
                 if (displayedItems != ItemType.Playlist) PlayFirst();
             }
             else if (k == Hotkey.SHUFFLE) Shuffle();
+            else if (k == Hotkey.REWIND) SetPosition(0); 
         }
 
         void RepositionControls()
@@ -600,6 +604,17 @@ namespace Echoes
                 // if your playback stream uses a different resolution than the WF
                 // use this to sync them
             }
+            else
+            {
+                if (showWaveform)
+                {
+                    Invoke((MethodInvoker)delegate
+                    {
+                        waveformImage = wf.CreateBitmap(Screen.FromControl(this).WorkingArea.Width * 2, this.seekBar.Height, -1, -1, true);
+                        waveformImage = waveformImage.SetOpacity(0.5d);
+                    });
+                }
+            }
         }
         public void CreateWaveform()
         {
@@ -608,7 +623,7 @@ namespace Echoes
             if (nowPlaying == null) { return; }
             wf = new Un4seen.Bass.Misc.WaveForm();
             wf.FileName = nowPlaying.filename;
-            wf.CallbackFrequency = 0;
+            wf.CallbackFrequency = 1000;
             var handler = new WAVEFORMPROC(WaveFormCallback);
             wf.NotifyHandler = handler;
             wf.ColorBackground = Color.Transparent;
@@ -619,7 +634,7 @@ namespace Echoes
             // e.g. if an already playing stream is 32-bit float, so this should also be
             // or use 'SyncPlayback' as shown below
             int strm;
-            if (!LoadStream(wf.FileName, out strm, BASSFlag.BASS_STREAM_DECODE | BASSFlag.BASS_MUSIC_DECODE | BASSFlag.BASS_MUSIC_PRESCAN)) return;
+            if (!LoadStream(wf.FileName, out strm, BASSFlag.BASS_MUSIC_STOPBACK | BASSFlag.BASS_STREAM_DECODE | BASSFlag.BASS_MUSIC_DECODE)) return;
             wf.RenderStart(strm, true);
             volumeBar.Refresh();
         }
@@ -1944,7 +1959,7 @@ namespace Echoes
             //Console.WriteLine("Peak: " + GetPeak(t.filename));*/
         }
 
-        bool LoadStream(string filename, out int outStream, BASSFlag flags)
+        public bool LoadStream(string filename, out int outStream, BASSFlag flags)
         {
             string ext = Path.GetExtension(filename.ToLower());
             if (supportedModuleTypes.Contains(ext))
@@ -2928,11 +2943,11 @@ namespace Echoes
                         {
                             LaunchTagEditor();
                         };
-                        /*MenuItem miConvert = new MenuItem("Convert to 192k MP3");
+                        MenuItem miConvert = new MenuItem("Convert");
                         miConvert.Click += (theSender, eventArgs) =>
                         {
                             Convert();
-                        };*/
+                        };
                         MenuItem miRenumber = new MenuItem("Save this order");
                         miRenumber.Click += (theSender, eventArgs) =>
                         {
@@ -2983,7 +2998,7 @@ namespace Echoes
                         };
                         cm.MenuItems.Add(miAddToPlaylist);
                         cm.MenuItems.Add(miEditTags);
-                        //cm.MenuItems.Add(miConvert);
+                        cm.MenuItems.Add(miConvert);
                         cm.MenuItems.Add(miRenumber);
                         cm.MenuItems.Add(miDupes);
                         cm.MenuItems.Add(miUnexisting);
@@ -2999,12 +3014,25 @@ namespace Echoes
             }
         }
 
-        /*void Convert()
+        void Convert()
         {
-            //Converter cvt = new Converter();
-            //cvt.Show();
+            if (theConverter != null) theConverter.Dispose();
+            if (trackGrid.SelectedRows.Count == 0) return;
+            List<Track> selectedToConvert = new List<Track>();
+            foreach (DataGridViewRow rw in trackGrid.SelectedRows)
+            {
+                selectedToConvert.Add((Track)rw.DataBoundItem);
+            }
+            if (Bass.BASS_GetDevice() == -1) InitSoundDevice();
+            if (!File.Exists(lameExeLocation))
+            {
+                MessageBox.Show("No lame.exe found. The converter needs the encoder executable placed in the same directory as the Echoes executable.", "LAME encoder needed.", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            theConverter = new Converter(selectedToConvert);
+            theConverter.Show(this);
 
-            if(trackGrid.SelectedRows.Count==0) return;
+            /*if(trackGrid.SelectedRows.Count==0) return;
             Track toConvert=((Track)trackGrid.SelectedRows[0].DataBoundItem);
             if (!File.Exists(toConvert.filename)) return;
 
@@ -3035,8 +3063,8 @@ namespace Echoes
             else
             {
                 Console.WriteLine("Error converting: " + Bass.BASS_ErrorGetCode());
-            }
-        }*/
+            }*/
+        }
 
         void MoveSelectedDown()
         {

@@ -23,6 +23,11 @@ namespace ModifiedControls
 
         protected override void OnPaint(PaintEventArgs e)
         {
+            if (Program.mainWindow == null)
+            {
+                base.OnPaint(e);
+                return;
+            }
             Rectangle rec = e.ClipRectangle;
             rec.Width = (int)(rec.Width * ((double)Value / Maximum)) - 4;
             if (ProgressBarRenderer.IsSupported) ProgressBarRenderer.DrawHorizontalBar(e.Graphics, e.ClipRectangle);

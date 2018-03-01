@@ -180,6 +180,11 @@ namespace System
                     ctrl.ForeColor = Program.mainWindow.controlForeColor;
                     SetColors(ctrl);
                 }
+                else if (ctrl is Label)
+                {
+                    ctrl.BackColor = Program.mainWindow.backgroundColor;
+                    ctrl.ForeColor = Program.mainWindow.controlForeColor;
+                }
                 else
                 {
                     ctrl.BackColor = Program.mainWindow.controlBackColor;

@@ -29,36 +29,14 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Converter));
-            this.convertButton = new ModifiedControls.ModifiedButton();
-            this.loadingProgress = new ModifiedControls.ModifiedProgressBar();
             this.convertWorker = new System.ComponentModel.BackgroundWorker();
             this.outputPathText = new System.Windows.Forms.TextBox();
             this.outputLabel = new System.Windows.Forms.Label();
             this.convertList = new System.Windows.Forms.ListBox();
+            this.convertProgress = new ModifiedControls.ModifiedProgressBarLoading();
             this.outputPathButton = new ModifiedControls.ModifiedButton();
+            this.convertButton = new ModifiedControls.ModifiedButton();
             this.SuspendLayout();
-            // 
-            // convertButton
-            // 
-            this.convertButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(48)))), ((int)(((byte)(48)))));
-            this.convertButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.convertButton.Font = new System.Drawing.Font("White Rabbit", 8.249999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.convertButton.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(200)))), ((int)(((byte)(200)))));
-            this.convertButton.Location = new System.Drawing.Point(579, 144);
-            this.convertButton.Margin = new System.Windows.Forms.Padding(2);
-            this.convertButton.Name = "convertButton";
-            this.convertButton.Size = new System.Drawing.Size(72, 36);
-            this.convertButton.TabIndex = 45;
-            this.convertButton.Text = "Convert";
-            this.convertButton.UseVisualStyleBackColor = false;
-            this.convertButton.Click += new System.EventHandler(this.convertButton_Click);
-            // 
-            // loadingProgress
-            // 
-            this.loadingProgress.Location = new System.Drawing.Point(11, 185);
-            this.loadingProgress.Name = "loadingProgress";
-            this.loadingProgress.Size = new System.Drawing.Size(640, 23);
-            this.loadingProgress.TabIndex = 47;
             // 
             // convertWorker
             // 
@@ -89,8 +67,16 @@
             this.convertList.FormattingEnabled = true;
             this.convertList.Location = new System.Drawing.Point(11, 12);
             this.convertList.Name = "convertList";
+            this.convertList.SelectionMode = System.Windows.Forms.SelectionMode.None;
             this.convertList.Size = new System.Drawing.Size(640, 121);
             this.convertList.TabIndex = 50;
+            // 
+            // convertProgress
+            // 
+            this.convertProgress.Location = new System.Drawing.Point(11, 186);
+            this.convertProgress.Name = "convertProgress";
+            this.convertProgress.Size = new System.Drawing.Size(640, 23);
+            this.convertProgress.TabIndex = 52;
             // 
             // outputPathButton
             // 
@@ -107,17 +93,33 @@
             this.outputPathButton.UseVisualStyleBackColor = false;
             this.outputPathButton.Click += new System.EventHandler(this.outputPathButton_Click);
             // 
+            // convertButton
+            // 
+            this.convertButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(48)))), ((int)(((byte)(48)))));
+            this.convertButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.convertButton.Font = new System.Drawing.Font("White Rabbit", 8.249999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.convertButton.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(200)))), ((int)(((byte)(200)))));
+            this.convertButton.Location = new System.Drawing.Point(579, 144);
+            this.convertButton.Margin = new System.Windows.Forms.Padding(2);
+            this.convertButton.Name = "convertButton";
+            this.convertButton.Size = new System.Drawing.Size(72, 36);
+            this.convertButton.TabIndex = 45;
+            this.convertButton.Text = "Convert";
+            this.convertButton.UseVisualStyleBackColor = false;
+            this.convertButton.Click += new System.EventHandler(this.convertButton_Click);
+            // 
             // Converter
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(663, 214);
+            this.ClientSize = new System.Drawing.Size(663, 219);
+            this.Controls.Add(this.convertProgress);
             this.Controls.Add(this.outputPathButton);
             this.Controls.Add(this.convertList);
             this.Controls.Add(this.outputLabel);
             this.Controls.Add(this.outputPathText);
-            this.Controls.Add(this.loadingProgress);
             this.Controls.Add(this.convertButton);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Converter";
             this.Text = "Converter";
@@ -129,11 +131,11 @@
         #endregion
 
         private ModifiedControls.ModifiedButton convertButton;
-        private ModifiedControls.ModifiedProgressBar loadingProgress;
         private System.ComponentModel.BackgroundWorker convertWorker;
         private System.Windows.Forms.TextBox outputPathText;
         private System.Windows.Forms.Label outputLabel;
         private System.Windows.Forms.ListBox convertList;
         private ModifiedControls.ModifiedButton outputPathButton;
+        private ModifiedControls.ModifiedProgressBarLoading convertProgress;
     }
 }
