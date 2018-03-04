@@ -174,11 +174,11 @@ namespace Echoes
             // transposeTxt
             // 
             this.transposeTxt.AutoSize = true;
-            this.transposeTxt.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.transposeTxt.Font = new System.Drawing.Font("Consolas", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.transposeTxt.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(200)))), ((int)(((byte)(200)))));
             this.transposeTxt.Location = new System.Drawing.Point(445, 10);
             this.transposeTxt.Name = "transposeTxt";
-            this.transposeTxt.Size = new System.Drawing.Size(88, 16);
+            this.transposeTxt.Size = new System.Drawing.Size(77, 15);
             this.transposeTxt.TabIndex = 23;
             this.transposeTxt.Text = "Transpose:";
             // 
@@ -376,14 +376,14 @@ namespace Echoes
             // 
             this.modifiedButton1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(48)))), ((int)(((byte)(48)))));
             this.modifiedButton1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.modifiedButton1.Font = new System.Drawing.Font("White Rabbit", 8.249999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.modifiedButton1.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.modifiedButton1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(200)))), ((int)(((byte)(200)))));
             this.modifiedButton1.Location = new System.Drawing.Point(513, 40);
             this.modifiedButton1.Margin = new System.Windows.Forms.Padding(2);
             this.modifiedButton1.Name = "modifiedButton1";
             this.modifiedButton1.Size = new System.Drawing.Size(76, 30);
             this.modifiedButton1.TabIndex = 24;
-            this.modifiedButton1.Text = "Save Playlist";
+            this.modifiedButton1.Text = "Save";
             this.modifiedButton1.UseVisualStyleBackColor = false;
             this.modifiedButton1.Click += new System.EventHandler(this.modifiedButton1_Click);
             // 
@@ -441,7 +441,7 @@ namespace Echoes
             // 
             this.eqButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(48)))), ((int)(((byte)(48)))));
             this.eqButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.eqButton.Font = new System.Drawing.Font("White Rabbit", 8.249999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.eqButton.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.eqButton.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(200)))), ((int)(((byte)(200)))));
             this.eqButton.Location = new System.Drawing.Point(460, 40);
             this.eqButton.Margin = new System.Windows.Forms.Padding(2);
