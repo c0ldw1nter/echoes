@@ -83,6 +83,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.cs" />
+    <Compile Include="ColorScheme.cs" />
     <Compile Include="ColumnInfo.cs" />
     <Compile Include="Converter.cs">
       <SubType>Form</SubType>
@@ -165,6 +166,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Settings.cs" />
     <Compile Include="ShowSelectedInExplorer.cs" />
     <Compile Include="SortableBindingList.cs" />
     <Compile Include="Statistics.cs">

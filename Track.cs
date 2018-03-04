@@ -42,8 +42,9 @@ namespace Echoes
                         artist = tagFile.Tag.Performers[0];
                     }
                     album = tagFile.Tag.Album;
-                    //year = tagFile.Tag.Year+"";
-                    //comment = tagFile.Tag.Comment;
+                    year = unchecked((int)tagFile.Tag.Year);
+                    comment = tagFile.Tag.Comment;
+                    genre = tagFile.Tag.JoinedGenres;
                     length = (int)tagFile.Properties.Duration.TotalSeconds;
                     bitrate = tagFile.Properties.AudioBitrate;
                     tagFile.Dispose();
@@ -71,13 +72,16 @@ namespace Echoes
         public string title { get; set; }
         public string artist { get; set; }
         public string album { get; set; }
-        public string year { get; set; }
+        public int year { get; set; }
         public string comment { get; set; }
+        public string genre { get; set; }
         public int length { get; set; }
         public int num { get; set; }
         public int listened { get; set; }
         public int bitrate { get; set; }
         public string filesize { get; set; }
+        public float playthrough { get; set; }
+        public int timesLoaded { get; set; }
         
         public Track(string filename, string title)
         {

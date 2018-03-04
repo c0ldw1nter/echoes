@@ -194,18 +194,28 @@ namespace Echoes
             }
         }
 
+        void LoadAttributesToTrack(XElement x, Track t)
+        {
+            if (x.Attribute("title") != null) t.title = x.Attribute("title").Value;
+            if (x.Attribute("artist") != null) t.artist = x.Attribute("artist").Value;
+            if (x.Attribute("album") != null) t.album = x.Attribute("album").Value;
+            if (x.Attribute("listened") != null) t.listened = Int32.Parse(x.Attribute("listened").Value);
+            if (x.Attribute("bitrate") != null) t.bitrate = Int32.Parse(x.Attribute("bitrate").Value);
+            if (x.Attribute("length") != null) t.length = Int32.Parse(x.Attribute("length").Value);
+            if (x.Attribute("timesLoaded") != null) t.timesLoaded = Int32.Parse(x.Attribute("timesLoaded").Value);
+            if (x.Attribute("playthrough") != null) t.playthrough = float.Parse(x.Attribute("playthrough").Value);
+            if (x.Attribute("year") != null) t.year = Int32.Parse(x.Attribute("year").Value);
+            if (x.Attribute("genre") != null) t.genre = x.Attribute("genre").Value;
+            if (x.Attribute("comment") != null) t.comment = x.Attribute("comment").Value;
+        }
+
         public bool GetCacheInfo(Track t)
         {
             LoadXml();
             XElement match = xml.Root.Descendants().FirstOrDefault(x => x.Attribute("filename") != null && x.Attribute("filename").Value == t.filename);
             if (match != null)
             {
-                if (match.Attribute("title") != null) t.title = match.Attribute("title").Value;
-                if (match.Attribute("artist") != null) t.artist = match.Attribute("artist").Value;
-                if (match.Attribute("album") != null) t.album = match.Attribute("album").Value;
-                if (match.Attribute("listened") != null) t.listened = Int32.Parse(match.Attribute("listened").Value);
-                if (match.Attribute("bitrate") != null) t.bitrate = Int32.Parse(match.Attribute("bitrate").Value);
-                if (match.Attribute("length") != null) t.length = Int32.Parse(match.Attribute("length").Value);
+                LoadAttributesToTrack(match, t);
                 return true;
             }
             return false;
@@ -214,14 +224,36 @@ namespace Echoes
         public List<Track> GetAllTracks()
         {
             LoadXml();
+            var trackProperties = typeof(Track).GetProperties().ToList();
             List<Track> ret = new List<Track>();
             foreach(XElement x in xml.Root.Descendants()) {
                 Track t = new Track(x.Attribute("filename").Value, x.Attribute("title").Value);
-                if (x.Attribute("album") != null) t.album = x.Attribute("album").Value;
-                if (x.Attribute("artist") != null) t.artist = x.Attribute("artist").Value;
-                if (x.Attribute("listened") != null) t.listened = Int32.Parse(x.Attribute("listened").Value);
-                if (x.Attribute("bitrate") != null) t.bitrate = Int32.Parse(x.Attribute("bitrate").Value);
-                if (x.Attribute("length") != null) t.length = Int32.Parse(x.Attribute("length").Value);
+                LoadAttributesToTrack(x, t);
+                /*foreach (XAttribute att in x.Attributes())
+                {
+                    System.Reflection.PropertyInfo prop=trackProperties.FirstOrDefault(z=>z.Name==att.Name);
+                    if (prop!=null)
+                    {
+                        object val = prop.GetValue(t, null);
+                        try
+                        {
+                            switch (Type.GetTypeCode(prop.GetType()))
+                            {
+                                case TypeCode.Int32:
+                                    prop.SetValue(t, Int32.Parse(att.Value));
+                                    break;
+                                case TypeCode.Single:
+                                    prop.SetValue(t, float.Parse(att.Value));
+                                    break;
+                                default:
+                                    prop.SetValue(t, att.Value);
+                                    break;
+                            }
+                        }
+                        catch (Exception) { }
+                    }
+                }*/
+                //GetCacheInfo(t);
                 ret.Add(t);
             }
             ret.Reverse();

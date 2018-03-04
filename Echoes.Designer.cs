@@ -1,4 +1,5 @@
 ﻿using ModifiedControls;
+using System.Windows.Forms;
 namespace Echoes
 {
     partial class Echoes
@@ -123,9 +124,9 @@ namespace Echoes
             // 
             this.tagsLoaderWorker.WorkerReportsProgress = true;
             this.tagsLoaderWorker.WorkerSupportsCancellation = true;
-            this.tagsLoaderWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
-            this.tagsLoaderWorker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorker1_ProgressChanged);
-            this.tagsLoaderWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker1_RunWorkerCompleted);
+            this.tagsLoaderWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.tagsLoaderWorker_DoWork);
+            this.tagsLoaderWorker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.tagsLoaderWorker_ProgressChanged);
+            this.tagsLoaderWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.tagsLoaderWorker_RunWorkerCompleted);
             // 
             // gridSearchTimer
             // 

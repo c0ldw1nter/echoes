@@ -82,6 +82,8 @@ namespace Echoes
          * 6. add a control of it to Options form;
         */
 
+        Settings settings;
+
         //colors
         public Color backgroundColor;
         public Color controlBackColor;
@@ -116,7 +118,6 @@ namespace Echoes
         public bool suppressHotkeys;
         public List<ColumnInfo> currentColumnInfo;
         public string midiSfLocation;
-        public float[] eqGains = { 8f, -8f, 14f };
 
         //hotkey settings
         public bool hotkeysAllowed;
@@ -143,6 +144,7 @@ namespace Echoes
         public bool eqEnabled = false;
         int peak = 0;
         public float normGain = 0;
+        public float[] eqGains = { 8f, -8f, 14f };
         bool normalizerRestart = false;
         public DSP_Gain DSPGain;
         Track toNormalize;
@@ -187,6 +189,7 @@ namespace Echoes
         bool gridSearchFirstStroke = true;
         bool sortingAllowed = true;
         bool showingPlayIcon = true;
+        bool reloadTagsFlag = false;
 
         public IntPtr theHandle;
 
@@ -200,15 +203,14 @@ namespace Echoes
         public DataGridViewCellStyle alternatingCellStyle = new DataGridViewCellStyle();
         public DataGridViewCellStyle highlightedCellStyle = new DataGridViewCellStyle();
 
-        //                                        0      1         2        3          4         5            6        7        8         9         10
-        readonly string[] COLUMN_PROPERTIES = { "num", "title", "artist", "length", "album", "listened", "filename", "year", "genre", "comment", "bitrate" };
-        readonly string[] COLUMN_HEADERS={"#","Title","Artist","Length","Album","Listened","File","Year","Genre","Comment","Bitrate"};
+        //                                        0      1         2        3          4         5            6        7        8         9         10             11
+        readonly string[] COLUMN_PROPERTIES = { "num", "title", "artist", "length", "album", "listened", "filename", "year", "genre", "comment", "bitrate", "playthrough" };
+        readonly string[] COLUMN_HEADERS={"#","Title","Artist","Length","Album","Listened","File","Year","Genre","Comment","Bitrate","Playthrough"};
 
         #endregion
 
         public Echoes()
         {
-
             vs.MaxFrequencySpectrum = Utils.FFTFrequency2Index(19200, 2047, 44100);
             xmlCacher = new XmlCacher(tagsCacheLocation);
             /*List<Track> trx = xmlCacher.GetAllTracks();
@@ -257,6 +259,42 @@ namespace Echoes
             SetColors();
             LoadPlaylistDb();
             StartupLoadProcedure();
+        }
+
+        void AddHeaderContextMenu()
+        {
+            ContextMenuStrip headerContextMenu = new ContextMenuStrip();
+            for(int i=0;i<COLUMN_HEADERS.Length;i++)
+            {
+                ToolStripMenuItem mi = new ToolStripMenuItem(COLUMN_HEADERS[i]);
+                if (currentColumnInfo.Where(x => x.id == i).Count() > 0) mi.Checked = true;
+                mi.Name=i+"";
+                mi.Click += (theSender, eventArgs) =>
+                {
+                    if (mi.Checked)
+                    {
+                        currentColumnInfo.Remove(currentColumnInfo.First(x => x.id == Int32.Parse(mi.Name)));
+                    }
+                    else
+                    {
+                        currentColumnInfo.Add(new ColumnInfo(Int32.Parse(mi.Name), 100));
+                    }
+                    RefreshPlaylistGrid();
+                    mi.Checked = !mi.Checked;
+                };
+                headerContextMenu.Items.Add(mi);
+            }
+            ToolStripMenuItem mit = new ToolStripMenuItem("<Restore default>");
+            mit.Click += (theSender, eventArgs) =>
+            {
+                currentColumnInfo = Program.defaultColumnInfo;
+                RefreshPlaylistGrid();
+            };
+            headerContextMenu.Items.Add(mit);
+            foreach (DataGridViewColumn clmn in trackGrid.Columns)
+            {
+                clmn.HeaderCell.ContextMenuStrip = headerContextMenu;
+            }
         }
 
         public void RemoveEQ()
@@ -819,12 +857,15 @@ namespace Echoes
                     DataPropertyName = COLUMN_PROPERTIES[currentColumnInfo[i].id],
                     Name = COLUMN_PROPERTIES[currentColumnInfo[i].id],
                     HeaderText = COLUMN_HEADERS[currentColumnInfo[i].id],
+                    Tag = currentColumnInfo[i].id
                 });
             }
             foreach (DataGridViewTextBoxColumn clmn in columns)
             {
                 trackGrid.Columns.Add(clmn);
             }
+
+            if (displayedItems != ItemType.Playlist) AddHeaderContextMenu();
 
             //filter with searchbox
             SortableBindingList<Track> source;
@@ -1720,6 +1761,13 @@ namespace Echoes
             return t;
         }*/
 
+        void ReloadTags()
+        {
+            if (tagsLoaderWorker.IsBusy) return;
+            reloadTagsFlag = true;
+            tagsLoaderWorker.RunWorkerAsync();
+        }
+
         private void AdvancePlayer()
         {
             try
@@ -1732,7 +1780,7 @@ namespace Echoes
                     int indexToPlay = currentRow.Index + 1;
                     if (currentRow.Index >= trackGrid.Rows.Count - 1) indexToPlay = 0;
                     Track t = (Track)trackGrid.Rows[indexToPlay].DataBoundItem;
-                    nowPlaying = t;
+                    //nowPlaying = t;
                     if (File.Exists(t.filename))
                     {
                         LoadAudioFile(t);
@@ -1765,11 +1813,29 @@ namespace Echoes
             catch (Exception) { }
         }
 
-        void FlushTimeListened()
+        void FlushTimeListened(Track t)
         {
-            if (nowPlaying == null || timeListenedTracker.Elapsed.TotalSeconds <= 1) return;
-            int beforeFlush=nowPlaying.listened;
-            SetListenedTime(nowPlaying, (int)timeListenedTracker.Elapsed.TotalSeconds + nowPlaying.listened);
+            if (t == null) return;
+
+            if (t.timesLoaded == null) t.timesLoaded = 1;
+            else t.timesLoaded++;
+
+            float percentageListened = (float)timeListenedTracker.Elapsed.TotalSeconds / (float)t.length;
+            if (percentageListened > 1 || (1f - percentageListened) < 0.01f) percentageListened = 1;
+
+            if (t.playthrough == null) t.playthrough = percentageListened;
+            else
+            {
+            float recalcPercentage = (t.playthrough * (t.timesLoaded - 1) + percentageListened) / t.timesLoaded;
+                t.playthrough = recalcPercentage;
+            }
+
+            //int beforeFlush=nowPlaying.listened;
+
+            //SetListenedTime(nowPlaying, (int)timeListenedTracker.Elapsed.TotalSeconds + nowPlaying.listened);
+            t.listened = (int)timeListenedTracker.Elapsed.TotalSeconds + t.listened;
+            xmlCacher.AddOrUpdate(new List<Track> { t });
+
             RefreshTotalTimeLabel();
             if (timeListenedTracker.IsRunning) timeListenedTracker.Restart();
             else timeListenedTracker.Reset();
@@ -1821,7 +1887,7 @@ namespace Echoes
             }
             volumeBar.Refresh();
             if (streamLoaded) Bass.BASS_ChannelStop(stream);
-            FlushTimeListened();
+            FlushTimeListened(nowPlaying);
             Bass.BASS_Free();
             /*if (!File.Exists(t.filename))
             {
@@ -2224,14 +2290,26 @@ namespace Echoes
             }
         }
 
+        void SaveColumnInfos()
+        {
+            ColumnInfo[] infos = new ColumnInfo[currentColumnInfo.Count];
+            currentColumnInfo.Clear();
+            foreach (DataGridViewColumn clmn in trackGrid.Columns)
+            {
+                infos[clmn.DisplayIndex] = new ColumnInfo((int)clmn.Tag, clmn.Width);
+            }
+            currentColumnInfo = infos.ToList();
+        }
+
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
+            if(displayedItems!=ItemType.Playlist) SaveColumnInfos();
             try { SaveXmlConfig(); }
             catch (Exception zx)
             {
                 MessageBox.Show(zx.ToString());
             }
-            FlushTimeListened();
+            FlushTimeListened(nowPlaying);
             Bass.BASS_Free();
             DeleteTempFile();
         }
@@ -2616,7 +2694,7 @@ namespace Echoes
             }
         }
 
-        private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
+        private void tagsLoaderWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             /*if (rebuildCache==false)
             {*/
@@ -2624,7 +2702,7 @@ namespace Echoes
                     if (e.Cancel) break;
 
                     Track t = playlist[z];
-                    if (!xmlCacher.GetCacheInfo(t))
+                    if (!xmlCacher.GetCacheInfo(t) || reloadTagsFlag)
                     {
                         t.GetTags();
                         xmlCacher.AddOrUpdate(new List<Track>(){t});
@@ -2647,12 +2725,13 @@ namespace Echoes
             }*/
         }
 
-        private void backgroundWorker1_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        private void tagsLoaderWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             trackText.Text = e.ProgressPercentage + "% loaded";
         }
-        private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        private void tagsLoaderWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
+            reloadTagsFlag = false;
             RefreshTotalTimeLabel();
             AllowSorting(true);
             if (nowPlaying == null) trackText.Text = "100% Loaded";
@@ -2953,6 +3032,11 @@ namespace Echoes
                         {
                             RenumberPlaylist(playlist);
                         };
+                        MenuItem miReloadTags = new MenuItem("Reload tag info");
+                        miReloadTags.Click += (theSender, eventArgs) =>
+                        {
+                            ReloadTags();
+                        };
                         MenuItem miDupes = new MenuItem("Find duplicates");
                         miDupes.Click += (theSender, eventArgs) =>
                         {
@@ -3000,6 +3084,7 @@ namespace Echoes
                         cm.MenuItems.Add(miEditTags);
                         cm.MenuItems.Add(miConvert);
                         cm.MenuItems.Add(miRenumber);
+                        cm.MenuItems.Add(miReloadTags);
                         cm.MenuItems.Add(miDupes);
                         cm.MenuItems.Add(miUnexisting);
                         cm.MenuItems.Add(miMoveUp);
@@ -3461,6 +3546,15 @@ namespace Echoes
                 }else if((dgv.Columns[e.ColumnIndex].HeaderText == "Bitrate")) {
                     int val = (int)e.Value;
                     if(val==0) e.Value=""; else e.Value = val+" kbps";
+                    e.FormattingApplied = true;
+                }else if ((dgv.Columns[e.ColumnIndex].HeaderText == "Playthrough")) {
+                    float val = (float)e.Value;
+                    if (val == 0f) e.Value = "--"; else e.Value = String.Format("{0:0.00}",val*100) + "%";
+                    e.FormattingApplied = true;
+                }else if ((dgv.Columns[e.ColumnIndex].HeaderText == "Year"))
+                {
+                    int val = (int)e.Value;
+                    if (val == 0) e.Value = ""; else e.Value = val + "";
                     e.FormattingApplied = true;
                 }
             }
