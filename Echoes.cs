@@ -130,7 +130,7 @@ namespace Echoes
         public string tagsCacheLocation = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), "track_cache.xml");
         public string configXmlFileLocation = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), "config.xml");
         public string lameExeLocation = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), "lame.exe");
-        public Uri lameExeDownloadSite = new Uri("http://www.rarewares.org/mp3-lame-bundle.php");
+        public string lameExeDownloadSite = "http://www.rarewares.org/mp3-lame-bundle.php";
 
         public XmlCacher xmlCacher;
 
@@ -3109,7 +3109,7 @@ namespace Echoes
                     +Environment.NewLine+Environment.NewLine+"Would you like to visit a third party website to download LAME encoder?"
                     , "LAME encoder needed.", MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.Yes)
                 {
-                    System.Diagnostics.Process.Start(lameExeDownloadSite.AbsolutePath);
+                    System.Diagnostics.Process.Start(lameExeDownloadSite);
                 }
                 return;
             }
