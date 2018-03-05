@@ -17,6 +17,7 @@ namespace Echoes
     public partial class Converter : Form
     {
         public List<Track> files;
+        int currentBitrate;
 
         string OutputPath;
         string outputPath {
@@ -30,10 +31,24 @@ namespace Echoes
                 outputPathText.Text = value;
             }
         }
+
+        void BindBitrateComboSource()
+        {
+            BindingList<LAMEBitrateComboItem> bl = new BindingList<LAMEBitrateComboItem>();
+            foreach (var value in Enum.GetValues(typeof(EncoderLAME.BITRATE)).Cast<int>())
+            {
+                bl.Add(new LAMEBitrateComboItem(value, ((EncoderLAME.BITRATE)value).ToString().Substring(5) + " kbps"));
+            }
+            qualityCombo.ValueMember = "bitrate";
+            qualityCombo.DisplayMember = "shownName";
+            qualityCombo.DataSource = bl;
+            qualityCombo.SelectedIndex = 19;
+        }
         
         public Converter(List<Track> files)
         {
             InitializeComponent();
+            BindBitrateComboSource();
             this.SetColors();
             convertList.DisplayMember = "filename";
             this.files = files;
@@ -44,9 +59,11 @@ namespace Echoes
         void QueueConversion()
         {
             if (files.Count <= 0) return;
+            currentBitrate = (int)Enum.Parse(typeof(EncoderLAME.BITRATE), qualityCombo.SelectedValue.ToString());
             if (!Directory.Exists(outputPath)) Directory.CreateDirectory(outputPath);
             convertButton.Text = "Cancel";
             outputPathButton.Enabled = false;
+            qualityCombo.Enabled = false;
             outputPathText.Enabled = false;
             convertWorker.RunWorkerAsync();
         }
@@ -71,7 +88,7 @@ namespace Echoes
                         num++;
                     }
                     l.OutputFile = Path.Combine(outputPath,tryName);
-                    l.LAME_Bitrate = (int)EncoderLAME.BITRATE.kbps_6;
+                    l.LAME_Bitrate = currentBitrate;
                     l.LAME_Mode = EncoderLAME.LAMEMode.Default;
                     l.LAME_Quality = EncoderLAME.LAMEQuality.Quality;
                     //if(!Un4seen.Bass.AddOn.Tags.BassTags.BASS_TAG_GetFromFile(convertStream, l.TAGs)) Console.WriteLine("no tags");
@@ -116,6 +133,7 @@ namespace Echoes
             convertButton.Text = "Convert";
             outputPathButton.Enabled = true;
             outputPathText.Enabled = true;
+            qualityCombo.Enabled = true;
             convertProgress.Value = 0;
         }
 
@@ -137,6 +155,20 @@ namespace Echoes
             else
             {
                 convertWorker.CancelAsync();
+            }
+        }
+        class LAMEBitrateComboItem
+        {
+            public int bitrate { get; set; }
+            public string shownName { get; set; }
+            public override string ToString()
+            {
+                return shownName;
+            }
+            public LAMEBitrateComboItem(int bitrate, string shownName)
+            {
+                this.bitrate = bitrate;
+                this.shownName = shownName;
             }
         }
     }

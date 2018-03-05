@@ -12,47 +12,6 @@ namespace Echoes
     public class XmlCacher
     {
         string filename;
-        /*public static void SaveTagsToXml(List<Track> tracks) {
-            XDocument xml;
-            try
-            {
-                xml = XDocument.Load(Program.mainWindow.tagsCacheLocation);
-            }
-            catch (Exception) 
-            {
-                xml = new XDocument();
-                xml.Add(new XElement("tracks"));
-            }
-            foreach (Track t in tracks)
-            {
-                if (xml.Root.Descendants().Where(x => x.Value == t.filename).Any()) continue;
-                XElement toAdd=new XElement("track");
-                foreach (var prop in t.GetType().GetProperties())
-                {
-                    var name = prop.Name;
-                    if (name == "num") continue;
-                    var val=prop.GetValue(t, null);
-                    
-                    if (name == "listened" && val == null)
-                    {
-                        val = "00:00:00";
-                    }
-                    if (val != null)
-                    {
-                        toAdd.Add(new XAttribute(name, val.ToString()));
-                    }
-                }
-                //if (!String.IsNullOrWhiteSpace(t.title)) toAdd.Add(new XAttribute("title", t.title));
-                //if (!String.IsNullOrWhiteSpace(t.artist)) toAdd.Add(new XAttribute("artist", t.artist));
-                //if (!String.IsNullOrWhiteSpace(t.album)) toAdd.Add(new XAttribute("album", t.album));
-                //if (!String.IsNullOrWhiteSpace(t.listened)) toAdd.Add(new XAttribute("listened", t.listened));
-                //else toAdd.Add(new XAttribute("listened", "00:00:00"));
-                toAdd.Value = t.filename;
-                xml.Root.Add(toAdd);
-            }
-            xml.Save(Program.mainWindow.tagsCacheLocation);
-            xml = null;
-        }*/
         XDocument xml;
         public XmlCacher(string filename)
         {
@@ -105,12 +64,6 @@ namespace Echoes
                 foreach (Track t in tracks)
                 {
                     XElement theThing = xml.Root.Descendants().FirstOrDefault(x => x.Attribute("filename") != null && x.Attribute("filename").Value == t.filename);
-                    /*if (theThing != null)
-                    {
-                        //theThing.RemoveAttributes();
-                        //theThing.Remove();
-                    }*/
-                    //theThing = new XElement("track");
                     List<XAttribute> newAttributes = new List<XAttribute>();
                     foreach (var prop in t.GetType().GetProperties())
                     {
@@ -124,11 +77,9 @@ namespace Echoes
                         if (val != null)
                         {
                             newAttributes.Add(new XAttribute(name, val.ToString()));
-                            //theThing.Add(new XAttribute(name, val.ToString()));
                         }
                     }
                     theThing.ReplaceAttributes(newAttributes.ToArray());
-                    //xml.Root.Add(theThing);new XAttribute(name, val.ToString())
                 }
                 SaveXml();
             }
@@ -223,62 +174,10 @@ namespace Echoes
             foreach(XElement x in xml.Root.Descendants()) {
                 Track t = new Track(x.Attribute("filename").Value, x.Attribute("title").Value);
                 LoadAttributesToTrack(x, t);
-                /*foreach (XAttribute att in x.Attributes())
-                {
-                    System.Reflection.PropertyInfo prop=trackProperties.FirstOrDefault(z=>z.Name==att.Name);
-                    if (prop!=null)
-                    {
-                        object val = prop.GetValue(t, null);
-                        try
-                        {
-                            switch (Type.GetTypeCode(prop.GetType()))
-                            {
-                                case TypeCode.Int32:
-                                    prop.SetValue(t, Int32.Parse(att.Value));
-                                    break;
-                                case TypeCode.Single:
-                                    prop.SetValue(t, float.Parse(att.Value));
-                                    break;
-                                default:
-                                    prop.SetValue(t, att.Value);
-                                    break;
-                            }
-                        }
-                        catch (Exception) { }
-                    }
-                }*/
-                //GetCacheInfo(t);
                 ret.Add(t);
             }
             ret.Reverse();
             return ret;
-        }
-
-        //returns a list of tracks whose cache wasn't found
-        public List<Track> LoadTagsToPlaylist(List<Track> tracks)
-        {
-            List<Track> uncachedTracks = new List<Track>();
-            LoadXml();
-            foreach (Track t in tracks)
-            {
-                XElement match = xml.Root.Descendants().FirstOrDefault(x => x.Attribute("filename")!=null && x.Attribute("filename").Value == t.filename);
-                if (match != null)
-                {
-                    if(match.Attribute("title")!=null) t.title = match.Attribute("title").Value;
-                    if (match.Attribute("artist") != null) t.artist = match.Attribute("artist").Value;
-                    if (match.Attribute("album") != null) t.album = match.Attribute("album").Value;
-                    if (match.Attribute("listened") != null) t.listened = Int32.Parse(match.Attribute("listened").Value);
-                    if (match.Attribute("bitrate") != null) t.bitrate = Int32.Parse(match.Attribute("bitrate").Value);
-                    if (match.Attribute("length") != null) t.length = Int32.Parse(match.Attribute("length").Value);
-                }
-                else uncachedTracks.Add(t);
-            }
-            return uncachedTracks;
-        }
-
-        public void ReleaseXml()
-        {
-            xml = null;
         }
 
         public void SaveXml()

@@ -130,6 +130,7 @@ namespace Echoes
         public string tagsCacheLocation = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), "track_cache.xml");
         public string configXmlFileLocation = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), "config.xml");
         public string lameExeLocation = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), "lame.exe");
+        public Uri lameExeDownloadSite = new Uri("http://www.rarewares.org/mp3-lame-bundle.php");
 
         public XmlCacher xmlCacher;
 
@@ -3104,7 +3105,12 @@ namespace Echoes
             if (Bass.BASS_GetDevice() == -1) InitSoundDevice();
             if (!File.Exists(lameExeLocation))
             {
-                MessageBox.Show("No lame.exe found. The converter needs the encoder executable placed in the same directory as the Echoes executable.", "LAME encoder needed.", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (MessageBox.Show("No lame.exe found. The converter needs the encoder executable placed in the same directory as the Echoes executable."
+                    +Environment.NewLine+Environment.NewLine+"Would you like to visit a third party website to download LAME encoder?"
+                    , "LAME encoder needed.", MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.Yes)
+                {
+                    System.Diagnostics.Process.Start(lameExeDownloadSite.AbsolutePath);
+                }
                 return;
             }
             theConverter = new Converter(selectedToConvert);

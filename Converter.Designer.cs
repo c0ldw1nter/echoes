@@ -36,6 +36,7 @@
             this.convertProgress = new ModifiedControls.ModifiedProgressBarLoading();
             this.outputPathButton = new ModifiedControls.ModifiedButton();
             this.convertButton = new ModifiedControls.ModifiedButton();
+            this.qualityCombo = new ModifiedControls.ModifiedComboBox();
             this.SuspendLayout();
             // 
             // convertWorker
@@ -48,7 +49,7 @@
             // 
             // outputPathText
             // 
-            this.outputPathText.Location = new System.Drawing.Point(11, 160);
+            this.outputPathText.Location = new System.Drawing.Point(11, 181);
             this.outputPathText.Name = "outputPathText";
             this.outputPathText.Size = new System.Drawing.Size(522, 20);
             this.outputPathText.TabIndex = 48;
@@ -56,7 +57,7 @@
             // outputLabel
             // 
             this.outputLabel.AutoSize = true;
-            this.outputLabel.Location = new System.Drawing.Point(12, 144);
+            this.outputLabel.Location = new System.Drawing.Point(12, 165);
             this.outputLabel.Name = "outputLabel";
             this.outputLabel.Size = new System.Drawing.Size(39, 13);
             this.outputLabel.TabIndex = 49;
@@ -73,7 +74,7 @@
             // 
             // convertProgress
             // 
-            this.convertProgress.Location = new System.Drawing.Point(11, 186);
+            this.convertProgress.Location = new System.Drawing.Point(11, 207);
             this.convertProgress.Name = "convertProgress";
             this.convertProgress.Size = new System.Drawing.Size(640, 23);
             this.convertProgress.TabIndex = 52;
@@ -84,7 +85,7 @@
             this.outputPathButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.outputPathButton.Font = new System.Drawing.Font("White Rabbit", 8.249999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.outputPathButton.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(200)))), ((int)(((byte)(200)))));
-            this.outputPathButton.Location = new System.Drawing.Point(538, 160);
+            this.outputPathButton.Location = new System.Drawing.Point(538, 181);
             this.outputPathButton.Margin = new System.Windows.Forms.Padding(2);
             this.outputPathButton.Name = "outputPathButton";
             this.outputPathButton.Size = new System.Drawing.Size(37, 20);
@@ -99,7 +100,7 @@
             this.convertButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.convertButton.Font = new System.Drawing.Font("White Rabbit", 8.249999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.convertButton.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(200)))), ((int)(((byte)(200)))));
-            this.convertButton.Location = new System.Drawing.Point(579, 144);
+            this.convertButton.Location = new System.Drawing.Point(579, 165);
             this.convertButton.Margin = new System.Windows.Forms.Padding(2);
             this.convertButton.Name = "convertButton";
             this.convertButton.Size = new System.Drawing.Size(72, 36);
@@ -108,11 +109,27 @@
             this.convertButton.UseVisualStyleBackColor = false;
             this.convertButton.Click += new System.EventHandler(this.convertButton_Click);
             // 
+            // qualityCombo
+            // 
+            this.qualityCombo.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(48)))), ((int)(((byte)(48)))));
+            this.qualityCombo.CausesValidation = false;
+            this.qualityCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.qualityCombo.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.qualityCombo.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.qualityCombo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(200)))), ((int)(((byte)(200)))));
+            this.qualityCombo.FormattingEnabled = true;
+            this.qualityCombo.HighlightColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(200)))), ((int)(((byte)(200)))));
+            this.qualityCombo.Location = new System.Drawing.Point(495, 139);
+            this.qualityCombo.Name = "qualityCombo";
+            this.qualityCombo.Size = new System.Drawing.Size(156, 21);
+            this.qualityCombo.TabIndex = 53;
+            // 
             // Converter
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(663, 219);
+            this.ClientSize = new System.Drawing.Size(663, 239);
+            this.Controls.Add(this.qualityCombo);
             this.Controls.Add(this.convertProgress);
             this.Controls.Add(this.outputPathButton);
             this.Controls.Add(this.convertList);
@@ -137,5 +154,6 @@
         private System.Windows.Forms.ListBox convertList;
         private ModifiedControls.ModifiedButton outputPathButton;
         private ModifiedControls.ModifiedProgressBarLoading convertProgress;
+        private ModifiedControls.ModifiedComboBox qualityCombo;
     }
 }
