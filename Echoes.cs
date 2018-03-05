@@ -2817,7 +2817,7 @@ namespace Echoes
                     currentRow = trackGrid.Rows[currentIndex];
                     currentTrack = (Track)currentRow.DataBoundItem;
                     int currentColumnIndex = 0;
-                    if (highlightedColumn == null)
+                    if (highlightedColumn == null || highlightedColumn.ValueType!=typeof(string))
                     {
                         foreach (DataGridViewColumn col in trackGrid.Columns)
                         {
@@ -2853,7 +2853,7 @@ namespace Echoes
                     currentRow = trackGrid.Rows[currentIndex];
                     currentTrack = (Track)currentRow.DataBoundItem;
                     int currentColumnIndex = 0;
-                    if (highlightedColumn == null)
+                    if (highlightedColumn == null || highlightedColumn.ValueType != typeof(string))
                     {
                         foreach (DataGridViewColumn col in trackGrid.Columns)
                         {
