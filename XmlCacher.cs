@@ -62,28 +62,16 @@ namespace Echoes
 
         public void CleanupCache()
         {
-            XDocument xml;
-            try
-            {
-                xml = XDocument.Load(Program.mainWindow.tagsCacheLocation);
-            }
-            catch (Exception)
-            {
-                return;
-            }
+            LoadXml();
+            int totalBefore = xml.Root.Descendants().Count();
             var toRem = xml.Root.Descendants().Where(x => !File.Exists(x.Attribute("filename").Value));
             int removeNum = toRem.Count();
             toRem.Remove();
-            xml.Save(Program.mainWindow.tagsCacheLocation);
+            SaveXml();
             if (removeNum > 0)
             {
                 MessageBox.Show(removeNum + "  entries were removed from cache.");
             }
-        }
-
-        public void BringToTop(string filename)
-        {
-
         }
 
         public void ClearDupes()
@@ -110,17 +98,20 @@ namespace Echoes
 
         public void AddOrUpdate(List<Track> tracks)
         {
+            System.Diagnostics.Stopwatch stopwatch = System.Diagnostics.Stopwatch.StartNew();
             LoadXml();
             try
             {
                 foreach (Track t in tracks)
                 {
                     XElement theThing = xml.Root.Descendants().FirstOrDefault(x => x.Attribute("filename") != null && x.Attribute("filename").Value == t.filename);
-                    if (theThing != null)
+                    /*if (theThing != null)
                     {
-                        theThing.Remove();
-                    }
-                    theThing = new XElement("track");
+                        //theThing.RemoveAttributes();
+                        //theThing.Remove();
+                    }*/
+                    //theThing = new XElement("track");
+                    List<XAttribute> newAttributes = new List<XAttribute>();
                     foreach (var prop in t.GetType().GetProperties())
                     {
                         var name = prop.Name;
@@ -132,14 +123,18 @@ namespace Echoes
                         }
                         if (val != null)
                         {
-                            theThing.Add(new XAttribute(name, val.ToString()));
+                            newAttributes.Add(new XAttribute(name, val.ToString()));
+                            //theThing.Add(new XAttribute(name, val.ToString()));
                         }
                     }
-                    xml.Root.Add(theThing);
+                    theThing.ReplaceAttributes(newAttributes.ToArray());
+                    //xml.Root.Add(theThing);new XAttribute(name, val.ToString())
                 }
                 SaveXml();
             }
             catch (Exception) { }
+            stopwatch.Stop();
+            Console.WriteLine("AddOrUpdate took "+ stopwatch.ElapsedMilliseconds+" ms");
         }
 
         public void LoadXml()
@@ -202,11 +197,10 @@ namespace Echoes
             if (x.Attribute("listened") != null) t.listened = Int32.Parse(x.Attribute("listened").Value);
             if (x.Attribute("bitrate") != null) t.bitrate = Int32.Parse(x.Attribute("bitrate").Value);
             if (x.Attribute("length") != null) t.length = Int32.Parse(x.Attribute("length").Value);
-            if (x.Attribute("timesLoaded") != null) t.timesLoaded = Int32.Parse(x.Attribute("timesLoaded").Value);
-            if (x.Attribute("playthrough") != null) t.playthrough = float.Parse(x.Attribute("playthrough").Value);
             if (x.Attribute("year") != null) t.year = Int32.Parse(x.Attribute("year").Value);
             if (x.Attribute("genre") != null) t.genre = x.Attribute("genre").Value;
             if (x.Attribute("comment") != null) t.comment = x.Attribute("comment").Value;
+            if (x.Attribute("trackNumber") != null) t.trackNumber = Int32.Parse(x.Attribute("trackNumber").Value);
         }
 
         public bool GetCacheInfo(Track t)

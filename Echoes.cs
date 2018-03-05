@@ -203,9 +203,9 @@ namespace Echoes
         public DataGridViewCellStyle alternatingCellStyle = new DataGridViewCellStyle();
         public DataGridViewCellStyle highlightedCellStyle = new DataGridViewCellStyle();
 
-        //                                        0      1         2        3          4         5            6        7        8         9         10             11
-        readonly string[] COLUMN_PROPERTIES = { "num", "title", "artist", "length", "album", "listened", "filename", "year", "genre", "comment", "bitrate", "playthrough" };
-        readonly string[] COLUMN_HEADERS={"#","Title","Artist","Length","Album","Listened","File","Year","Genre","Comment","Bitrate","Playthrough"};
+        //                                        0      1         2        3          4         5            6        7        8         9         10             11      
+        readonly string[] COLUMN_PROPERTIES = { "num", "title", "artist", "length", "album", "listened", "filename", "year", "genre", "comment", "bitrate", "trackNumber" };
+        readonly string[] COLUMN_HEADERS={"#","Title","Artist","Length","Album","Listened","File","Year","Genre","Comment","Bitrate","Track #"};
 
         #endregion
 
@@ -1817,19 +1817,6 @@ namespace Echoes
         {
             if (t == null) return;
 
-            if (t.timesLoaded == null) t.timesLoaded = 1;
-            else t.timesLoaded++;
-
-            float percentageListened = (float)timeListenedTracker.Elapsed.TotalSeconds / (float)t.length;
-            if (percentageListened > 1 || (1f - percentageListened) < 0.01f) percentageListened = 1;
-
-            if (t.playthrough == null) t.playthrough = percentageListened;
-            else
-            {
-            float recalcPercentage = (t.playthrough * (t.timesLoaded - 1) + percentageListened) / t.timesLoaded;
-                t.playthrough = recalcPercentage;
-            }
-
             //int beforeFlush=nowPlaying.listened;
 
             //SetListenedTime(nowPlaying, (int)timeListenedTracker.Elapsed.TotalSeconds + nowPlaying.listened);
@@ -2694,10 +2681,13 @@ namespace Echoes
             }
         }
 
+        List<Track> tracksToLoadForTags;
+
         private void tagsLoaderWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             /*if (rebuildCache==false)
             {*/
+            tracksToLoadForTags = new List<Track>();
                 for(int z=0;z<playlist.Count;z++){
                     if (e.Cancel) break;
 
@@ -2705,11 +2695,13 @@ namespace Echoes
                     if (!xmlCacher.GetCacheInfo(t) || reloadTagsFlag)
                     {
                         t.GetTags();
-                        xmlCacher.AddOrUpdate(new List<Track>(){t});
+                        //xmlCacher.AddOrUpdate(new List<Track>(){t});
+                        tracksToLoadForTags.Add(t);
                     }
                     trackGrid.InvalidateRow(z);
                     tagsLoaderWorker.ReportProgress((int)(((float)z / (float)playlist.Count) * 100));
                 }
+                tagsLoaderWorker.ReportProgress(100);
             /*}
             else
             {
@@ -2731,6 +2723,7 @@ namespace Echoes
         }
         private void tagsLoaderWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
+            xmlCacher.AddOrUpdate(tracksToLoadForTags);
             reloadTagsFlag = false;
             RefreshTotalTimeLabel();
             AllowSorting(true);
@@ -3330,16 +3323,17 @@ namespace Echoes
 
         void RemoveUnexisting()
         {
-            List<int> nums = new List<int>();
+            //List<int> nums = new List<int>();
+            List<Track> tracksToRemove = new List<Track>();
             foreach (Track t in playlist)
             {
                 if (!File.Exists(t.filename))
                 {
-                    nums.Add(t.num);
+                    tracksToRemove.Add(t);
                 }
             }
-            playlist = playlist.Where(x => !nums.Contains(x.num)).ToList();
-            MessageBox.Show(nums.Count + " entries were removed.");
+            playlist = playlist.Where(x => !tracksToRemove.Contains(x)).ToList();
+            MessageBox.Show(tracksToRemove.Count + " entries were removed.");
             RefreshPlaylistGrid();
             RefreshTotalTimeLabel();
         }
@@ -3547,11 +3541,12 @@ namespace Echoes
                     int val = (int)e.Value;
                     if(val==0) e.Value=""; else e.Value = val+" kbps";
                     e.FormattingApplied = true;
-                }else if ((dgv.Columns[e.ColumnIndex].HeaderText == "Playthrough")) {
-                    float val = (float)e.Value;
-                    if (val == 0f) e.Value = "--"; else e.Value = String.Format("{0:0.00}",val*100) + "%";
-                    e.FormattingApplied = true;
                 }else if ((dgv.Columns[e.ColumnIndex].HeaderText == "Year"))
+                {
+                    int val = (int)e.Value;
+                    if (val == 0) e.Value = ""; else e.Value = val + "";
+                    e.FormattingApplied = true;
+                }else if ((dgv.Columns[e.ColumnIndex].HeaderText == "Track #"))
                 {
                     int val = (int)e.Value;
                     if (val == 0) e.Value = ""; else e.Value = val + "";

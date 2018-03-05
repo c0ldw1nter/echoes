@@ -26,8 +26,7 @@ namespace Echoes
             new ColumnInfo(4,155),
             new ColumnInfo(5,70),
             new ColumnInfo(6,100),
-            new ColumnInfo(10,70),
-            new ColumnInfo(11,90)
+            new ColumnInfo(10,70)
         };
 
         //general

@@ -45,6 +45,7 @@ namespace Echoes
                     year = unchecked((int)tagFile.Tag.Year);
                     comment = tagFile.Tag.Comment;
                     genre = tagFile.Tag.JoinedGenres;
+                    trackNumber = unchecked((int)tagFile.Tag.Track);
                     length = (int)tagFile.Properties.Duration.TotalSeconds;
                     bitrate = tagFile.Properties.AudioBitrate;
                     tagFile.Dispose();
@@ -80,9 +81,7 @@ namespace Echoes
         public int listened { get; set; }
         public int bitrate { get; set; }
         public string filesize { get; set; }
-        public float playthrough { get; set; }
-        public int timesLoaded { get; set; }
-        
+        public int trackNumber { get; set; }
         public Track(string filename, string title)
         {
             this.filename = filename;
