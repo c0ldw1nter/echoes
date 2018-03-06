@@ -864,9 +864,8 @@ namespace Echoes
             foreach (DataGridViewTextBoxColumn clmn in columns)
             {
                 trackGrid.Columns.Add(clmn);
+                
             }
-
-            if (displayedItems != ItemType.Playlist) AddHeaderContextMenu();
 
             //filter with searchbox
             SortableBindingList<Track> source;
@@ -901,6 +900,7 @@ namespace Echoes
             HighlightPlayingTrack();
             RefreshTotalTimeLabel();
             if(displayedItems!=ItemType.Cache) displayedItems = ItemType.Track;
+            if (displayedItems != ItemType.Playlist) AddHeaderContextMenu();
         }
 
         void DisplayPlaylistsInGrid()
@@ -2331,12 +2331,36 @@ namespace Echoes
         {
             ChooseFile();
         }
+        Random rng = new Random();
         private void timer1_Tick(object sender, EventArgs e)
         {
             if (streamLoaded)
             {
                 if (Bass.BASS_ChannelIsActive(stream) == BASSActive.BASS_ACTIVE_PLAYING | Bass.BASS_ChannelIsActive(stream) == BASSActive.BASS_ACTIVE_PAUSED)
                 {
+                    //-- row flashing --
+
+                    /*Color highlightedBackColor, highlightedForeColor;
+                    if (highlightedRow.Index % 2 == 0)
+                    {
+                        highlightedBackColor = defaultCellStyle.BackColor;
+                        highlightedForeColor = defaultCellStyle.ForeColor;
+                    }
+                    else 
+                    { 
+                        highlightedBackColor = alternatingCellStyle.BackColor;
+                        highlightedForeColor = alternatingCellStyle.ForeColor;
+                    }
+                    float energy=0;
+                    vs.DetectPeakFrequency(stream, out energy);
+                    highlightedCellStyle.BackColor = highlightedBackColor.MixWith(highlightBackColor, Math.Abs(energy));
+                    highlightedCellStyle.ForeColor = highlightedForeColor.MixWith(highlightForeColor, Math.Abs(energy));
+                    highlightedCellStyle.SelectionBackColor = controlForeColor.Darken().Darken().MixWith(highlightBackColor, Math.Abs(energy));
+                    highlightedCellStyle.SelectionForeColor = highlightedCellStyle.BackColor;
+                    highlightedRow.DefaultCellStyle = highlightedCellStyle;*/
+
+                    //-- row flashing end <<TOO MUCH CPU USAGE>> WTF setting control BackColor/ForeColor strains cpu
+
                     switch (visualisationStyle) {
                         case 1:
                             visualsPicture.Image = vs.CreateSpectrumLine(stream, visualsPicture.Width, visualsPicture.Height, spectrumColor, spectrumColor, backgroundColor, 5, 1, false, true, true);

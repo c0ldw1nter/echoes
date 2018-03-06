@@ -15,6 +15,15 @@ namespace System
 {
     public static class ExtensionMethods
     {
+        public static Color MixWith(this Color c1, Color c2, float transparency)
+        {
+            int _r = Math.Min((c1.R + (byte)(c2.R * transparency)), 255);
+            int _g = Math.Min((c1.G + (byte)(c2.G * transparency)), 255);
+            int _b = Math.Min((c1.B + (byte)(c2.B * transparency)), 255);
+
+            return Color.FromArgb(Convert.ToByte(_r), Convert.ToByte(_g), Convert.ToByte(_b));
+        }
+
         public static Bitmap SetOpacity(this Bitmap originalImage, double opacity)
         {
             if ((originalImage.PixelFormat & PixelFormat.Indexed) == PixelFormat.Indexed)
