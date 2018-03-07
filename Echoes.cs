@@ -142,6 +142,7 @@ namespace Echoes
         public BASS_MIDI_FONT[] midiFonts;
         public Visuals vs = new Un4seen.Bass.Misc.Visuals();
         int[] _fxEQ = { 0, 0, 0 };
+        bool playlistChanged = false;
         public bool eqEnabled = false;
         int peak = 0;
         public float normGain = 0;
@@ -773,6 +774,7 @@ namespace Echoes
                         Track t = new Track(file, "");
                         t.GetTags();
                         playlist.Insert(0,t);
+                        playlistChanged = true;
                         //add to current playlist
                     }
                     displayedItems = ItemType.Track;
@@ -795,6 +797,15 @@ namespace Echoes
                 else DisplayPlaylistsInGrid();
             }
             RefreshTotalTimeLabel();
+        }
+
+        void AskToSavePlaylistChanges()
+        {
+            if (!playlistChanged || displayedItems!=ItemType.Track) return;
+            if (MessageBox.Show("Playlist has unsaved changes. Save now?", "Playlist", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.Yes)
+            {
+                SavePlaylist();
+            }
         }
 
         void StartupLoadProcedure()
@@ -978,6 +989,7 @@ namespace Echoes
             RefreshPlaylistGrid();
             trackGrid.Rows[oldIndex].Selected = item2Selected;
             trackGrid.Rows[newIndex].Selected = item1Selected;
+            playlistChanged = true;
         }
 
         Track GetTrackByNum(int num)
@@ -999,6 +1011,7 @@ namespace Echoes
                     lastInt = i; 
                 }
                 RefreshPlaylistGrid();
+                playlistChanged = true;
             }
             else
             {
@@ -1490,15 +1503,24 @@ namespace Echoes
         private void CopyTrackToPlaylist(List<Track> t, string playlistFile)
         {
             List<Track> thePlaylist = new List<Track>();
+            List<Track> playlistFromFile = ReadM3u(playlistFile);
             t.Reverse();
             for (int i = 0; i < t.Count; i++)
             {
+                if (playlistFromFile.Where(x => x.filename == t[i].filename).Count() > 0)
+                {
+                    if(MessageBox.Show("Playlist '"+Path.GetFileName(playlistFile)+"' already has this track: "+Environment.NewLine+
+                        t[i].filename + ". Add regardless?", "Dupe", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.No)
+                    {
+                        continue;
+                    } 
+                }
                 Track newTrack = new Track(t[i].filename, t[i].title);
                 newTrack.length = t[i].length;
                 newTrack.artist = t[i].artist;
                 thePlaylist.Add(newTrack);
             }
-            thePlaylist.AddRange(ReadM3u(playlistFile));
+            thePlaylist.AddRange(playlistFromFile);
             RenumberPlaylist(thePlaylist);
             ExportM3u(playlistFile, thePlaylist);
         }
@@ -1686,6 +1708,7 @@ namespace Echoes
                 RefreshGrid();
                 if (autoShuffle) Shuffle();
                 RefreshPlaylistGrid();
+                playlistChanged = false;
                 AllowSorting(false);
                 if (tagsLoaderWorker.IsBusy) tagsLoaderWorker.CancelAsync();
                 else
@@ -2291,6 +2314,7 @@ namespace Echoes
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
+            AskToSavePlaylistChanges();
             if(displayedItems!=ItemType.Playlist) SaveColumnInfos();
             try { SaveXmlConfig(); }
             catch (Exception zx)
@@ -2617,6 +2641,7 @@ namespace Echoes
 
         private void comboBox1_SelectionChangeCommitted(object sender, EventArgs e)
         {
+            AskToSavePlaylistChanges();
             if (playlistSelectorCombo.SelectedIndex == 0)
             {
                 playlist = new List<Track>();
@@ -3338,7 +3363,7 @@ namespace Echoes
             this.BeginInvoke(new MethodInvoker(a));
         }
 
-        private void modifiedButton1_Click(object sender, EventArgs e)
+        void SavePlaylist()
         {
             if (currentPlaylist != tempPlaylistFile)
             {
@@ -3349,6 +3374,11 @@ namespace Echoes
             {
                 ExportPlaylist();
             }
+        }
+
+        private void modifiedButton1_Click(object sender, EventArgs e)
+        {
+            SavePlaylist();
         }
 
         void RemoveUnexisting()
