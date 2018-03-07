@@ -3374,6 +3374,7 @@ namespace Echoes
             {
                 ExportPlaylist();
             }
+            playlistChanged = false;
         }
 
         private void modifiedButton1_Click(object sender, EventArgs e)
