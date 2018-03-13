@@ -56,6 +56,7 @@ namespace Echoes
                 title = filename;
                 length = 0;
             }
+            size = new FileInfo(filename).Length;
             if (String.IsNullOrWhiteSpace(title))
             {
                 title = Path.GetFileName(filename);
@@ -82,6 +83,8 @@ namespace Echoes
         public int bitrate { get; set; }
         public string filesize { get; set; }
         public int trackNumber { get; set; }
+        public DateTime lastOpened { get; set; }
+        public long size { get; set; }
         public Track(string filename, string title)
         {
             this.filename = filename;

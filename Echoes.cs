@@ -205,9 +205,9 @@ namespace Echoes
         public DataGridViewCellStyle alternatingCellStyle = new DataGridViewCellStyle();
         public DataGridViewCellStyle highlightedCellStyle = new DataGridViewCellStyle();
 
-        //                                        0      1         2        3          4         5            6        7        8         9         10             11      
-        readonly string[] COLUMN_PROPERTIES = { "num", "title", "artist", "length", "album", "listened", "filename", "year", "genre", "comment", "bitrate", "trackNumber" };
-        readonly string[] COLUMN_HEADERS={"#","Title","Artist","Length","Album","Listened","File","Year","Genre","Comment","Bitrate","Track #"};
+        //                                        0      1         2        3          4         5            6        7        8         9         10             11           12         13
+        readonly string[] COLUMN_PROPERTIES = { "num", "title", "artist", "length", "album", "listened", "filename", "year", "genre", "comment", "bitrate", "trackNumber", "lastOpened", "size" };
+        readonly string[] COLUMN_HEADERS={"#","Title","Artist","Length","Album","Listened","File","Year","Genre","Comment","Bitrate","Track #","Last opened","Size"};
 
         #endregion
 
@@ -543,14 +543,15 @@ namespace Echoes
             trackText.Location = new Point(trackText.Location.X, playBtn.Location.Y + playBtn.Height + 5);
             seekBar.Location = new Point(seekBar.Location.X, trackText.Location.Y + trackText.Height + 5);
             searchBox.Location = new Point(searchBox.Location.X, seekBar.Location.Y + seekBar.Height + 5);
-            playlistInfoTxt.Location = new Point(playlistInfoTxt.Location.X, seekBar.Location.Y + seekBar.Height + 5);
+            playlistInfoTxt.Location = new Point(searchBox.Location.X+searchBox.Width+20, seekBar.Location.Y + seekBar.Height + 5);
+            playlistInfoTxt.Width = playlistSelectorCombo.Location.X - 10 - playlistInfoTxt.Location.X;
             playlistInfoTxt.Height = playlistSelectorCombo.Height;
             playlistSelectorCombo.Location = new Point(playlistSelectorCombo.Location.X, seekBar.Location.Y + seekBar.Height + 5);
             volumeBar.Location = new Point(volumeBar.Location.X, seekBar.Location.Y + seekBar.Height + 5);
             volumeBar.Height = playlistSelectorCombo.Height;
             trackGrid.Location = new Point(trackGrid.Location.X, searchBox.Location.Y + searchBox.Height + 5);
-            Form1_Resize(null, null);
-            Refresh();
+            //Form1_Resize(null, null);
+            //Refresh();
         }
 
         public void SetFonts()
@@ -797,6 +798,16 @@ namespace Echoes
                 else DisplayPlaylistsInGrid();
             }
             RefreshTotalTimeLabel();
+        }
+
+        bool AskToQuitWorker()
+        {
+            if (!tagsLoaderWorker.IsBusy) return true;
+            if (MessageBox.Show("Tag loading in progress. Any loaded tags will not be saved if you quit. Do you wish to quit?", "Loading", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.No)
+            {
+                return false;
+            }
+            return true;
         }
 
         void AskToSavePlaylistChanges()
@@ -1914,6 +1925,7 @@ namespace Echoes
                 //nowPlaying = playlist[index];
             }
             t.GetTags();
+            t.lastOpened = DateTime.Now;
             nowPlaying = t;
             if (!tagsLoaderWorker.IsBusy) try { xmlCacher.AddOrUpdate(new List<Track>() { t }); }
                 catch (Exception) { }
@@ -2314,6 +2326,11 @@ namespace Echoes
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
+            if (!AskToQuitWorker())
+            {
+                e.Cancel=true;
+                return;
+            }
             AskToSavePlaylistChanges();
             if(displayedItems!=ItemType.Playlist) SaveColumnInfos();
             try { SaveXmlConfig(); }
@@ -2555,7 +2572,7 @@ namespace Echoes
             volumeBar.Maximum = volumeBar.Width;
             volumeBar.Location = new Point(this.Width - 180,volumeBar.Location.Y);
             playlistSelectorCombo.Location = new Point(this.Width - 350, playlistSelectorCombo.Location.Y);
-            playlistInfoTxt.Location = new Point(playlistSelectorCombo.Location.X - playlistInfoTxt.Width - 5, playlistInfoTxt.Location.Y);
+            //playlistInfoTxt.Location = new Point(playlistSelectorCombo.Location.X - playlistInfoTxt.Width - 5, playlistInfoTxt.Location.Y);
             trackGrid.Width = this.Width - 40;
             int spaceForOther=trackGrid.ColumnHeadersHeight+2;
             if (trackGrid.Controls.OfType<HScrollBar>().First().Visible) spaceForOther += SystemInformation.HorizontalScrollBarHeight;
@@ -2572,6 +2589,7 @@ namespace Echoes
             }
             if (dataGridView1.Width > estimatedWidth) dataGridView1.Columns.GetLastColumn(DataGridViewElementStates.Displayed, DataGridViewElementStates.None).Width = dataGridView1.Width - dataGridView1.Columns.GetColumnsWidth(DataGridViewElementStates.Displayed);
             else dataGridView1.Columns.GetLastColumn(DataGridViewElementStates.Displayed, DataGridViewElementStates.None).Width = currentColumnInfo.Last().width;*/
+            RepositionControls();
             Refresh();
         }
 
@@ -2816,12 +2834,22 @@ namespace Echoes
             }
         }
 
+        long TotalFileSize(SortableBindingList<Track> tracksList)
+        {
+            long ret = 0;
+            foreach (Track t in tracksList)
+            {
+                ret += t.size;
+            }
+            return ret;
+        }
+
         void RefreshTotalTimeLabel()
         {
             SortableBindingList <Track> tehList= (SortableBindingList<Track>)(trackGrid.DataSource);
             if (displayedItems != ItemType.Playlist)
             {
-                playlistInfoTxt.Text = tehList.Count + " tracks, " + TotalPlaylistTime(tehList).ProperTimeFormat();
+                playlistInfoTxt.Text = tehList.Count + " tracks ("+ TotalFileSize(tehList).BytesToString()+ "), " + TotalPlaylistTime(tehList).ProperTimeFormat();
                 playlistInfoTxt.Text += " [" + TotalPlaylistListened(tehList).ProperTimeFormat() + " listened]";
             }
         }
@@ -3611,6 +3639,17 @@ namespace Echoes
                 {
                     int val = (int)e.Value;
                     if (val == 0) e.Value = ""; else e.Value = val + "";
+                    e.FormattingApplied = true;
+                }else if ((dgv.Columns[e.ColumnIndex].HeaderText == "Size"))
+                {
+                    long val = (long)e.Value;
+                    if (val == 0) e.Value = ""; else e.Value = val.BytesToString();
+                    e.FormattingApplied = true;
+                }else if ((dgv.Columns[e.ColumnIndex].HeaderText == "Last opened"))
+                {
+                    DateTime val = (DateTime)e.Value;
+                    if (val == DateTime.MinValue) e.Value = "";
+                    else e.Value = val.ToString("yyyy-MM-dd");
                     e.FormattingApplied = true;
                 }
             }

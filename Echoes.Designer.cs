@@ -52,13 +52,13 @@ namespace Echoes
             this.shuffleBtn = new System.Windows.Forms.PictureBox();
             this.optionsBtn = new System.Windows.Forms.PictureBox();
             this.repeatBtn = new System.Windows.Forms.PictureBox();
+            this.normalizerWorker = new System.ComponentModel.BackgroundWorker();
+            this.playlistInfoTxt = new System.Windows.Forms.Label();
+            this.eqButton = new ModifiedControls.ModifiedButton();
             this.modifiedButton1 = new ModifiedControls.ModifiedButton();
             this.playlistSelectorCombo = new ModifiedControls.ModifiedComboBox();
             this.volumeBar = new ModifiedControls.ModifiedProgressBarVol();
             this.seekBar = new ModifiedControls.ModifiedProgressBarSeek();
-            this.playlistInfoTxt = new System.Windows.Forms.Label();
-            this.eqButton = new ModifiedControls.ModifiedButton();
-            this.normalizerWorker = new System.ComponentModel.BackgroundWorker();
             ((System.ComponentModel.ISupportInitialize)(this.trackGrid)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.transposeChangerNum)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.fwdBtn)).BeginInit();
@@ -372,6 +372,40 @@ namespace Echoes
             this.repeatBtn.MouseLeave += new System.EventHandler(this.repeatBtn_MouseLeave);
             this.repeatBtn.MouseUp += new System.Windows.Forms.MouseEventHandler(this.repeatBtn_MouseUp);
             // 
+            // normalizerWorker
+            // 
+            this.normalizerWorker.WorkerReportsProgress = true;
+            this.normalizerWorker.WorkerSupportsCancellation = true;
+            this.normalizerWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.normalizerWorker_DoWork);
+            this.normalizerWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.normalizerWorker_RunWorkerCompleted);
+            // 
+            // playlistInfoTxt
+            // 
+            this.playlistInfoTxt.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.playlistInfoTxt.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.playlistInfoTxt.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.playlistInfoTxt.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(200)))), ((int)(((byte)(200)))));
+            this.playlistInfoTxt.Location = new System.Drawing.Point(231, 141);
+            this.playlistInfoTxt.Name = "playlistInfoTxt";
+            this.playlistInfoTxt.Size = new System.Drawing.Size(508, 18);
+            this.playlistInfoTxt.TabIndex = 43;
+            this.playlistInfoTxt.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // eqButton
+            // 
+            this.eqButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(48)))), ((int)(((byte)(48)))));
+            this.eqButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.eqButton.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.eqButton.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(200)))), ((int)(((byte)(200)))));
+            this.eqButton.Location = new System.Drawing.Point(460, 40);
+            this.eqButton.Margin = new System.Windows.Forms.Padding(2);
+            this.eqButton.Name = "eqButton";
+            this.eqButton.Size = new System.Drawing.Size(38, 30);
+            this.eqButton.TabIndex = 44;
+            this.eqButton.Text = "EQ";
+            this.eqButton.UseVisualStyleBackColor = false;
+            this.eqButton.Click += new System.EventHandler(this.eqButton_Click);
+            // 
             // modifiedButton1
             // 
             this.modifiedButton1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(48)))), ((int)(((byte)(48)))));
@@ -425,39 +459,6 @@ namespace Echoes
             this.seekBar.MouseDown += new System.Windows.Forms.MouseEventHandler(this.progressBar1_MouseDown);
             this.seekBar.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseMove);
             this.seekBar.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseUp);
-            // 
-            // playlistInfoTxt
-            // 
-            this.playlistInfoTxt.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.playlistInfoTxt.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.playlistInfoTxt.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(200)))), ((int)(((byte)(200)))));
-            this.playlistInfoTxt.Location = new System.Drawing.Point(231, 141);
-            this.playlistInfoTxt.Name = "playlistInfoTxt";
-            this.playlistInfoTxt.Size = new System.Drawing.Size(508, 18);
-            this.playlistInfoTxt.TabIndex = 43;
-            this.playlistInfoTxt.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            // 
-            // eqButton
-            // 
-            this.eqButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(48)))), ((int)(((byte)(48)))));
-            this.eqButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.eqButton.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.eqButton.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(200)))), ((int)(((byte)(200)))));
-            this.eqButton.Location = new System.Drawing.Point(460, 40);
-            this.eqButton.Margin = new System.Windows.Forms.Padding(2);
-            this.eqButton.Name = "eqButton";
-            this.eqButton.Size = new System.Drawing.Size(38, 30);
-            this.eqButton.TabIndex = 44;
-            this.eqButton.Text = "EQ";
-            this.eqButton.UseVisualStyleBackColor = false;
-            this.eqButton.Click += new System.EventHandler(this.eqButton_Click);
-            // 
-            // normalizerWorker
-            // 
-            this.normalizerWorker.WorkerReportsProgress = true;
-            this.normalizerWorker.WorkerSupportsCancellation = true;
-            this.normalizerWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.normalizerWorker_DoWork);
-            this.normalizerWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.normalizerWorker_RunWorkerCompleted);
             // 
             // Echoes
             // 
@@ -548,9 +549,9 @@ namespace Echoes
         private System.Windows.Forms.PictureBox shuffleBtn;
         private System.Windows.Forms.PictureBox optionsBtn;
         private System.Windows.Forms.PictureBox repeatBtn;
-        private System.Windows.Forms.Label playlistInfoTxt;
         private ModifiedButton eqButton;
         public System.ComponentModel.BackgroundWorker normalizerWorker;
+        private Label playlistInfoTxt;
     }
 }
 

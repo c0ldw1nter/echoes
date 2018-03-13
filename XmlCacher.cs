@@ -57,7 +57,6 @@ namespace Echoes
 
         public void AddOrUpdate(List<Track> tracks)
         {
-            System.Diagnostics.Stopwatch stopwatch = System.Diagnostics.Stopwatch.StartNew();
             LoadXml();
             try
             {
@@ -74,6 +73,13 @@ namespace Echoes
                         {
                             val = "0";
                         }
+                        else if (name == "lastOpened")
+                        {
+                            DateTime dateVal=(DateTime)val;
+                            if(dateVal==DateTime.MinValue) continue;
+                            newAttributes.Add(new XAttribute(name, dateVal.ToString("yyyy-MM-dd")));
+                            continue;
+                        }
                         if (val != null)
                         {
                             newAttributes.Add(new XAttribute(name, val.ToString()));
@@ -84,8 +90,6 @@ namespace Echoes
                 SaveXml();
             }
             catch (Exception) { }
-            stopwatch.Stop();
-            Console.WriteLine("AddOrUpdate took "+ stopwatch.ElapsedMilliseconds+" ms");
         }
 
         public void LoadXml()
@@ -152,6 +156,8 @@ namespace Echoes
             if (x.Attribute("genre") != null) t.genre = x.Attribute("genre").Value;
             if (x.Attribute("comment") != null) t.comment = x.Attribute("comment").Value;
             if (x.Attribute("trackNumber") != null) t.trackNumber = Int32.Parse(x.Attribute("trackNumber").Value);
+            if (x.Attribute("size") != null) t.size = Int64.Parse(x.Attribute("size").Value);
+            try { if (x.Attribute("lastOpened") != null) t.lastOpened = DateTime.ParseExact(x.Attribute("lastOpened").Value, "yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture); } catch (Exception) { }
         }
 
         public bool GetCacheInfo(Track t)
