@@ -3649,7 +3649,7 @@ namespace Echoes
                 {
                     DateTime val = (DateTime)e.Value;
                     if (val == DateTime.MinValue) e.Value = "";
-                    else e.Value = val.ToString("yyyy-MM-dd");
+                    else e.Value = val.ToString(Program.lastOpenedDateFormat);
                     e.FormattingApplied = true;
                 }
             }

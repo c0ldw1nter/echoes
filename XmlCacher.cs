@@ -77,7 +77,7 @@ namespace Echoes
                         {
                             DateTime dateVal=(DateTime)val;
                             if(dateVal==DateTime.MinValue) continue;
-                            newAttributes.Add(new XAttribute(name, dateVal.ToString("yyyy-MM-dd")));
+                            newAttributes.Add(new XAttribute(name, dateVal.ToString(Program.lastOpenedDateFormat)));
                             continue;
                         }
                         if (val != null)
@@ -157,7 +157,8 @@ namespace Echoes
             if (x.Attribute("comment") != null) t.comment = x.Attribute("comment").Value;
             if (x.Attribute("trackNumber") != null) t.trackNumber = Int32.Parse(x.Attribute("trackNumber").Value);
             if (x.Attribute("size") != null) t.size = Int64.Parse(x.Attribute("size").Value);
-            try { if (x.Attribute("lastOpened") != null) t.lastOpened = DateTime.ParseExact(x.Attribute("lastOpened").Value, "yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture); } catch (Exception) { }
+            try { if (x.Attribute("lastOpened") != null) t.lastOpened = DateTime.ParseExact(x.Attribute("lastOpened").Value, Program.lastOpenedDateFormat, System.Globalization.CultureInfo.InvariantCulture); }
+            catch (Exception) { }
         }
 
         public bool GetCacheInfo(Track t)
