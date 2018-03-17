@@ -99,7 +99,7 @@ namespace Echoes
         #endregion
         public static List<string> filesToOpen = new List<string>();
         public static Echoes mainWindow;
-        public static string lastOpenedDateFormat = "yyyy-MM-dd HH:mm";
+        public static string lastOpenedDateFormat = "yyyy-MM-dd HH:mm:ss";
 
 
         [STAThread]
