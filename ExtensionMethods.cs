@@ -125,7 +125,7 @@ namespace System
             return false;
         }
 
-        public static string ToModText(this HotkeyData hkd) {
+        /*public static string ToModText(this HotkeyData hkd) {
             if (hkd.alt == hkd.shift == hkd.ctrl == false) return "NONE";
             List<string> btns = new List<string>();
             string ret = "";
@@ -141,7 +141,7 @@ namespace System
                 }
             }
             return ret;
-        }
+        }*/
 
         public static string ToTime(this int timeint)
         {

@@ -133,7 +133,7 @@ namespace Echoes
             hotkeyDgv.Rows.Clear();
             foreach (HotkeyData hkd in Program.mainWindow.hotkeys)
             {
-                hotkeyDgv.Rows.Add(new object[] {hkd.enabled, hkd.hotkey.ToString(), hkd.ToModText(), hkd.key.ToString()});
+                hotkeyDgv.Rows.Add(new object[] {hkd.enabled, hkd.hotkey.ToString(), hkd.ModToString(), hkd.key.ToString()});
             }
         }
 

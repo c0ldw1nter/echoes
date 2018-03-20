@@ -24,5 +24,24 @@ namespace Echoes
             this.ctrl = ctrl;
             this.enabled = enabled;
         }
+
+        public string ModToString()
+        {
+            if (!(alt || shift || ctrl)) return "None";
+            List<string> btns = new List<string>();
+            string ret = "";
+            if (ctrl) btns.Add("Ctrl");
+            if (alt) btns.Add("Alt");
+            if (shift) btns.Add("Shift");
+            for (int i = 0; i < btns.Count; i++)
+            {
+                ret += btns[i];
+                if (i < btns.Count - 1)
+                {
+                    ret += " + ";
+                }
+            }
+            return ret;
+        }
     }
 }
