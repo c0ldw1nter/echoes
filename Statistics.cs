@@ -105,6 +105,9 @@ namespace Echoes
 
         private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
         {
+            searchBoxAlbum.Text = "";
+            searchBoxArtist.Text = "";
+            searchBoxTrack.Text = "";
             if (tabControl1.SelectedTab == tabControl1.TabPages["tabPage1"])
             {
                 CalcTracks();
@@ -170,6 +173,51 @@ namespace Echoes
             Program.mainWindow.StopPlayer();
             Program.mainWindow.LoadAudioFile(((StatsItem)rw.DataBoundItem).track);
             Program.mainWindow.Play();
+        }
+
+        void FilterList(DataGridView dgv, string word)
+        {
+            SortableBindingList<StatsItem> source;
+            if (String.IsNullOrEmpty(word))
+            {
+                source = new SortableBindingList<StatsItem>(stats);
+            }
+            else
+            {
+                var sourceList = new List<StatsItem>(stats);
+                var searchKeywords = word.Split(new char[] { '&' }, StringSplitOptions.RemoveEmptyEntries);
+                foreach (string s in searchKeywords)
+                {
+                    bool invertSearch = false;
+                    string searchWrd = s.TrimStart();
+                    if (searchWrd.StartsWith("!"))
+                    {
+                        searchWrd = searchWrd.Substring(1);
+                        invertSearch = true;
+                    }
+                    searchWrd = searchWrd.Trim();
+                    if (invertSearch) sourceList = sourceList.Where(x => !x.name.ContainsIgnoreCase(searchWrd)).ToList();
+                    else sourceList = sourceList.Where(x => x.name.ContainsIgnoreCase(searchWrd)).ToList();
+                }
+                source = new SortableBindingList<StatsItem>(sourceList);
+            }
+            dgv.DataSource = source;
+        }
+
+        private void searchBoxTextChanged(object sender, EventArgs e)
+        {
+            if (((TextBox)sender) == searchBoxTrack)
+            {
+                FilterList(topTracksGrid, ((TextBox)sender).Text);
+            }
+            else if (((TextBox)sender) == searchBoxArtist)
+            {
+                FilterList(topArtistsGrid, ((TextBox)sender).Text);
+            }
+            else
+            {
+                FilterList(topAlbumsGrid, ((TextBox)sender).Text);
+            }
         }
     }
 }

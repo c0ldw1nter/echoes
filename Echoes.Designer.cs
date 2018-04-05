@@ -278,14 +278,16 @@ namespace Echoes
             // 
             // echoesLogo
             // 
-            this.echoesLogo.BackgroundImage = global::Echoes.Properties.Resources.echoesLogoWhite;
+            this.echoesLogo.BackgroundImage = global::Echoes.Properties.Resources.echoesLogoWhiteDim;
             this.echoesLogo.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.echoesLogo.Location = new System.Drawing.Point(998, 10);
             this.echoesLogo.Name = "echoesLogo";
             this.echoesLogo.Size = new System.Drawing.Size(60, 60);
             this.echoesLogo.TabIndex = 14;
             this.echoesLogo.TabStop = false;
-            this.echoesLogo.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseDoubleClick);
+            this.echoesLogo.MouseEnter += new System.EventHandler(this.echoesLogo_MouseEnter);
+            this.echoesLogo.MouseLeave += new System.EventHandler(this.echoesLogo_MouseLeave);
+            this.echoesLogo.MouseUp += new System.Windows.Forms.MouseEventHandler(this.echoesLogo_MouseUp);
             // 
             // openBtn
             // 

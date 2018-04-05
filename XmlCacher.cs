@@ -85,7 +85,14 @@ namespace Echoes
                             newAttributes.Add(new XAttribute(name, val.ToString()));
                         }
                     }
-                    theThing.ReplaceAttributes(newAttributes.ToArray());
+                    if (theThing == null)
+                    {
+                        theThing = new XElement("track", newAttributes.ToArray());
+                        xml.Root.Add(theThing);
+                    }
+                    else {
+                        theThing.ReplaceAttributes(newAttributes.ToArray());
+                    }
                 }
                 SaveXml();
             }

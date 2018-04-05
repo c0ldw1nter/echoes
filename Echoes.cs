@@ -886,7 +886,6 @@ namespace Echoes
             foreach (DataGridViewTextBoxColumn clmn in columns)
             {
                 trackGrid.Columns.Add(clmn);
-                
             }
 
             //filter with searchbox
@@ -2058,6 +2057,8 @@ namespace Echoes
                     BASSFlag.BASS_MUSIC_PRESCAN |
                     BASSFlag.BASS_MIXER_DOWNMIX |
                     BASSFlag.BASS_MUSIC_RAMPS |
+                    BASSFlag.BASS_SAMPLE_FX |
+                    BASSFlag.BASS_MUSIC_STOPBACK |
                     flags, 0);
                 return true;
             }
@@ -2106,6 +2107,7 @@ namespace Echoes
                 Bass.BASS_ChannelFlags(stream, BASSFlag.BASS_DEFAULT, BASSFlag.BASS_SAMPLE_LOOP);
                 Bass.BASS_ChannelFlags(stream, BASSFlag.BASS_DEFAULT, BASSFlag.BASS_MUSIC_LOOP);
             }
+            Console.WriteLine(Bass.BASS_ChannelFlags(stream, BASSFlag.BASS_DEFAULT, BASSFlag.BASS_DEFAULT).ToString());
         }
 
         public bool InitMidi()
@@ -2421,7 +2423,7 @@ namespace Echoes
                 {
                     visualsPicture.Image = null;
                 }
-                if (advanceFlag || GetPosition() > GetLength())
+                if (advanceFlag || GetPosition()>GetLength())
                 {
                     AdvancePlayer();
                     advanceFlag = false;
@@ -3514,11 +3516,6 @@ namespace Echoes
             eqWindow.Show(this);
         }
 
-        private void pictureBox1_MouseDoubleClick(object sender, MouseEventArgs e)
-        {
-            ShowStats();
-        }
-
         private void button1_MouseEnter(object sender, EventArgs e)
         {
             if (showingPlayIcon) playBtn.Image = global::Echoes.Properties.Resources.play2;
@@ -3909,6 +3906,21 @@ namespace Echoes
                 Console.WriteLine("Normalizing of " + toNormalize.title + " cancelled.");
             }
             volumeBar.Refresh();
+        }
+
+        private void echoesLogo_MouseUp(object sender, MouseEventArgs e)
+        {
+            ShowStats();
+        }
+
+        private void echoesLogo_MouseLeave(object sender, EventArgs e)
+        {
+            echoesLogo.BackgroundImage = global::Echoes.Properties.Resources.echoesLogoWhiteDim;
+        }
+
+        private void echoesLogo_MouseEnter(object sender, EventArgs e)
+        {
+            echoesLogo.BackgroundImage = global::Echoes.Properties.Resources.echoesLogoWhite;
         }
     }
 }

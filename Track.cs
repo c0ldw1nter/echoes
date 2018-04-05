@@ -50,13 +50,14 @@ namespace Echoes
                     bitrate = tagFile.Properties.AudioBitrate;
                     tagFile.Dispose();
                 }
+                size = new FileInfo(filename).Length;
             }
             catch (Exception)
             {
                 title = filename;
                 length = 0;
+                size = 0;
             }
-            size = new FileInfo(filename).Length;
             if (String.IsNullOrWhiteSpace(title))
             {
                 title = Path.GetFileName(filename);

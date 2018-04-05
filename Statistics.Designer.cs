@@ -45,6 +45,9 @@
             this.dataGridViewTextBoxColumn4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn5 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn6 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.searchBoxTrack = new System.Windows.Forms.TextBox();
+            this.searchBoxArtist = new System.Windows.Forms.TextBox();
+            this.searchBoxAlbum = new System.Windows.Forms.TextBox();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.topTracksGrid)).BeginInit();
@@ -71,6 +74,7 @@
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.searchBoxTrack);
             this.tabPage1.Controls.Add(this.topTracksGrid);
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
@@ -90,13 +94,13 @@
             this.num,
             this.name,
             this.listened});
-            this.topTracksGrid.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.topTracksGrid.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.topTracksGrid.EnableHeadersVisualStyles = false;
-            this.topTracksGrid.Location = new System.Drawing.Point(3, 3);
+            this.topTracksGrid.Location = new System.Drawing.Point(3, 29);
             this.topTracksGrid.Name = "topTracksGrid";
             this.topTracksGrid.RowHeadersVisible = false;
             this.topTracksGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.topTracksGrid.Size = new System.Drawing.Size(605, 360);
+            this.topTracksGrid.Size = new System.Drawing.Size(605, 334);
             this.topTracksGrid.TabIndex = 0;
             this.topTracksGrid.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.topArtistsGrid_CellFormatting);
             this.topTracksGrid.CellMouseDoubleClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.topTracksGrid_CellMouseDoubleClick);
@@ -127,6 +131,7 @@
             // 
             // tabPage2
             // 
+            this.tabPage2.Controls.Add(this.searchBoxArtist);
             this.tabPage2.Controls.Add(this.topArtistsGrid);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
@@ -146,13 +151,13 @@
             this.dataGridViewTextBoxColumn1,
             this.dataGridViewTextBoxColumn2,
             this.dataGridViewTextBoxColumn3});
-            this.topArtistsGrid.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.topArtistsGrid.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.topArtistsGrid.EnableHeadersVisualStyles = false;
-            this.topArtistsGrid.Location = new System.Drawing.Point(3, 3);
+            this.topArtistsGrid.Location = new System.Drawing.Point(3, 29);
             this.topArtistsGrid.Name = "topArtistsGrid";
             this.topArtistsGrid.RowHeadersVisible = false;
             this.topArtistsGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.topArtistsGrid.Size = new System.Drawing.Size(605, 360);
+            this.topArtistsGrid.Size = new System.Drawing.Size(605, 334);
             this.topArtistsGrid.TabIndex = 1;
             this.topArtistsGrid.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.topArtistsGrid_CellFormatting);
             this.topArtistsGrid.CellMouseDoubleClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.topArtistsGrid_CellMouseDoubleClick);
@@ -183,6 +188,7 @@
             // 
             // tabPage3
             // 
+            this.tabPage3.Controls.Add(this.searchBoxAlbum);
             this.tabPage3.Controls.Add(this.topAlbumsGrid);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
@@ -202,13 +208,13 @@
             this.dataGridViewTextBoxColumn4,
             this.dataGridViewTextBoxColumn5,
             this.dataGridViewTextBoxColumn6});
-            this.topAlbumsGrid.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.topAlbumsGrid.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.topAlbumsGrid.EnableHeadersVisualStyles = false;
-            this.topAlbumsGrid.Location = new System.Drawing.Point(3, 3);
+            this.topAlbumsGrid.Location = new System.Drawing.Point(3, 29);
             this.topAlbumsGrid.Name = "topAlbumsGrid";
             this.topAlbumsGrid.RowHeadersVisible = false;
             this.topAlbumsGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.topAlbumsGrid.Size = new System.Drawing.Size(605, 360);
+            this.topAlbumsGrid.Size = new System.Drawing.Size(605, 334);
             this.topAlbumsGrid.TabIndex = 1;
             this.topAlbumsGrid.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.topArtistsGrid_CellFormatting);
             this.topAlbumsGrid.CellMouseDoubleClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.topAlbumsGrid_CellMouseDoubleClick);
@@ -237,6 +243,39 @@
             this.dataGridViewTextBoxColumn6.ReadOnly = true;
             this.dataGridViewTextBoxColumn6.Width = 80;
             // 
+            // searchBoxTrack
+            // 
+            this.searchBoxTrack.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.searchBoxTrack.Dock = System.Windows.Forms.DockStyle.Top;
+            this.searchBoxTrack.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.searchBoxTrack.Location = new System.Drawing.Point(3, 3);
+            this.searchBoxTrack.Name = "searchBoxTrack";
+            this.searchBoxTrack.Size = new System.Drawing.Size(605, 20);
+            this.searchBoxTrack.TabIndex = 22;
+            this.searchBoxTrack.TextChanged += new System.EventHandler(this.searchBoxTextChanged);
+            // 
+            // searchBoxArtist
+            // 
+            this.searchBoxArtist.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.searchBoxArtist.Dock = System.Windows.Forms.DockStyle.Top;
+            this.searchBoxArtist.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.searchBoxArtist.Location = new System.Drawing.Point(3, 3);
+            this.searchBoxArtist.Name = "searchBoxArtist";
+            this.searchBoxArtist.Size = new System.Drawing.Size(605, 20);
+            this.searchBoxArtist.TabIndex = 22;
+            this.searchBoxArtist.TextChanged += new System.EventHandler(this.searchBoxTextChanged);
+            // 
+            // searchBoxAlbum
+            // 
+            this.searchBoxAlbum.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.searchBoxAlbum.Dock = System.Windows.Forms.DockStyle.Top;
+            this.searchBoxAlbum.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.searchBoxAlbum.Location = new System.Drawing.Point(3, 3);
+            this.searchBoxAlbum.Name = "searchBoxAlbum";
+            this.searchBoxAlbum.Size = new System.Drawing.Size(605, 20);
+            this.searchBoxAlbum.TabIndex = 23;
+            this.searchBoxAlbum.TextChanged += new System.EventHandler(this.searchBoxTextChanged);
+            // 
             // Statistics
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -248,10 +287,13 @@
             this.Text = "Statistics";
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
+            this.tabPage1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.topTracksGrid)).EndInit();
             this.tabPage2.ResumeLayout(false);
+            this.tabPage2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.topArtistsGrid)).EndInit();
             this.tabPage3.ResumeLayout(false);
+            this.tabPage3.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.topAlbumsGrid)).EndInit();
             this.ResumeLayout(false);
 
@@ -275,5 +317,8 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn4;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn5;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn6;
+        private System.Windows.Forms.TextBox searchBoxTrack;
+        private System.Windows.Forms.TextBox searchBoxArtist;
+        private System.Windows.Forms.TextBox searchBoxAlbum;
     }
 }

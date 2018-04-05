@@ -215,6 +215,7 @@
     <EmbeddedResource Include="TagEditor.resx">
       <DependentUpon>TagEditor.cs</DependentUpon>
     </EmbeddedResource>
+    <None Include="ClassDiagram1.cd" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -263,7 +264,7 @@
     <Content Include="lib\Bass.Net.xml" />
     <Content Include="lib\SuperM3U.dll" />
     <Content Include="lib\taglib-sharp.dll" />
-    <None Include="Resources\tracker.png" />
+    <Content Include="Resources\echoesLogoWhiteDim.png" />
     <None Include="Resources\import3.png" />
     <None Include="Resources\export1.png" />
     <None Include="Resources\export2.png" />

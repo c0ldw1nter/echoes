@@ -113,6 +113,16 @@ namespace Echoes.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap echoesLogoWhiteDim {
+            get {
+                object obj = ResourceManager.GetObject("echoesLogoWhiteDim", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap export1 {
             get {
                 object obj = ResourceManager.GetObject("export1", resourceCulture);
@@ -466,16 +476,6 @@ namespace Echoes.Properties {
         internal static System.Drawing.Bitmap stop3 {
             get {
                 object obj = ResourceManager.GetObject("stop3", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap tracker {
-            get {
-                object obj = ResourceManager.GetObject("tracker", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
