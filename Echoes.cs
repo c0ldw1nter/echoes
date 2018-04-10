@@ -2709,7 +2709,7 @@ namespace Echoes
                     PlayerPrevious();
                     break;
                 case Keys.C:
-                    if (e.Control) CopySelectedToClipboard(); else e.SuppressKeyPress = false;
+                    if (e.Control && trackGrid.Focused) CopySelectedToClipboard(); else e.SuppressKeyPress = false;
                     break;
                 case Keys.Delete:
                     DeleteSelected();
