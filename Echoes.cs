@@ -106,6 +106,7 @@ namespace Echoes
         public int visualisationStyle;
         public int visualfps;
         public int repeat;
+        public int converterSelectedBitrateIndex;
         public float volume;
         public float hotkeyVolumeIncrement;
         public float hotkeyTransposeIncrement;
@@ -138,6 +139,7 @@ namespace Echoes
         public int mixer;
         public bool confirmSaveFlag = false;
         public bool streamLoaded = false;
+        bool reinitTagLoader = false;
         public SYNCPROC endSync, stallSync;
         public BASS_MIDI_FONT[] midiFonts;
         public Visuals vs = new Un4seen.Bass.Misc.Visuals();
@@ -182,7 +184,6 @@ namespace Echoes
 
         string currentPlaylist=null;
         string gridSearchWord = "";
-        string tempPlaylistFile;
         
         bool draggingSeek = false;
         bool draggingVolume = false;
@@ -205,9 +206,9 @@ namespace Echoes
         public DataGridViewCellStyle alternatingCellStyle = new DataGridViewCellStyle();
         public DataGridViewCellStyle highlightedCellStyle = new DataGridViewCellStyle();
 
-        //                                        0      1         2        3          4         5            6        7        8         9         10             11           12         13
-        readonly string[] COLUMN_PROPERTIES = { "num", "title", "artist", "length", "album", "listened", "filename", "year", "genre", "comment", "bitrate", "trackNumber", "lastOpened", "size" };
-        readonly string[] COLUMN_HEADERS={"#","Title","Artist","Length","Album","Listened","File","Year","Genre","Comment","Bitrate","Track #","Last opened","Size"};
+        //                                        0      1         2        3          4         5            6        7        8         9         10             11           12         13        14        15
+        readonly string[] COLUMN_PROPERTIES = { "num", "title", "artist", "length", "album", "listened", "filename", "year", "genre", "comment", "bitrate", "trackNumber", "lastOpened", "size", "format", "trueBitrate" };
+        readonly string[] COLUMN_HEADERS={"#","Title","Artist","Length","Album","Listened","File","Year","Genre","Comment","Bitrate","Track #","Last opened","Size","Format","True Bitrate"};
 
         #endregion
 
@@ -254,8 +255,6 @@ namespace Echoes
             if (visualfps < 1) visualfps = 1;
             progressRefreshTimer.Interval = 1000 / visualfps;
             progressRefreshTimer.Start();
-            //LoadConfig();
-            //SetDefaults();
             RepositionControls();
 
             SetColors();
@@ -369,7 +368,6 @@ namespace Echoes
                 if(supportedAudioTypes.Contains(Path.GetExtension(dlg.FileName).ToLower())) {
                     xmlCacher.ChangeFilename(t.filename, dlg.FileName);
                     t.filename = dlg.FileName;
-                    //playlist[playlist.IndexOf(t)] = GetTrackInfo(t.filename);
                     t.GetTags();
                     if (MessageBox.Show("Do you want to look for other missing files in this directory?", "", MessageBoxButtons.YesNo) == DialogResult.Yes)
                     {
@@ -398,7 +396,7 @@ namespace Echoes
                 {
                     xmlCacher.ChangeFilename(t.filename, match);
                     t.filename = match;
-                    t.GetTags();//playlist[playlist.IndexOf(t)] = GetTrackInfo(t.filename);
+                    t.GetTags();
                     foundFiles++;
                 }
             }
@@ -728,57 +726,21 @@ namespace Echoes
             xmlCacher.AddOrUpdate(new List<Track> { track });
         }
 
-        void CreateTempPlaylist()
-        {
-            string tryName = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), "Temporary Playlist.m3u");
-            int increment=0;
-            while (File.Exists(tryName))
-            {
-                increment++;
-                tryName = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), "Temporary Playlist"+increment+".m3u");
-            }
-            tempPlaylistFile = tryName;
-            AddKnownPlaylist(tryName);
-            //PopulatePlaylistList();
-        }
-
         void LoadFiles(List<string> files)
         {
+            if (tagsLoaderWorker.IsBusy)
+            {
+                tagsLoaderWorker.CancelAsync();
+                LoadFiles(files);
+                return;
+            }
             string lastList = null;
-            bool tempPlaylistCreated = false;
+            var loadingPlaylist = new List<Track>();
             foreach (string file in files)
             {
                 if (supportedAudioTypes.Contains(Path.GetExtension(file).ToLower()))
                 {
-                    if ((string)playlistSelectorCombo.SelectedValue == null)
-                    {
-                        //if no current playlist, create a temp one
-                        if (tempPlaylistFile == null)
-                        {
-                            CreateTempPlaylist();
-                            playlist = new List<Track>();
-                        }
-                        Track t = new Track(file, Path.GetFileName(file));
-                        t.length = 0;
-                        t.artist = "";
-                        playlist.Add(t);
-                        tempPlaylistCreated = true;
-                    }
-                    else
-                    {
-                        /*Track t = GetTrackInfo(file);
-                        if (!playlist.Contains(t))
-                        {
-                            playlist.Insert(0, t);
-                            RenumberPlaylist(playlist);
-                        }*/
-                        Track t = new Track(file, "");
-                        t.GetTags();
-                        playlist.Insert(0,t);
-                        playlistChanged = true;
-                        //add to current playlist
-                    }
-                    displayedItems = ItemType.Track;
+                    loadingPlaylist.Add(new Track(file, Path.GetFileName(file)));
                 }
                 else if(Path.GetExtension(file).ToLower()==".m3u")
                 {
@@ -786,15 +748,34 @@ namespace Echoes
                     lastList = file;
                 }
             }
-            if (tempPlaylistCreated)
+            if ((string)playlistSelectorCombo.SelectedValue == null && displayedItems!=ItemType.Track)
             {
-                ExportM3u(tempPlaylistFile, playlist);
-                //rebuildCache = true;
-                ImportM3u(tempPlaylistFile);
+                LoadCustomPlaylist(loadingPlaylist);
+                displayedItems = ItemType.Track;
+                tagsLoaderWorker.RunWorkerAsync();
             }
             else
             {
-                if (displayedItems == ItemType.Track) RefreshPlaylistGrid();
+                if (displayedItems == ItemType.Track)
+                {
+                    if (loadingPlaylist.Count > 0)
+                    {
+                        loadingPlaylist.Reverse();
+                        foreach (Track t in loadingPlaylist) playlist.Insert(0, t);
+                        RenumberPlaylist(playlist);
+                        if (tagsLoaderWorker.IsBusy)
+                        {
+                            reinitTagLoader = true;
+                            tagsLoaderWorker.CancelAsync();
+                        }
+                        else
+                        {
+                            tagsLoaderWorker.RunWorkerAsync();
+                        }
+                        playlistChanged = true;
+                    }
+                    RefreshPlaylistGrid();
+                }
                 else DisplayPlaylistsInGrid();
             }
             RefreshTotalTimeLabel();
@@ -822,19 +803,12 @@ namespace Echoes
         void StartupLoadProcedure()
         {
             string lastList = null;
+            playlist = new List<Track>();
             foreach (string file in Program.filesToOpen)
             {
                 if (supportedAudioTypes.Contains(Path.GetExtension(file).ToLower()))
                 {
-                    if (tempPlaylistFile == null)
-                    {
-                        CreateTempPlaylist();
-                        playlist = new List<Track>();
-                    }
-                    Track t=new Track(file, Path.GetFileName(file));
-                    t.length=0;
-                    t.artist="";
-                    playlist.Add(t);
+                    playlist.Add(new Track(file, Path.GetFileName(file)));
                 }
                 else if (Path.GetExtension(file).ToLower() == ".m3u")
                 {
@@ -842,9 +816,14 @@ namespace Echoes
                     lastList = file;
                 }
             }
-            if(tempPlaylistFile !=null) ExportM3u(tempPlaylistFile, playlist);
             PopulatePlaylistList();
-            if (tempPlaylistFile != null) { ImportM3u(tempPlaylistFile); Play(); }
+            if (playlist.Count > 0)
+            {
+                LoadCustomPlaylist(playlist);
+                displayedItems = ItemType.Track;
+                tagsLoaderWorker.RunWorkerAsync();
+                Play();
+            }
             else if (lastList != null) ImportM3u(lastList);
             else DisplayPlaylistsInGrid();
         }
@@ -1230,6 +1209,9 @@ namespace Echoes
             item = new XElement("suppressHotkeys");
             item.Value = suppressHotkeys.ToString();
             general.Add(item);
+            item = new XElement("converterSelectedBitrateIndex");
+            item.Value = converterSelectedBitrateIndex.ToString();
+            general.Add(item);
             xml.Root.Add(general);
             //colors
             XElement colors = new XElement("colors");
@@ -1374,6 +1356,9 @@ namespace Echoes
             ele = group.Element("suppressHotkeys");
             if (ele != null && Boolean.TryParse(ele.Value, out suppressHotkeys)) { }
             else suppressHotkeys = Program.suppressHotkeysDefault;
+            ele = group.Element("converterSelectedBitrateIndex");
+            if (ele != null && Int32.TryParse(ele.Value, out converterSelectedBitrateIndex)) { }
+            else converterSelectedBitrateIndex = Program.converterSelectedBitrateIndexDefault;
             //colors
             group = xml.Root.Element("colors");
             ele=group.Element("background");
@@ -1733,67 +1718,6 @@ namespace Echoes
                 MessageBox.Show(filename + " is invalid.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }
         }
-        
-        /*private Track GetTrackInfo(string filename) {
-            string title=null;
-            string artist=null;
-            string album=null;
-            //string year=null;
-            //string comment=null;
-            string length = null;
-            string bitrate = null;
-            try
-            {
-                if (supportedModuleTypes.Contains(Path.GetExtension(filename).ToLower()))
-                {
-                    Bass.BASS_Init(-1, 44100, BASSInit.BASS_DEVICE_DEFAULT, IntPtr.Zero);
-                    int track = Bass.BASS_MusicLoad(filename, 0, 0, BASSFlag.BASS_MUSIC_NOSAMPLE | BASSFlag.BASS_MUSIC_PRESCAN, 0);
-                    title = Bass.BASS_ChannelGetMusicName(track);
-                    artist = Bass.BASS_ChannelGetMusicMessage(track);
-                    length = TimeSpan.FromSeconds(Bass.BASS_ChannelBytes2Seconds(track, (int)Bass.BASS_ChannelGetLength(track))).ToString("mm\\:ss");
-                    Bass.BASS_Free();
-                }
-                else if (supportedMidiTypes.Contains(Path.GetExtension(filename).ToLower()))
-                {
-                    Bass.BASS_Init(-1, 44100, BASSInit.BASS_DEVICE_DEFAULT, IntPtr.Zero);
-                    int track = BassMidi.BASS_MIDI_StreamCreateFile(filename, 0, 0, BASSFlag.BASS_DEFAULT, 0);
-                    title = Path.GetFileName(filename);
-                    length = TimeSpan.FromSeconds(Bass.BASS_ChannelBytes2Seconds(track, (int)Bass.BASS_ChannelGetLength(track))).ToString("mm\\:ss");
-                    Bass.BASS_Free();
-                }
-                else
-                {
-                    TagLib.File tagFile = TagLib.File.Create(filename);
-                    title = tagFile.Tag.Title;
-                    if (tagFile.Tag.Performers.Length > 0)
-                    {
-                        artist = tagFile.Tag.Performers[0];
-                    }
-                    album = tagFile.Tag.Album;
-                    //year = tagFile.Tag.Year+"";
-                    //comment = tagFile.Tag.Comment;
-                    length = tagFile.Properties.Duration.ToString("mm\\:ss");
-                    bitrate = tagFile.Properties.AudioBitrate+" kbps";
-                    tagFile.Dispose();
-                }
-            }
-            catch (Exception asdf) {
-                //MessageBox.Show(asdf.ToString());
-                title = filename;
-                length = "00:00";
-            }
-            if (String.IsNullOrWhiteSpace(title))
-            {
-                title = Path.GetFileName(filename);
-            }
-            Track t = new Track(filename, title);
-            t.artist = artist;
-            t.album = album;
-            t.length = length;
-            t.bitrate = bitrate;
-            t.listened = XmlCacher.GetListened(filename); //TimeSpan.FromSeconds(GetListenedTime(filename)).ToString("hh\\:mm\\:ss");
-            return t;
-        }*/
 
         void ReloadTags()
         {
@@ -1851,9 +1775,6 @@ namespace Echoes
         {
             if (t == null) return;
 
-            //int beforeFlush=nowPlaying.listened;
-
-            //SetListenedTime(nowPlaying, (int)timeListenedTracker.Elapsed.TotalSeconds + nowPlaying.listened);
             t.listened = (int)timeListenedTracker.Elapsed.TotalSeconds + t.listened;
             xmlCacher.AddOrUpdate(new List<Track> { t });
 
@@ -2213,7 +2134,6 @@ namespace Echoes
             if (dlg.ShowDialog(this) == DialogResult.OK)
             {
                 ExportM3u(dlg.FileName.ToString(), playlist);
-                DeleteTempFile();
                 if (currentPlaylist != dlg.FileName.ToString())
                 {
                     playlistSelectorCombo.SelectedValue = currentPlaylist = dlg.FileName.ToString();
@@ -2342,16 +2262,6 @@ namespace Echoes
             }
             FlushTimeListened(nowPlaying);
             Bass.BASS_Free();
-            DeleteTempFile();
-        }
-
-        
-
-        void DeleteTempFile()
-        {
-            if (knownPlaylists.Contains(tempPlaylistFile)) RemoveKnownPlaylist(knownPlaylists.IndexOf(tempPlaylistFile));
-            if (File.Exists(tempPlaylistFile)) File.Delete(tempPlaylistFile);
-            tempPlaylistFile = null;
         }
 
         private void button1_Click(object sender, MouseEventArgs e)
@@ -2800,6 +2710,11 @@ namespace Echoes
             if (nowPlaying == null) trackText.Text = "100% Loaded";
             else DisplayTrackInfo(nowPlaying);
             trackGrid.Refresh();
+            if (reinitTagLoader)
+            {
+                reinitTagLoader = false;
+                tagsLoaderWorker.RunWorkerAsync();
+            }
         }
 
         public TimeSpan TotalPlaylistListened(SortableBindingList<Track> list)
@@ -3395,15 +3310,8 @@ namespace Echoes
 
         void SavePlaylist()
         {
-            if (currentPlaylist != tempPlaylistFile)
-            {
-                ExportM3u(currentPlaylist, playlist.OrderBy(x => x.num).ToList());
-                System.Media.SystemSounds.Exclamation.Play();
-            }
-            else
-            {
-                ExportPlaylist();
-            }
+            ExportM3u(currentPlaylist, playlist.OrderBy(x => x.num).ToList());
+            System.Media.SystemSounds.Exclamation.Play();
             playlistChanged = false;
         }
 
@@ -3647,6 +3555,12 @@ namespace Echoes
                     DateTime val = (DateTime)e.Value;
                     if (val == DateTime.MinValue) e.Value = "";
                     else e.Value = val.ToString(Program.lastOpenedDateFormat);
+                    e.FormattingApplied = true;
+                }
+                else if ((dgv.Columns[e.ColumnIndex].HeaderText == "True Bitrate"))
+                {
+                    float val = (float)e.Value;
+                    if (val == 0) e.Value = ""; else e.Value = String.Format("{0:0.00}", val) + " kbps";
                     e.FormattingApplied = true;
                 }
             }

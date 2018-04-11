@@ -34,6 +34,7 @@ namespace Echoes
         public readonly static int visualisationStyleDefault = 1;
         public readonly static int visualfpsDefault = 40;
         public readonly static int repeatDefault = 1;
+        public readonly static int converterSelectedBitrateIndexDefault = 19;
         public readonly static float volumeDefault = 1f;
         public readonly static bool autoShuffleDefault = false;
         public readonly static bool autoAdvanceDefault = true;

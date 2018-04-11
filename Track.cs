@@ -86,6 +86,20 @@ namespace Echoes
         public int trackNumber { get; set; }
         public DateTime lastOpened { get; set; }
         public long size { get; set; }
+        public float trueBitrate
+        {
+            get
+            {
+                return ((float)size / length)*0.008f;
+            }
+        }
+        public string format
+        {
+            get
+            {
+                return Path.GetExtension(filename).ToUpper();
+            }
+        }
         public Track(string filename, string title)
         {
             this.filename = filename;

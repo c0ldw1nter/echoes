@@ -53,6 +53,7 @@
             this.outputPathText.Name = "outputPathText";
             this.outputPathText.Size = new System.Drawing.Size(522, 20);
             this.outputPathText.TabIndex = 48;
+            this.outputPathText.TextChanged += new System.EventHandler(this.outputPathText_TextChanged);
             // 
             // outputLabel
             // 
@@ -123,6 +124,7 @@
             this.qualityCombo.Name = "qualityCombo";
             this.qualityCombo.Size = new System.Drawing.Size(156, 21);
             this.qualityCombo.TabIndex = 53;
+            this.qualityCombo.SelectionChangeCommitted += new System.EventHandler(this.qualityCombo_SelectedIndexChanged);
             // 
             // Converter
             // 

@@ -11,6 +11,9 @@ using System.Windows.Forms;
 using System.IO;
 using Un4seen.Bass;
 using Un4seen.Bass.Misc;
+using Un4seen.Bass.AddOn.Midi;
+using Un4seen.Bass.AddOn.Flac;
+using Un4seen.Bass.AddOn.Wma;
 
 namespace Echoes
 {
@@ -42,12 +45,14 @@ namespace Echoes
             qualityCombo.ValueMember = "bitrate";
             qualityCombo.DisplayMember = "shownName";
             qualityCombo.DataSource = bl;
-            qualityCombo.SelectedIndex = 19;
+            qualityCombo.SelectedIndex = Program.mainWindow.converterSelectedBitrateIndex;
         }
         
         public Converter(List<Track> files)
         {
             InitializeComponent();
+            Bass.BASS_PluginLoad("bassflac.dll");
+            Bass.BASS_PluginLoad("basswma.dll");
             BindBitrateComboSource();
             this.SetColors();
             convertList.DisplayMember = "filename";
@@ -93,6 +98,7 @@ namespace Echoes
                     l.LAME_Quality = EncoderLAME.LAMEQuality.Quality;
                     //if(!Un4seen.Bass.AddOn.Tags.BassTags.BASS_TAG_GetFromFile(convertStream, l.TAGs)) Console.WriteLine("no tags");
                     l.TAGs = Un4seen.Bass.AddOn.Tags.BassTags.BASS_TAG_GetFromFile(t.filename);
+                    if (Bass.BASS_ErrorGetCode() != 0) Console.WriteLine(Bass.BASS_ErrorGetCode());
                     l.Start(null, IntPtr.Zero, false);
                     byte[] encBuffer = new byte[65536];
                     while (Bass.BASS_ChannelIsActive(convertStream) == BASSActive.BASS_ACTIVE_PLAYING)
@@ -170,6 +176,16 @@ namespace Echoes
                 this.bitrate = bitrate;
                 this.shownName = shownName;
             }
+        }
+
+        private void outputPathText_TextChanged(object sender, EventArgs e)
+        {
+            outputPath = outputPathText.Text;
+        }
+
+        private void qualityCombo_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Program.mainWindow.converterSelectedBitrateIndex = qualityCombo.SelectedIndex;
         }
     }
 }
