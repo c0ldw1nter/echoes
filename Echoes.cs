@@ -2126,7 +2126,7 @@ namespace Echoes
 
         private void ExportPlaylist()
         {
-            if ((string)playlistSelectorCombo.SelectedValue == null) return;
+            if (displayedItems==ItemType.Playlist) return;
             SaveFileDialog dlg = new SaveFileDialog();
             dlg.Title = "Save Playlist";
             dlg.Filter = "M3U playlists (*.m3u)|*.m3u";
@@ -3310,6 +3310,10 @@ namespace Echoes
 
         void SavePlaylist()
         {
+            if(!File.Exists(currentPlaylist)) {
+                ExportPlaylist();
+                return;
+            }
             ExportM3u(currentPlaylist, playlist.OrderBy(x => x.num).ToList());
             System.Media.SystemSounds.Exclamation.Play();
             playlistChanged = false;
