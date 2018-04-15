@@ -208,8 +208,8 @@ namespace Echoes
 
         //                                        0      1         2        3          4         5            6        7        8         9         10             11           12         13        14        15
         readonly string[] COLUMN_PROPERTIES = { "num", "title", "artist", "length", "album", "listened", "filename", "year", "genre", "comment", "bitrate", "trackNumber", "lastOpened", "size", "format", "trueBitrate" };
-        readonly string[] COLUMN_HEADERS={"#","Title","Artist","Length","Album","Listened","File","Year","Genre","Comment","Bitrate","Track #","Last opened","Size","Format","True Bitrate"};
-
+        readonly string[] COLUMN_HEADERS = {"#","Title","Artist","Length","Album","Listened","File","Year","Genre","Comment","Bitrate","Track #","Last opened","Size","Format","True Bitrate"};
+        readonly string[] COLUMN_HEADERS_ALLOWED_CUSTOM = { "Title", "Artist", "Length", "Album", "Year", "Genre", "Comment", "Bitrate", "Format" };
         #endregion
 
         public Echoes()
@@ -3015,6 +3015,27 @@ namespace Echoes
                         {
                             Convert();
                         };
+                        //find column clicked
+                        MenuItem miFindFrom = new MenuItem();
+                        bool includeFindFrom = false;
+                        DataGridViewColumn columnClicked=trackGrid.Columns[trackGrid.HitTest(e.X, e.Y).ColumnIndex];
+                        if (COLUMN_HEADERS_ALLOWED_CUSTOM.Contains<string>(columnClicked.HeaderText))
+                        {
+                            string columnProperty = COLUMN_PROPERTIES[COLUMN_HEADERS.IndexOf(columnClicked.HeaderText)];
+                            miFindFrom = new MenuItem("Find everything with this " + columnClicked.HeaderText);
+                            miFindFrom.Click += (theSender, eventArgs) =>
+                            {
+                                List<object> selectedTracksProperties = new List<object>();
+                                foreach (DataGridViewRow rw in trackGrid.SelectedRows)
+                                {
+                                    Track rtr = (Track)rw.DataBoundItem;
+                                    selectedTracksProperties.Add(typeof(Track).GetProperty(columnProperty).GetValue(rtr, null));
+                                }
+                                List<Track> customPlaylist = xmlCacher.GetAllTracks().Where(x => selectedTracksProperties.Contains(typeof(Track).GetProperty(columnProperty).GetValue(x, null))).ToList();
+                                LoadCustomPlaylist(customPlaylist);
+                            };
+                            includeFindFrom = true;
+                        }
                         MenuItem miRenumber = new MenuItem("Save this order");
                         miRenumber.Click += (theSender, eventArgs) =>
                         {
@@ -3071,6 +3092,7 @@ namespace Echoes
                         cm.MenuItems.Add(miAddToPlaylist);
                         cm.MenuItems.Add(miEditTags);
                         cm.MenuItems.Add(miConvert);
+                        if(includeFindFrom) cm.MenuItems.Add(miFindFrom);
                         cm.MenuItems.Add(miRenumber);
                         cm.MenuItems.Add(miReloadTags);
                         cm.MenuItems.Add(miDupes);

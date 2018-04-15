@@ -15,6 +15,18 @@ namespace System
 {
     public static class ExtensionMethods
     {
+        public static int IndexOf(this object[] array, object element)
+        {
+            for (int i = 0; i < array.Length; i++)
+            {
+                if (array[i].Equals(element))
+                {
+                    return i;
+                }
+            }
+            return -1;
+        } 
+
         public static Color MixWith(this Color c1, Color c2, float transparency)
         {
             int _r = Math.Min((c1.R + (byte)(c2.R * transparency)), 255);
