@@ -58,6 +58,12 @@ namespace Echoes
             UnhookWindowsHookEx(hookID);
         }
 
+        public void SetForegroundWindow()
+        {
+            IntPtr handle = Process.GetCurrentProcess().MainWindowHandle;
+            SetForegroundWindow(handle);
+        }
+
         /// <summary>
         /// Registers hook with Windows API
         /// </summary>
@@ -145,6 +151,9 @@ namespace Echoes
 
         [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         private static extern IntPtr GetModuleHandle(string lpModuleName);
+
+        [DllImport("User32.dll")]
+        private static extern bool SetForegroundWindow(IntPtr hWnd);
         #endregion
     }
 }

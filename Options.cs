@@ -406,7 +406,7 @@ namespace Echoes
                 tryInt++;
                 newName = "Color scheme" + tryInt;
             }
-            EnterNameForm form = new EnterNameForm(newName);
+            EnterTextForm form = new EnterTextForm("Enter name", newName);
             if (form.ShowDialog(this) == DialogResult.OK)
             {
                 if (colorSchemes.Contains(form.enteredText.Text))

@@ -15,6 +15,12 @@ namespace System
 {
     public static class ExtensionMethods
     {
+        public static IEnumerable<T> Except<T>(this IEnumerable<T> ienum, T o)
+        {
+            List<T> list = new List<T>();
+            list.Add(o);
+            return ienum.Except(list);
+        }
         public static int IndexOf(this object[] array, object element)
         {
             for (int i = 0; i < array.Length; i++)

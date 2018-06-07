@@ -498,6 +498,7 @@ namespace Echoes
             this.MinimumSize = new System.Drawing.Size(1086, 300);
             this.Name = "Echoes";
             this.Text = "Echoes";
+            this.Activated += new System.EventHandler(this.Echoes_Enter);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.DragDrop += new System.Windows.Forms.DragEventHandler(this.Echoes_DragDrop);
             this.DragEnter += new System.Windows.Forms.DragEventHandler(this.Echoes_DragEnter);

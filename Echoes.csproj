@@ -62,7 +62,6 @@
     <Reference Include="SuperM3U, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>lib\SuperM3U.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -97,11 +96,11 @@
     <Compile Include="DupeFinder.Designer.cs">
       <DependentUpon>DupeFinder.cs</DependentUpon>
     </Compile>
-    <Compile Include="EnterNameForm.cs">
+    <Compile Include="EnterTextForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="EnterNameForm.Designer.cs">
-      <DependentUpon>EnterNameForm.cs</DependentUpon>
+    <Compile Include="EnterTextForm.Designer.cs">
+      <DependentUpon>EnterTextForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Equalizer.cs">
       <SubType>Form</SubType>
@@ -114,6 +113,9 @@
     <Compile Include="HotkeyData.cs" />
     <Compile Include="KeyboardHook.cs" />
     <Compile Include="EqualizerTrackbar.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ModifiedMenuItem.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="ModifiedProgressBar.cs">
@@ -192,8 +194,8 @@
     <EmbeddedResource Include="Echoes.resx">
       <DependentUpon>Echoes.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="EnterNameForm.resx">
-      <DependentUpon>EnterNameForm.cs</DependentUpon>
+    <EmbeddedResource Include="EnterTextForm.resx">
+      <DependentUpon>EnterTextForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Equalizer.resx">
       <DependentUpon>Equalizer.cs</DependentUpon>

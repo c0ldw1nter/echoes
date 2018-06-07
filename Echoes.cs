@@ -54,7 +54,7 @@ namespace Echoes
     }
     public enum ItemType
     {
-        Playlist, Track, Cache
+        Playlist, Track
     }
     public enum Modifier
     {
@@ -728,14 +728,17 @@ namespace Echoes
 
         void LoadFiles(List<string> files)
         {
+            //tag loader stuff
             if (tagsLoaderWorker.IsBusy)
             {
                 tagsLoaderWorker.CancelAsync();
                 LoadFiles(files);
                 return;
             }
-            string lastList = null;
+            //
+
             var loadingPlaylist = new List<Track>();
+            string lastList=null;
             foreach (string file in files)
             {
                 if (supportedAudioTypes.Contains(Path.GetExtension(file).ToLower()))
@@ -745,38 +748,57 @@ namespace Echoes
                 else if(Path.GetExtension(file).ToLower()==".m3u")
                 {
                     AddKnownPlaylist(file);
-                    lastList = file;
+                    Console.WriteLine("Added playlist: " + Path.GetFileName(file));
                 }
             }
-            if ((string)playlistSelectorCombo.SelectedValue == null && displayedItems!=ItemType.Track)
+            if (loadingPlaylist.Count == 0)
             {
+                //there were no valid track files, load m3u if any
+                if (lastList != null) ImportM3u(lastList);
+                return;
+            }
+            
+            //there were track files
+            if (displayedItems != ItemType.Track)
+            {
+                //in playlist list mode, create new playlist
                 LoadCustomPlaylist(loadingPlaylist);
                 displayedItems = ItemType.Track;
                 tagsLoaderWorker.RunWorkerAsync();
             }
             else
             {
-                if (displayedItems == ItemType.Track)
+                //in a created playlist, add tracks to it
+                loadingPlaylist.Reverse();
+                bool addDupes = false;
+                bool askToAddDupes = true;
+                foreach (Track t in loadingPlaylist)
                 {
-                    if (loadingPlaylist.Count > 0)
+                    if (!addDupes && playlist.Where(x => x.filename == t.filename).Count() > 0)
                     {
-                        loadingPlaylist.Reverse();
-                        foreach (Track t in loadingPlaylist) playlist.Insert(0, t);
-                        RenumberPlaylist(playlist);
-                        if (tagsLoaderWorker.IsBusy)
+                        if (askToAddDupes)
                         {
-                            reinitTagLoader = true;
-                            tagsLoaderWorker.CancelAsync();
+                            addDupes=MessageBox.Show("There are duplicates. Add them?", "Dupes", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.Yes;
+                            askToAddDupes = false;
+                            if (addDupes)
+                            {
+                                playlist.Insert(0, t);
+                            }
                         }
-                        else
-                        {
-                            tagsLoaderWorker.RunWorkerAsync();
-                        }
-                        playlistChanged = true;
-                    }
-                    RefreshPlaylistGrid();
+                    }else playlist.Insert(0, t);
                 }
-                else DisplayPlaylistsInGrid();
+                FixPlaylistNumbers(playlist);
+                RefreshPlaylistGrid();
+                if (tagsLoaderWorker.IsBusy)
+                {
+                    reinitTagLoader = true;
+                    tagsLoaderWorker.CancelAsync();
+                }
+                else
+                {
+                    tagsLoaderWorker.RunWorkerAsync();
+                }
+                playlistChanged = true;
             }
             RefreshTotalTimeLabel();
         }
@@ -876,22 +898,29 @@ namespace Echoes
             }
             else
             {
-                var sourceList = new List<Track>(playlist);
-                var searchKeywords = searchWord.Split(new char[]{'&'}, StringSplitOptions.RemoveEmptyEntries);
-                foreach (string s in searchKeywords)
+                List<Track> tracksWithDupes = new List<Track>();
+                var searchOrKeywords = searchWord.Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
+                foreach (string or in searchOrKeywords)
                 {
-                    bool invertSearch = false;
-                    string searchWrd = s.TrimStart();
-                    if (searchWrd.StartsWith("!"))
+                    var sourceList = new List<Track>(playlist);
+                    var searchKeywords = or.Split(new char[] { '&' }, StringSplitOptions.RemoveEmptyEntries);
+                    foreach (string s in searchKeywords)
                     {
-                        searchWrd = searchWrd.Substring(1);
-                        invertSearch = true;
+                        bool invertSearch = false;
+                        string searchWrd = s.TrimStart();
+                        if (searchWrd.StartsWith("!"))
+                        {
+                            searchWrd = searchWrd.Substring(1);
+                            invertSearch = true;
+                        }
+                        searchWrd = searchWrd.Trim();
+                        if (invertSearch) sourceList = sourceList.Where(x => !x.title.ContainsIgnoreCase(searchWrd) && !x.album.ContainsIgnoreCase(searchWrd) && !x.artist.ContainsIgnoreCase(searchWrd)).ToList();
+                        else sourceList = sourceList.Where(x => x.title.ContainsIgnoreCase(searchWrd) || x.album.ContainsIgnoreCase(searchWrd) || x.artist.ContainsIgnoreCase(searchWrd)).ToList();
                     }
-                    searchWrd=searchWrd.Trim();
-                    if (invertSearch) sourceList = sourceList.Where(x => !x.title.ContainsIgnoreCase(searchWrd) && !x.album.ContainsIgnoreCase(searchWrd) && !x.artist.ContainsIgnoreCase(searchWrd)).ToList();
-                    else sourceList = sourceList.Where(x => x.title.ContainsIgnoreCase(searchWrd) || x.album.ContainsIgnoreCase(searchWrd) || x.artist.ContainsIgnoreCase(searchWrd)).ToList();
+                    tracksWithDupes.AddRange(sourceList);
                 }
-                source = new SortableBindingList<Track>(sourceList);
+                source = new SortableBindingList<Track>(tracksWithDupes.Distinct().ToList());
+                //source = new SortableBindingList<Track>(sourceList);
             }
             trackGrid.DataSource = source;
             //
@@ -899,7 +928,7 @@ namespace Echoes
             trackGrid.ClearSelection();
             HighlightPlayingTrack();
             RefreshTotalTimeLabel();
-            if(displayedItems!=ItemType.Cache) displayedItems = ItemType.Track;
+            //if(displayedItems!=ItemType.Cache) displayedItems = ItemType.Track;
             if (displayedItems != ItemType.Playlist) AddHeaderContextMenu();
         }
 
@@ -974,7 +1003,7 @@ namespace Echoes
             bool item1Selected = trackGrid.Rows[oldIndex].Selected;
             bool item2Selected = trackGrid.Rows[newIndex].Selected;
             playlist.Insert(newIndex, item);
-            RenumberPlaylist(playlist);
+            FixPlaylistNumbers(playlist);
             RefreshPlaylistGrid();
             trackGrid.Rows[oldIndex].Selected = item2Selected;
             trackGrid.Rows[newIndex].Selected = item1Selected;
@@ -1487,6 +1516,19 @@ namespace Echoes
             HighlightPlayingTrack();
         }
 
+        void FixPlaylistNumbers(List<Track> p)
+        {
+            var invalidNumbaTracks = p.Where(x => x.num < 1).ToList();
+            if (invalidNumbaTracks.Count == 0) return;
+            for (int i = 0; i < invalidNumbaTracks.Count; i++)
+            {
+                invalidNumbaTracks[i].num = i+1;
+                p.Remove(invalidNumbaTracks[i]);
+            }
+            foreach (Track t in p) t.num += invalidNumbaTracks.Count;
+            p.InsertRange(0, invalidNumbaTracks);
+        }
+
         private void RenumberPlaylist(List<Track> p)
         {
             for (int i = 0; i < p.Count; i++)
@@ -1516,7 +1558,7 @@ namespace Echoes
                 thePlaylist.Add(newTrack);
             }
             thePlaylist.AddRange(playlistFromFile);
-            RenumberPlaylist(thePlaylist);
+            FixPlaylistNumbers(thePlaylist);
             ExportM3u(playlistFile, thePlaylist);
         }
 
@@ -1651,8 +1693,7 @@ namespace Echoes
         private List<Track> ReadM3u(string filename)
         {
             List<Track> ret = new List<Track>();
-            if (SuperM3U.Reader.FileIsValid(filename))
-            {
+            try {
                 List<M3UTrack> tracks = SuperM3U.Reader.GetTracks(filename);
                 for (int i=0;i<tracks.Count;i++)
                 {
@@ -1661,6 +1702,10 @@ namespace Echoes
                     t.length = tracks[i].length;
                     ret.Add(t);
                 }
+            }
+            catch (Exception)
+            {
+                //error
             }
             return ret;
         }
@@ -1680,8 +1725,8 @@ namespace Echoes
             }
             searchBox.Text = "";
             System.Diagnostics.Process.GetCurrentProcess().StartInfo.WorkingDirectory = Path.GetDirectoryName(filename);
-            if (SuperM3U.Reader.FileIsValid(filename))
-            {
+            try{
+                displayedItems = ItemType.Track;
                 playlist = new List<Track>();
                 currentPlaylist = filename;
                 AddKnownPlaylist(filename);
@@ -1711,9 +1756,8 @@ namespace Echoes
                     trackText.Text = "Loading...";
                     tagsLoaderWorker.RunWorkerAsync();
                 }
-                displayedItems = ItemType.Track;
             }
-            else
+            catch (Exception)
             {
                 MessageBox.Show(filename + " is invalid.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }
@@ -2545,12 +2589,13 @@ namespace Echoes
         {
             playlist = lst;
             RenumberPlaylist(playlist);
-            displayedItems = ItemType.Cache;
+            displayedItems = ItemType.Track;
             RefreshPlaylistGrid();
             if (autoShuffle) Shuffle();
             RefreshTotalTimeLabel();
             currentPlaylist = "";
             playlistSelectorCombo.SelectedIndex = 0;
+            playlistChanged = false;
         }
 
         public void LoadEverythingFromArtist(string artist)
@@ -2984,18 +3029,35 @@ namespace Echoes
                     if (displayedItems != ItemType.Playlist)
                     {
                         MenuItem miAddToPlaylist = new MenuItem("Add to playlist");
+                        MenuItem miRemove = new MenuItem("Remove");
+                        MenuItem miRemoveEntriesContainedIn = new MenuItem("Entries contained in playlist");
+                        miRemove.MenuItems.Add(miRemoveEntriesContainedIn);
                         for (int i = 0; i < knownPlaylists.Count; i++)
                         {
                             int z = i;
-                            if (playlistSelectorCombo.SelectedIndex>2 && knownPlaylists[i] == knownPlaylists[playlistSelectorCombo.SelectedIndex - 2])
+                            if (playlistSelectorCombo.SelectedIndex>1 && knownPlaylists[i] == knownPlaylists[playlistSelectorCombo.SelectedIndex - 2])
                                 continue;
-                            MenuItem itm = new MenuItem(knownPlaylists[z]);
+                            string displayName = knownPlaylists[z];
+                            if (knownPlaylists.Except(displayName).Where(x => Path.GetFileName(x) == Path.GetFileName(displayName)).Count() == 0)
+                            {
+                                displayName = Path.GetFileName(displayName);
+                            }
+                            MenuItem itm = new MenuItem(displayName);
                             itm.Click += (theSender, eventArgs) =>
                             {
-                                //MessageBox.Show(selectedTracks[0].filename);
                                 CopyTrackToPlaylist(selectedTracks, knownPlaylists[z]);
                             };
                             miAddToPlaylist.MenuItems.Add(itm);
+                            itm = new MenuItem(displayName);
+                            itm.Click += (theSender, eventArgs) =>
+                            {
+                                List<string> thatPlaylist = SuperM3U.Reader.GetFiles(knownPlaylists[z]);
+                                int before = playlist.Count;
+                                playlist = playlist.Where(x => !thatPlaylist.Contains(x.filename)).ToList();
+                                RefreshPlaylistGrid();
+                                MessageBox.Show("Removed " + (before-playlist.Count) + " entries.", "Removed");
+                            };
+                            miRemoveEntriesContainedIn.MenuItems.Add(itm);
                         }
                         MenuItem npItem = new MenuItem("New playlist");
                         npItem.Click += (theSender, eventArgs) =>
@@ -3017,6 +3079,8 @@ namespace Echoes
                         };
                         //find column clicked
                         MenuItem miFindFrom = new MenuItem();
+                        MenuItem miRemoveWith = miFindFrom;
+                        MenuItem miRemoveWithout = miFindFrom;
                         bool includeFindFrom = false;
                         DataGridViewColumn columnClicked=trackGrid.Columns[trackGrid.HitTest(e.X, e.Y).ColumnIndex];
                         if (COLUMN_HEADERS_ALLOWED_CUSTOM.Contains<string>(columnClicked.HeaderText))
@@ -3033,6 +3097,34 @@ namespace Echoes
                                 }
                                 List<Track> customPlaylist = xmlCacher.GetAllTracks().Where(x => selectedTracksProperties.Contains(typeof(Track).GetProperty(columnProperty).GetValue(x, null))).ToList();
                                 LoadCustomPlaylist(customPlaylist);
+                            };
+                            miRemoveWith = new MenuItem("Everything with this "+columnClicked.HeaderText);
+                            miRemoveWith.Click += (theSender, eventArgs) =>
+                            {
+                                List<object> selectedTracksProperties = new List<object>();
+                                foreach (DataGridViewRow rw in trackGrid.SelectedRows)
+                                {
+                                    Track rtr = (Track)rw.DataBoundItem;
+                                    selectedTracksProperties.Add(typeof(Track).GetProperty(columnProperty).GetValue(rtr, null));
+                                }
+                                int before = playlist.Count;
+                                playlist = playlist.Where(x => !selectedTracksProperties.Contains(typeof(Track).GetProperty(columnProperty).GetValue(x, null))).ToList();
+                                RefreshPlaylistGrid();
+                                MessageBox.Show("Removed " + (before - playlist.Count) + " entries.", "Removed");
+                            };
+                            miRemoveWithout = new MenuItem("Everything without this " + columnClicked.HeaderText);
+                            miRemoveWithout.Click += (theSender, eventArgs) =>
+                            {
+                                List<object> selectedTracksProperties = new List<object>();
+                                foreach (DataGridViewRow rw in trackGrid.SelectedRows)
+                                {
+                                    Track rtr = (Track)rw.DataBoundItem;
+                                    selectedTracksProperties.Add(typeof(Track).GetProperty(columnProperty).GetValue(rtr, null));
+                                }
+                                int before = playlist.Count;
+                                playlist = playlist.Where(x => selectedTracksProperties.Contains(typeof(Track).GetProperty(columnProperty).GetValue(x, null))).ToList();
+                                RefreshPlaylistGrid();
+                                MessageBox.Show("Removed " + (before - playlist.Count) + " entries.", "Removed");
                             };
                             includeFindFrom = true;
                         }
@@ -3051,24 +3143,25 @@ namespace Echoes
                         {
                             OpenDupeFinder();
                         };
-                        MenuItem miUnexisting = new MenuItem("Remove missing file entries");
-                        if (displayedItems == ItemType.Track)
+                        MenuItem miRemoveMissing = new MenuItem("Missing file entries");
+                        if (playlistSelectorCombo.SelectedIndex > 1)
                         {
-                            miUnexisting.Click += (theSender, eventArgs) =>
+                            miRemoveMissing.Click += (theSender, eventArgs) =>
                             {
                                 RemoveUnexisting();
                             };
                         }
-                        else if (displayedItems == ItemType.Cache)
+                        else
                         {
-                            miUnexisting.Click += (theSender, eventArgs) =>
+                            miRemoveMissing.Click += (theSender, eventArgs) =>
                             {
                                 xmlCacher.CleanupCache();
                                 playlist = xmlCacher.GetAllTracks();
-                                RenumberPlaylist(playlist);
+                                FixPlaylistNumbers(playlist);
                                 RefreshPlaylistGrid();
                             };
                         }
+                        miRemove.MenuItems.Add(miRemoveMissing);
                         MenuItem miMoveUp = new MenuItem("Move up");
                         miMoveUp.Click += (theSender, eventArgs) =>
                         {
@@ -3092,11 +3185,16 @@ namespace Echoes
                         cm.MenuItems.Add(miAddToPlaylist);
                         cm.MenuItems.Add(miEditTags);
                         cm.MenuItems.Add(miConvert);
-                        if(includeFindFrom) cm.MenuItems.Add(miFindFrom);
+                        if (includeFindFrom)
+                        {
+                            cm.MenuItems.Add(miFindFrom);
+                            miRemove.MenuItems.Add(miRemoveWith);
+                            miRemove.MenuItems.Add(miRemoveWithout);
+                        }
+                        cm.MenuItems.Add(miRemove);
                         cm.MenuItems.Add(miRenumber);
                         cm.MenuItems.Add(miReloadTags);
                         cm.MenuItems.Add(miDupes);
-                        cm.MenuItems.Add(miUnexisting);
                         cm.MenuItems.Add(miMoveUp);
                         cm.MenuItems.Add(miMoveDown);
                         cm.MenuItems.Add(miMoveToTop);
@@ -3861,6 +3959,11 @@ namespace Echoes
         private void echoesLogo_MouseEnter(object sender, EventArgs e)
         {
             echoesLogo.BackgroundImage = global::Echoes.Properties.Resources.echoesLogoWhite;
+        }
+
+        private void Echoes_Enter(object sender, EventArgs e)
+        {
+            kh.SetForegroundWindow();
         }
     }
 }

@@ -32,14 +32,12 @@ namespace Echoes
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Options));
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.generalPage = new System.Windows.Forms.TabPage();
-            this.setDefaultsBtn = new ModifiedControls.ModifiedButton();
-            this.font2ChangeBtn = new ModifiedControls.ModifiedButton();
+            this.normalizeCheckbox = new System.Windows.Forms.CheckBox();
             this.font2Txt = new System.Windows.Forms.Label();
             this.showWaveformCheckbox = new System.Windows.Forms.CheckBox();
             this.fontPctTxt = new System.Windows.Forms.TextBox();
             this.fontSizePercentTxt = new System.Windows.Forms.Label();
             this.fontSizePercentTrack = new System.Windows.Forms.TrackBar();
-            this.fontChangeBtn = new ModifiedControls.ModifiedButton();
             this.fontTxt = new System.Windows.Forms.Label();
             this.autoShuffleCheckbox = new System.Windows.Forms.CheckBox();
             this.autoAdvanceCheckbox = new System.Windows.Forms.CheckBox();
@@ -47,7 +45,6 @@ namespace Echoes
             this.fpsText = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.fpsBar = new System.Windows.Forms.TrackBar();
-            this.button1 = new ModifiedControls.ModifiedButton();
             this.midiTxt = new System.Windows.Forms.Label();
             this.popupCheckbox = new System.Windows.Forms.CheckBox();
             this.hotkeysPage = new System.Windows.Forms.TabPage();
@@ -61,9 +58,13 @@ namespace Echoes
             this.Function = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Mod = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Key = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colorsPage = new System.Windows.Forms.TabPage();
+            this.setDefaultsBtn = new ModifiedControls.ModifiedButton();
+            this.font2ChangeBtn = new ModifiedControls.ModifiedButton();
+            this.fontChangeBtn = new ModifiedControls.ModifiedButton();
+            this.button1 = new ModifiedControls.ModifiedButton();
             this.removeHotkeyBtn = new ModifiedControls.ModifiedButton();
             this.addHotkeyBtn = new ModifiedControls.ModifiedButton();
-            this.colorsPage = new System.Windows.Forms.TabPage();
             this.addColorSchemeBtn = new ModifiedControls.ModifiedButton();
             this.colorSchemeSelectorCombo = new ModifiedControls.ModifiedComboBox();
             this.colorHighlighted2Btn = new ModifiedControls.ModifiedButton();
@@ -79,7 +80,6 @@ namespace Echoes
             this.colorVisualsBtn = new ModifiedControls.ModifiedButton();
             this.colorVolBarBtn = new ModifiedControls.ModifiedButton();
             this.colorSeekBtn = new ModifiedControls.ModifiedButton();
-            this.normalizeCheckbox = new System.Windows.Forms.CheckBox();
             this.tabControl1.SuspendLayout();
             this.generalPage.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.fontSizePercentTrack)).BeginInit();
@@ -134,31 +134,17 @@ namespace Echoes
             this.generalPage.TabIndex = 0;
             this.generalPage.Text = "General";
             // 
-            // setDefaultsBtn
+            // normalizeCheckbox
             // 
-            this.setDefaultsBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(110)))), ((int)(((byte)(110)))), ((int)(((byte)(110)))));
-            this.setDefaultsBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.setDefaultsBtn.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.setDefaultsBtn.Location = new System.Drawing.Point(367, 205);
-            this.setDefaultsBtn.Name = "setDefaultsBtn";
-            this.setDefaultsBtn.Size = new System.Drawing.Size(59, 23);
-            this.setDefaultsBtn.TabIndex = 34;
-            this.setDefaultsBtn.Text = "Defaults";
-            this.setDefaultsBtn.UseVisualStyleBackColor = true;
-            this.setDefaultsBtn.Click += new System.EventHandler(this.setDefaultsBtn_Click);
-            // 
-            // font2ChangeBtn
-            // 
-            this.font2ChangeBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(110)))), ((int)(((byte)(110)))), ((int)(((byte)(110)))));
-            this.font2ChangeBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.font2ChangeBtn.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.font2ChangeBtn.Location = new System.Drawing.Point(213, 142);
-            this.font2ChangeBtn.Name = "font2ChangeBtn";
-            this.font2ChangeBtn.Size = new System.Drawing.Size(59, 23);
-            this.font2ChangeBtn.TabIndex = 33;
-            this.font2ChangeBtn.Text = "Change";
-            this.font2ChangeBtn.UseVisualStyleBackColor = true;
-            this.font2ChangeBtn.Click += new System.EventHandler(this.font2ChangeBtn_Click);
+            this.normalizeCheckbox.AutoSize = true;
+            this.normalizeCheckbox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.normalizeCheckbox.Location = new System.Drawing.Point(5, 52);
+            this.normalizeCheckbox.Name = "normalizeCheckbox";
+            this.normalizeCheckbox.Size = new System.Drawing.Size(114, 17);
+            this.normalizeCheckbox.TabIndex = 35;
+            this.normalizeCheckbox.Text = "Normalize loudness";
+            this.normalizeCheckbox.UseVisualStyleBackColor = true;
+            this.normalizeCheckbox.CheckedChanged += new System.EventHandler(this.normalizeCheckbox_CheckedChanged);
             // 
             // font2Txt
             // 
@@ -218,19 +204,6 @@ namespace Echoes
             this.fontSizePercentTrack.ValueChanged += new System.EventHandler(this.fontSizePercentTrack_ValueChanged);
             this.fontSizePercentTrack.MouseUp += new System.Windows.Forms.MouseEventHandler(this.fontSizePercentTrack_MouseUp);
             // 
-            // fontChangeBtn
-            // 
-            this.fontChangeBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(110)))), ((int)(((byte)(110)))), ((int)(((byte)(110)))));
-            this.fontChangeBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.fontChangeBtn.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.fontChangeBtn.Location = new System.Drawing.Point(214, 22);
-            this.fontChangeBtn.Name = "fontChangeBtn";
-            this.fontChangeBtn.Size = new System.Drawing.Size(59, 23);
-            this.fontChangeBtn.TabIndex = 27;
-            this.fontChangeBtn.Text = "Change";
-            this.fontChangeBtn.UseVisualStyleBackColor = true;
-            this.fontChangeBtn.Click += new System.EventHandler(this.fontChangeBtn_Click);
-            // 
             // fontTxt
             // 
             this.fontTxt.AutoSize = true;
@@ -282,7 +255,7 @@ namespace Echoes
             this.fpsText.Enabled = false;
             this.fpsText.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.fpsText.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(200)))), ((int)(((byte)(200)))));
-            this.fpsText.Location = new System.Drawing.Point(5, 167);
+            this.fpsText.Location = new System.Drawing.Point(208, 210);
             this.fpsText.Name = "fpsText";
             this.fpsText.ReadOnly = true;
             this.fpsText.Size = new System.Drawing.Size(124, 20);
@@ -310,19 +283,6 @@ namespace Echoes
             this.fpsBar.Value = 30;
             this.fpsBar.Scroll += new System.EventHandler(this.trackBar1_Scroll);
             this.fpsBar.ValueChanged += new System.EventHandler(this.trackBar1_ValueChanged);
-            // 
-            // button1
-            // 
-            this.button1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(110)))), ((int)(((byte)(110)))), ((int)(((byte)(110)))));
-            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.button1.Location = new System.Drawing.Point(5, 206);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(59, 23);
-            this.button1.TabIndex = 5;
-            this.button1.Text = "Change";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // midiTxt
             // 
@@ -497,6 +457,84 @@ namespace Echoes
             this.Key.ReadOnly = true;
             this.Key.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             // 
+            // colorsPage
+            // 
+            this.colorsPage.Controls.Add(this.addColorSchemeBtn);
+            this.colorsPage.Controls.Add(this.colorSchemeSelectorCombo);
+            this.colorsPage.Controls.Add(this.colorHighlighted2Btn);
+            this.colorsPage.Controls.Add(this.colorHighlightedBtn);
+            this.colorsPage.Controls.Add(this.colorSeek2Btn);
+            this.colorsPage.Controls.Add(this.colorVolBar2Btn);
+            this.colorsPage.Controls.Add(this.colorBackgroundBtn);
+            this.colorsPage.Controls.Add(this.colorControlFrontBtn);
+            this.colorsPage.Controls.Add(this.colorControlBackBtn);
+            this.colorsPage.Controls.Add(this.colorTrackAlbumBtn);
+            this.colorsPage.Controls.Add(this.colorTrackArtistBtn);
+            this.colorsPage.Controls.Add(this.colorTrackTitleBtn);
+            this.colorsPage.Controls.Add(this.colorVisualsBtn);
+            this.colorsPage.Controls.Add(this.colorVolBarBtn);
+            this.colorsPage.Controls.Add(this.colorSeekBtn);
+            this.colorsPage.Location = new System.Drawing.Point(4, 22);
+            this.colorsPage.Name = "colorsPage";
+            this.colorsPage.Padding = new System.Windows.Forms.Padding(3);
+            this.colorsPage.Size = new System.Drawing.Size(434, 236);
+            this.colorsPage.TabIndex = 2;
+            this.colorsPage.Text = "Colors";
+            this.colorsPage.UseVisualStyleBackColor = true;
+            this.colorsPage.MouseDown += new System.Windows.Forms.MouseEventHandler(this.colorsPage_MouseDown);
+            // 
+            // setDefaultsBtn
+            // 
+            this.setDefaultsBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(110)))), ((int)(((byte)(110)))), ((int)(((byte)(110)))));
+            this.setDefaultsBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.setDefaultsBtn.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.setDefaultsBtn.Location = new System.Drawing.Point(367, 205);
+            this.setDefaultsBtn.Name = "setDefaultsBtn";
+            this.setDefaultsBtn.Size = new System.Drawing.Size(59, 23);
+            this.setDefaultsBtn.TabIndex = 34;
+            this.setDefaultsBtn.Text = "Defaults";
+            this.setDefaultsBtn.UseVisualStyleBackColor = true;
+            this.setDefaultsBtn.Click += new System.EventHandler(this.setDefaultsBtn_Click);
+            // 
+            // font2ChangeBtn
+            // 
+            this.font2ChangeBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(110)))), ((int)(((byte)(110)))), ((int)(((byte)(110)))));
+            this.font2ChangeBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.font2ChangeBtn.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.font2ChangeBtn.Location = new System.Drawing.Point(213, 142);
+            this.font2ChangeBtn.Name = "font2ChangeBtn";
+            this.font2ChangeBtn.Size = new System.Drawing.Size(59, 23);
+            this.font2ChangeBtn.TabIndex = 33;
+            this.font2ChangeBtn.Text = "Change";
+            this.font2ChangeBtn.UseVisualStyleBackColor = true;
+            this.font2ChangeBtn.Click += new System.EventHandler(this.font2ChangeBtn_Click);
+            // 
+            // fontChangeBtn
+            // 
+            this.fontChangeBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(110)))), ((int)(((byte)(110)))), ((int)(((byte)(110)))));
+            this.fontChangeBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.fontChangeBtn.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.fontChangeBtn.Location = new System.Drawing.Point(214, 22);
+            this.fontChangeBtn.Name = "fontChangeBtn";
+            this.fontChangeBtn.Size = new System.Drawing.Size(59, 23);
+            this.fontChangeBtn.TabIndex = 27;
+            this.fontChangeBtn.Text = "Change";
+            this.fontChangeBtn.UseVisualStyleBackColor = true;
+            this.fontChangeBtn.Click += new System.EventHandler(this.fontChangeBtn_Click);
+            // 
+            // button1
+            // 
+            this.button1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(110)))), ((int)(((byte)(110)))), ((int)(((byte)(110)))));
+            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.button1.Location = new System.Drawing.Point(5, 206);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(59, 23);
+            this.button1.TabIndex = 5;
+            this.button1.Text = "Change";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
             // removeHotkeyBtn
             // 
             this.removeHotkeyBtn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(48)))), ((int)(((byte)(48)))));
@@ -526,32 +564,6 @@ namespace Echoes
             this.addHotkeyBtn.Text = "+";
             this.addHotkeyBtn.UseVisualStyleBackColor = false;
             this.addHotkeyBtn.Click += new System.EventHandler(this.addHotkeyBtn_Click);
-            // 
-            // colorsPage
-            // 
-            this.colorsPage.Controls.Add(this.addColorSchemeBtn);
-            this.colorsPage.Controls.Add(this.colorSchemeSelectorCombo);
-            this.colorsPage.Controls.Add(this.colorHighlighted2Btn);
-            this.colorsPage.Controls.Add(this.colorHighlightedBtn);
-            this.colorsPage.Controls.Add(this.colorSeek2Btn);
-            this.colorsPage.Controls.Add(this.colorVolBar2Btn);
-            this.colorsPage.Controls.Add(this.colorBackgroundBtn);
-            this.colorsPage.Controls.Add(this.colorControlFrontBtn);
-            this.colorsPage.Controls.Add(this.colorControlBackBtn);
-            this.colorsPage.Controls.Add(this.colorTrackAlbumBtn);
-            this.colorsPage.Controls.Add(this.colorTrackArtistBtn);
-            this.colorsPage.Controls.Add(this.colorTrackTitleBtn);
-            this.colorsPage.Controls.Add(this.colorVisualsBtn);
-            this.colorsPage.Controls.Add(this.colorVolBarBtn);
-            this.colorsPage.Controls.Add(this.colorSeekBtn);
-            this.colorsPage.Location = new System.Drawing.Point(4, 22);
-            this.colorsPage.Name = "colorsPage";
-            this.colorsPage.Padding = new System.Windows.Forms.Padding(3);
-            this.colorsPage.Size = new System.Drawing.Size(434, 236);
-            this.colorsPage.TabIndex = 2;
-            this.colorsPage.Text = "Colors";
-            this.colorsPage.UseVisualStyleBackColor = true;
-            this.colorsPage.MouseDown += new System.Windows.Forms.MouseEventHandler(this.colorsPage_MouseDown);
             // 
             // addColorSchemeBtn
             // 
@@ -752,18 +764,6 @@ namespace Echoes
             this.colorSeekBtn.Text = "Seek";
             this.colorSeekBtn.UseVisualStyleBackColor = true;
             this.colorSeekBtn.Click += new System.EventHandler(this.colorSeekBtn_Click);
-            // 
-            // normalizeCheckbox
-            // 
-            this.normalizeCheckbox.AutoSize = true;
-            this.normalizeCheckbox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.normalizeCheckbox.Location = new System.Drawing.Point(5, 52);
-            this.normalizeCheckbox.Name = "normalizeCheckbox";
-            this.normalizeCheckbox.Size = new System.Drawing.Size(114, 17);
-            this.normalizeCheckbox.TabIndex = 35;
-            this.normalizeCheckbox.Text = "Normalize loudness";
-            this.normalizeCheckbox.UseVisualStyleBackColor = true;
-            this.normalizeCheckbox.CheckedChanged += new System.EventHandler(this.normalizeCheckbox_CheckedChanged);
             // 
             // Options
             // 
