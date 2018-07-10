@@ -387,9 +387,9 @@ namespace Echoes
             this.playlistInfoTxt.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.playlistInfoTxt.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.playlistInfoTxt.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(200)))), ((int)(((byte)(200)))));
-            this.playlistInfoTxt.Location = new System.Drawing.Point(231, 141);
+            this.playlistInfoTxt.Location = new System.Drawing.Point(195, 141);
             this.playlistInfoTxt.Name = "playlistInfoTxt";
-            this.playlistInfoTxt.Size = new System.Drawing.Size(508, 18);
+            this.playlistInfoTxt.Size = new System.Drawing.Size(544, 18);
             this.playlistInfoTxt.TabIndex = 43;
             this.playlistInfoTxt.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 

@@ -108,6 +108,12 @@
     <Compile Include="Equalizer.Designer.cs">
       <DependentUpon>Equalizer.cs</DependentUpon>
     </Compile>
+    <Compile Include="Filter.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Filter.Designer.cs">
+      <DependentUpon>Filter.cs</DependentUpon>
+    </Compile>
     <Compile Include="FloatingOSDWindow.cs" />
     <Compile Include="FloatingWindow.cs" />
     <Compile Include="HotkeyData.cs" />
@@ -199,6 +205,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Equalizer.resx">
       <DependentUpon>Equalizer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Filter.resx">
+      <DependentUpon>Filter.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Options.resx">
       <DependentUpon>Options.cs</DependentUpon>

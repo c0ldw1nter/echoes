@@ -12,6 +12,7 @@ namespace Echoes
     public class XmlCacher
     {
         string filename;
+        string backupFilename;
         XDocument xml;
         public XmlCacher(string filename)
         {
@@ -196,7 +197,19 @@ namespace Echoes
 
         public void SaveXml()
         {
-            if (xml != null) xml.Save(filename);
+            try
+            {
+                if (xml != null)
+                {
+                    backupFilename=Path.GetFileNameWithoutExtension(filename) + ".bak";
+                    File.Move(filename, backupFilename);
+                    xml.Save(filename);
+                }
+            }
+            catch (Exception)
+            {
+                File.Move(backupFilename, filename);
+            }
         }
     }
 }

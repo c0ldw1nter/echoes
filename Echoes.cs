@@ -1757,9 +1757,10 @@ namespace Echoes
                     tagsLoaderWorker.RunWorkerAsync();
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 MessageBox.Show(filename + " is invalid.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                Console.WriteLine(e.StackTrace);
             }
         }
 
@@ -2161,6 +2162,7 @@ namespace Echoes
             dlg.Filter = "M3U playlists (*.m3u)|*.m3u";
             if (dlg.ShowDialog(this) == DialogResult.OK)
             {
+                if (!dlg.FileName.ToString().ToLower().EndsWith(".m3u")) dlg.FileName += ".m3u";
                 ExportM3u(dlg.FileName.ToString(), new List<Track>());
                 return dlg.FileName.ToString();
             }
