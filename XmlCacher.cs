@@ -202,12 +202,15 @@ namespace Echoes
                 if (xml != null)
                 {
                     backupFilename=Path.GetFileNameWithoutExtension(filename) + ".bak";
+                    if (File.Exists(backupFilename)) File.Delete(backupFilename);
                     File.Move(filename, backupFilename);
                     xml.Save(filename);
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                MessageBox.Show("Error with saving cache:"+Environment.NewLine+e.Message+Environment.NewLine+e.StackTrace);
+                if (File.Exists(filename)) File.Delete(filename);
                 File.Move(backupFilename, filename);
             }
         }
