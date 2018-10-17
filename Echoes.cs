@@ -748,7 +748,7 @@ namespace Echoes
                 else if(Path.GetExtension(file).ToLower()==".m3u")
                 {
                     AddKnownPlaylist(file);
-                    Console.WriteLine("Added playlist: " + Path.GetFileName(file));
+                    lastList = file;
                 }
             }
             if (loadingPlaylist.Count == 0)
@@ -914,8 +914,59 @@ namespace Echoes
                             invertSearch = true;
                         }
                         searchWrd = searchWrd.Trim();
-                        if (invertSearch) sourceList = sourceList.Where(x => !x.title.ContainsIgnoreCase(searchWrd) && !x.album.ContainsIgnoreCase(searchWrd) && !x.artist.ContainsIgnoreCase(searchWrd)).ToList();
-                        else sourceList = sourceList.Where(x => x.title.ContainsIgnoreCase(searchWrd) || x.album.ContainsIgnoreCase(searchWrd) || x.artist.ContainsIgnoreCase(searchWrd)).ToList();
+
+                        //process special keywords
+                        switch (searchWrd)
+                        {
+                            case "%monthago":
+                                sourceList = sourceList.Where(x => x.lastOpened < DateTime.Now.AddDays(-30)).ToList();
+                                break;
+                            case "%weekago":
+                                sourceList = sourceList.Where(x => x.lastOpened < DateTime.Now.AddDays(-7)).ToList();
+                                break;
+                            case "%dayago":
+                                sourceList = sourceList.Where(x => x.lastOpened < DateTime.Now.AddDays(-1)).ToList();
+                                break;
+                            case "%never":
+                                sourceList = sourceList.Where(x => x.lastOpened == DateTime.MinValue).ToList();
+                                break;
+                            default:
+                                //process keywords with =variable
+                                if (searchWrd.StartsWith("%daysago="))
+                                {
+                                    searchWrd = searchWrd.Split('=').Last();
+                                    try
+                                    {
+                                        int dayNumber = Int32.Parse(searchWrd);
+                                        sourceList = sourceList.Where(x => x.lastOpened < DateTime.Now.AddDays(dayNumber*-1)).ToList();
+                                    }
+                                    catch (Exception) { }
+                                    break;
+                                }
+                                else if (searchWord.StartsWith("%artist="))
+                                {
+                                    searchWrd = searchWrd.Split('=').Last().ToLower();
+                                    sourceList = sourceList.Where(x => x.artist.ToLower() == searchWrd).ToList();
+                                    break;
+                                }
+                                else if (searchWord.StartsWith("%title="))
+                                {
+                                    searchWrd = searchWrd.Split('=').Last().ToLower();
+                                    sourceList = sourceList.Where(x => x.title.ToLower() == searchWrd).ToList();
+                                    break;
+                                }
+                                else if (searchWord.StartsWith("%album="))
+                                {
+                                    searchWrd = searchWrd.Split('=').Last().ToLower();
+                                    sourceList = sourceList.Where(x => x.album.ToLower().ToLower() == searchWrd).ToList();
+                                    break;
+                                }
+
+                                //default search processor
+                                if (invertSearch) sourceList = sourceList.Where(x => !x.title.ContainsIgnoreCase(searchWrd) && !x.album.ContainsIgnoreCase(searchWrd) && !x.artist.ContainsIgnoreCase(searchWrd)).ToList();
+                                else sourceList = sourceList.Where(x => x.title.ContainsIgnoreCase(searchWrd) || x.album.ContainsIgnoreCase(searchWrd) || x.artist.ContainsIgnoreCase(searchWrd)).ToList();
+                                break;
+                        }
                     }
                     tracksWithDupes.AddRange(sourceList);
                 }
@@ -962,7 +1013,7 @@ namespace Echoes
                     if (t != "<No playlist>" && t!="<Cache>")
                     {
                         Track tr = new Track(knownPlaylists[i - 2], t);
-                        tr.num = i;
+                        tr.num = i-1;
                         playlist.Add(tr);
                     }
                 }
@@ -1654,7 +1705,7 @@ namespace Echoes
             playlistSelectorCombo.DataSource = playlistItems;
         }
 
-        private void ExportM3u(string filename, List<Track> plist)
+        public void ExportM3u(string filename, List<Track> plist)
         {
             List<string> filenames = new List<string>();
             List<string> artists = new List<string>();
@@ -2335,7 +2386,7 @@ namespace Echoes
         {
             if (streamLoaded)
             {
-                if (Bass.BASS_ChannelIsActive(stream) == BASSActive.BASS_ACTIVE_PLAYING | Bass.BASS_ChannelIsActive(stream) == BASSActive.BASS_ACTIVE_PAUSED)
+                if (Bass.BASS_ChannelIsActive(stream) == BASSActive.BASS_ACTIVE_PLAYING )
                 {
                     //-- row flashing --
 
@@ -2979,10 +3030,6 @@ namespace Echoes
             ShowSelectedInExplorer.FilesOrFolders(filenames);
         }
 
-        private void OpenInExplorer(string filename)
-        {
-            ShowSelectedInExplorer.FilesOrFolders();
-        }
         void OpenDupeFinder()
         {
             df = new DupeFinder(playlist);
@@ -3164,48 +3211,108 @@ namespace Echoes
                             };
                         }
                         miRemove.MenuItems.Add(miRemoveMissing);
-                        MenuItem miMoveUp = new MenuItem("Move up");
+                        MenuItem miMoveUp = new MenuItem("Up");
                         miMoveUp.Click += (theSender, eventArgs) =>
                         {
                             MoveSelectedUp();
                         };
-                        MenuItem miMoveDown = new MenuItem("Move down");
+                        MenuItem miMoveDown = new MenuItem("Down");
                         miMoveDown.Click += (theSender, eventArgs) =>
                         {
                             MoveSelectedDown();
                         };
-                        MenuItem miMoveToTop = new MenuItem("Move to top");
+                        MenuItem miMoveToTop = new MenuItem("To top");
                         miMoveToTop.Click += (theSender, eventArgs) =>
                         {
                             MoveSelectedToTop();
                         };
-                        MenuItem miMoveToBottom = new MenuItem("Move to bottom");
+                        MenuItem miMoveToBottom = new MenuItem("To bottom");
                         miMoveToBottom.Click += (theSender, eventArgs) =>
                         {
                             MoveSelectedToBottom();
                         };
+                        MenuItem miMove = new MenuItem("Move");
+                        miMove.MenuItems.Add(miMoveUp);
+                        miMove.MenuItems.Add(miMoveDown);
+                        miMove.MenuItems.Add(miMoveToTop);
+                        miMove.MenuItems.Add(miMoveToBottom);
+
+                        MenuItem miSync = new MenuItem("Synchronize...");
+                        miSync.Click += (theSender, eventArgs) =>
+                        {
+                            SynchronizePlaylist();
+                        };
+
+                        MenuItem miInvertSelection = new MenuItem("Invert selection");
+                        miInvertSelection.Click += (theSender, eventArgs) =>
+                        {
+                            InvertSelection();
+                        };
                         cm.MenuItems.Add(miAddToPlaylist);
+                        cm.MenuItems.Add(miMove);
+                        cm.MenuItems.Add(miRemove);
                         cm.MenuItems.Add(miEditTags);
                         cm.MenuItems.Add(miConvert);
+                        cm.MenuItems.Add(miSync);
                         if (includeFindFrom)
                         {
                             cm.MenuItems.Add(miFindFrom);
                             miRemove.MenuItems.Add(miRemoveWith);
                             miRemove.MenuItems.Add(miRemoveWithout);
                         }
-                        cm.MenuItems.Add(miRemove);
+                        cm.MenuItems.Add(miInvertSelection);
                         cm.MenuItems.Add(miRenumber);
                         cm.MenuItems.Add(miReloadTags);
                         cm.MenuItems.Add(miDupes);
-                        cm.MenuItems.Add(miMoveUp);
-                        cm.MenuItems.Add(miMoveDown);
-                        cm.MenuItems.Add(miMoveToTop);
-                        cm.MenuItems.Add(miMoveToBottom);
                     }
                     cm.Show(trackGrid, e.Location);
                 }
                 catch (Exception) {
                 }
+            }
+        }
+
+        private void SynchronizePlaylist()
+        {
+            using (var fbd = new FolderBrowserDialog())
+            {
+                DialogResult result = fbd.ShowDialog();
+                if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
+                {
+                    if (Exporter.inProgress) MessageBox.Show("Sync already in progress. Wait for it to finish.");
+                    else
+                    {
+                        string playlistPath;
+                        bool abort = false;
+                        if (!File.Exists(currentPlaylist))
+                        {
+                            EnterTextForm etf = new EnterTextForm("Enter playlist name", "");
+                            if (etf.ShowDialog() != DialogResult.OK)
+                            {
+                                abort = true;
+                            }
+                            else
+                            {
+                                playlistPath = etf.enteredText.Text;
+                            }
+                        }
+                        else playlistPath = currentPlaylist;
+                        if (!abort)
+                        {
+                            Exporter xporter = new Exporter(playlist, fbd.SelectedPath);
+                            Exporter.playlistName = Path.GetFileName(currentPlaylist);
+                            xporter.ShowDialog();
+                        }
+                    }
+                }
+            }
+        }
+
+        private void InvertSelection()
+        {
+            foreach (DataGridViewRow rw in trackGrid.Rows)
+            {
+                rw.Selected = !rw.Selected;
             }
         }
 

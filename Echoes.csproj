@@ -108,6 +108,12 @@
     <Compile Include="Equalizer.Designer.cs">
       <DependentUpon>Equalizer.cs</DependentUpon>
     </Compile>
+    <Compile Include="Exporter.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Exporter.Designer.cs">
+      <DependentUpon>Exporter.cs</DependentUpon>
+    </Compile>
     <Compile Include="Filter.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -205,6 +211,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Equalizer.resx">
       <DependentUpon>Equalizer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Exporter.resx">
+      <DependentUpon>Exporter.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Filter.resx">
       <DependentUpon>Filter.cs</DependentUpon>

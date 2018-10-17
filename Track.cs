@@ -71,6 +71,14 @@ namespace Echoes
                 listened = 0;
             }
         }
+        public void GetSize()
+        {
+            try
+            {
+                size = new FileInfo(filename).Length;
+            }
+            catch (Exception) { }
+        }
         public string filename { get; set; }
         public string title { get; set; }
         public string artist { get; set; }

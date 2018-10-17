@@ -1,0 +1,179 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.IO;
+using System.Security.Cryptography;
+
+namespace Echoes
+{
+    public partial class Exporter : Form
+    {
+        public static bool inProgress = false;
+        public static int progress, total;
+        static List<ExporterMessage> messagesToLog = new List<ExporterMessage>();
+        public static string playlistName;
+        int updatedCount;
+        List<Track> playlist;
+        string outPath;
+        List<Track> newPlaylist = new List<Track>();
+        List<PathAndSize> pathsNSizes = new List<PathAndSize>();
+        public Exporter(List<Track> playlist, string outPath)
+        {
+            this.playlist = playlist;
+            this.outPath = outPath;
+            InitializeComponent();
+            this.SetColors();
+            if (playlist.Count == 0 || !Directory.Exists(outPath))
+            {
+                infoLabel.Text = "Playlist empty or directory doesn't exist.";
+                return;
+            }
+            List<string> outPathFiles=Directory.EnumerateFiles(outPath).ToList();
+            foreach (string s in outPathFiles)
+            {
+                PathAndSize pns = new PathAndSize(s);
+                pns.size = new FileInfo(s).Length;
+                pathsNSizes.Add(pns);
+            }
+            foreach (Track t in playlist) t.GetSize();
+            exporterWorker.RunWorkerAsync();
+            total = playlist.Count;
+            updatedCount = 0;
+        }
+
+        string GetMD5(string filename)
+        {
+            using (var md5 = MD5.Create())
+            {
+                using (var stream = File.OpenRead(filename))
+                {
+                    return Encoding.Default.GetString(md5.ComputeHash(stream));
+                }
+            }
+        }
+
+        string PathHasFile(Track t)
+        {
+            foreach (PathAndSize pns in pathsNSizes)
+            {
+                if (pns.size == t.size)
+                {
+                    if (Path.GetFileName(t.filename).Equals(Path.GetFileName(pns.path)))
+                    {
+                        return pns.path;
+                    }
+                    if(GetMD5(t.filename).Equals(GetMD5(pns.path))) {
+                        return pns.path;
+                    }
+                }
+            }
+            return String.Empty;
+        }
+
+        string GetFreeFilename(string path, string file)
+        {
+
+            string newPath = Path.Combine(path, Path.GetFileName(file));
+            int counter=1;
+            while (File.Exists(newPath))
+            {
+                messagesToLog.Add(new ExporterMessage(progress + ". " + file + " name already exists. change attempt " + counter, Color.Yellow));
+                newPath = Path.Combine(path, Path.GetFileNameWithoutExtension(file) + "_" + counter + Path.GetExtension(file));
+                counter++;
+            }
+            return newPath;
+        }
+
+        private void exporterWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            inProgress = true;
+            foreach (Track t in playlist)
+            {
+                progress = playlist.IndexOf(t)+1;
+                string maybePath=PathHasFile(t);
+                if (maybePath.Equals(String.Empty))
+                {
+                    //doesnt have file, copy
+                    messagesToLog.Add(new ExporterMessage(progress + ". " + Path.GetFileName(t.filename) + " not found.", Color.Red));
+                    maybePath = GetFreeFilename(outPath, Path.GetFileName(t.filename));
+                    try
+                    {
+                        File.Copy(t.filename, maybePath);
+                        updatedCount++;
+                    }
+                    catch (Exception exc)
+                    {
+                        maybePath = String.Empty;
+                        messagesToLog.Add(new ExporterMessage(progress + ". " + Path.GetFileName(t.filename) + " error copying!!", Color.Magenta));
+                        //MessageBox.Show(exc.StackTrace);
+                    }
+                }
+                else
+                {
+                    //already in
+                    messagesToLog.Add(new ExporterMessage(progress + ". " + Path.GetFileName(t.filename) + " found.", Color.Lime));
+                    if (!Path.GetFileName(t.filename).Equals(Path.GetFileName(maybePath)))
+                    {
+                        messagesToLog.Add(new ExporterMessage(progress + ". " +"Different filename: "+Path.GetFileName(maybePath), Color.Cyan));
+                    }
+                }
+                //this down here is with double protection so you dont get an unexisting file in playlist (see catch above)
+                if (!maybePath.Equals(String.Empty)) newPlaylist.Add(new Track(maybePath, Path.GetFileName(maybePath)));
+                exporterWorker.ReportProgress(0);
+            }
+        }
+
+        void PrintMessage()
+        {
+            while (messagesToLog.Count > 0)
+            {
+                ExporterMessage dis = messagesToLog.First();
+                log.AppendText(dis.text+Environment.NewLine, dis.color);
+                messagesToLog.Remove(dis);
+            }
+        }
+
+        void UpdateProgressLabel()
+        {
+            infoLabel.Text = "Processing file " + progress + "/" + total+" ...";
+        }
+
+        private void exporterWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            UpdateProgressLabel();
+            PrintMessage();
+        }
+
+        private void exporterWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            Program.mainWindow.ExportM3u(Path.Combine(outPath, playlistName), newPlaylist);
+            PrintMessage();
+            infoLabel.Text = "Done. Added "+updatedCount+" new files. Playlist total: "+newPlaylist.Count;
+            inProgress = false;
+        }
+    }
+
+    class PathAndSize
+    {
+        public PathAndSize(string path)
+        {
+            this.path = path;
+        }
+        public string path;
+        public long size;
+    }
+
+    class ExporterMessage
+    {
+        public ExporterMessage(string text) { this.text = text; this.color = Program.mainWindow.controlForeColor; }
+        public ExporterMessage(string text, Color color) { this.text = text; this.color = color; }
+        public string text;
+        public Color color;
+    }
+}

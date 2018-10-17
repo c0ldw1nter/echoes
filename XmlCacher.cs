@@ -201,7 +201,7 @@ namespace Echoes
             {
                 if (xml != null)
                 {
-                    backupFilename=Path.GetFileNameWithoutExtension(filename) + ".bak";
+                    backupFilename=Path.ChangeExtension(filename, "bak");
                     if (File.Exists(backupFilename)) File.Delete(backupFilename);
                     File.Move(filename, backupFilename);
                     xml.Save(filename);
