@@ -59,6 +59,7 @@ namespace Echoes
             this.playlistSelectorCombo = new ModifiedControls.ModifiedComboBox();
             this.volumeBar = new ModifiedControls.ModifiedProgressBarVol();
             this.seekBar = new ModifiedControls.ModifiedProgressBarSeek();
+            this.loadTrackWorker = new System.ComponentModel.BackgroundWorker();
             ((System.ComponentModel.ISupportInitialize)(this.trackGrid)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.transposeChangerNum)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.fwdBtn)).BeginInit();
@@ -462,6 +463,11 @@ namespace Echoes
             this.seekBar.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseMove);
             this.seekBar.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseUp);
             // 
+            // loadTrackWorker
+            // 
+            this.loadTrackWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.loadTrackWorker_DoWork);
+            this.loadTrackWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.loadTrackWorker_RunWorkerCompleted);
+            // 
             // Echoes
             // 
             this.AllowDrop = true;
@@ -555,6 +561,7 @@ namespace Echoes
         private ModifiedButton eqButton;
         public System.ComponentModel.BackgroundWorker normalizerWorker;
         private Label playlistInfoTxt;
+        private System.ComponentModel.BackgroundWorker loadTrackWorker;
     }
 }
 

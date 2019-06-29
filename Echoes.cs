@@ -157,6 +157,8 @@ namespace Echoes
         float normalizeSmoothingTickSize;
 
         public Track nowPlaying = null;
+        private Track trackToLoad;
+        Track trackToReload;
         public List<Track> playlist = new List<Track>();
         public List<string> supportedModuleTypes = new List<string>() { ".mo3", ".it", ".xm", ".s3m", ".mtm", ".mod", ".umx" };
         public List<string> supportedAudioTypes = new List<string>() { ".mp3", ".mp2", ".mp1", ".wav", ".ogg", ".wma", ".m4a", ".flac" };
@@ -499,8 +501,7 @@ namespace Echoes
                     if (trackGrid.Rows.Count - 1 >= currRow)
                     {
                         Track t = (Track)trackGrid.Rows[currRow].DataBoundItem;
-                        LoadAudioFile(t);
-                        Play();
+                        LoadAudio(t);
                     }
                 }
             }
@@ -858,7 +859,7 @@ namespace Echoes
             }
             else
             {
-                LoadAudioFile(t);
+                LoadAudio(t);
             }
         }
 
@@ -1837,8 +1838,7 @@ namespace Echoes
                     //nowPlaying = t;
                     if (File.Exists(t.filename))
                     {
-                        LoadAudioFile(t);
-                        Play();
+                        LoadAudio(t);
                     }
                     else
                     {
@@ -1860,8 +1860,7 @@ namespace Echoes
                 else
                 {
                     Track t = (Track)trackGrid.Rows[currentRow.Index - 1].DataBoundItem;
-                    LoadAudioFile(t);
-                    Play();
+                    LoadAudio(t);
                 }
             }
             catch (Exception) { }
@@ -1916,7 +1915,7 @@ namespace Echoes
             Bass.BASS_Init(-1, 44100, BASSInit.BASS_DEVICE_DEFAULT, this.Handle);
         }
 
-        public void LoadAudioFile(Track t)
+        void PrepareToLoadFile(Track t)
         {
             if (DSPGain != null)
             {
@@ -1927,18 +1926,12 @@ namespace Echoes
             if (streamLoaded) Bass.BASS_ChannelStop(stream);
             FlushTimeListened(nowPlaying);
             Bass.BASS_Free();
-            /*if (!File.Exists(t.filename))
-            {
-                PointToMissingFile(t);
-                return;
-            }*/
+
             if (playlist != null && playlist.Contains(t))
             {
                 int numzor = t.num;
                 int index = playlist.IndexOf(playlist.First(x => x.num == t.num));
-                //t.gettags
                 playlist[index].num = numzor;
-                //nowPlaying = playlist[index];
             }
             t.GetTags();
             t.lastOpened = DateTime.Now;
@@ -1946,76 +1939,14 @@ namespace Echoes
             if (!tagsLoaderWorker.IsBusy) try { xmlCacher.AddOrUpdate(new List<Track>() { t }); }
                 catch (Exception) { }
             InitSoundDevice();
-            /*string ext=Path.GetExtension(t.filename.ToLower());
-            if (supportedModuleTypes.Contains(ext))
-            {
-                stream = Bass.BASS_MusicLoad(t.filename, 0, 0, 
-                    BASSFlag.BASS_MUSIC_SINCINTER | 
-                    BASSFlag.BASS_MUSIC_PRESCAN | 
-                    BASSFlag.BASS_SAMPLE_SOFTWARE | 
-                    BASSFlag.BASS_MIXER_DOWNMIX | 
-                    BASSFlag.BASS_MUSIC_RAMPS, 0);
-            }
-            else if (supportedMidiTypes.Contains(ext))
-            {
-                if (!InitMidi()) { nowPlaying = null; return; }
-                BassMidi.BASS_MIDI_StreamSetFonts(0, midiFonts, midiFonts.Length);
-                stream = BassMidi.BASS_MIDI_StreamCreateFile(t.filename, 0, 0, BASSFlag.BASS_DEFAULT | BASSFlag.BASS_SAMPLE_SOFTWARE, 0);
-            }else if (ext==".flac") {
-                stream = BassFlac.BASS_FLAC_StreamCreateFile(t.filename, 0, 0, BASSFlag.BASS_DEFAULT | BASSFlag.BASS_SAMPLE_SOFTWARE);
-            }
-            else if (ext == ".wma")
-            {
-                stream = BassWma.BASS_WMA_StreamCreateFile(t.filename, 0, 0, BASSFlag.BASS_DEFAULT | BASSFlag.BASS_SAMPLE_SOFTWARE);
-            }
-            else if (supportedAudioTypes.Contains(ext))
-            {
-                stream = Bass.BASS_StreamCreateFile(t.filename, 0, 0, BASSFlag.BASS_DEFAULT | BASSFlag.BASS_SAMPLE_SOFTWARE);
-            }
-            else
-            {
-                streamLoaded = false;
-                return;
-            }*/
+        }
+
+        public void LoadAudioFile(Track t)
+        {
             if (!LoadStream(t.filename, out stream, BASSFlag.BASS_DEFAULT | BASSFlag.BASS_SAMPLE_SOFTWARE))
             {
                 streamLoaded = false;
                 return;
-            }
-            /*mixer = BassMix.BASS_Mixer_StreamCreate(44100, 2, BASSFlag.BASS_DEFAULT);
-            BassMix.BASS_Mixer_StreamAddChannel(mixer, stream, BASSFlag.BASS_DEFAULT);*/
-            /*float peak=0;
-            float gainFactor=Utils.GetNormalizationGain(t.filename,0.2f,-1d,-1d,ref peak);*/
-            //Bass.BASS_ChannelSetDSP(stream, gainProc, IntPtr.Zero, 0);
-
-            if (showWaveform || normalize) CreateWaveform();
-
-            //if(normalize) Normalize();
-            DefineEQ();
-            ApplyEQ();
-            /*if (showWaveform)
-            {
-                CreateWaveform();
-            }*/
-            if (Bass.BASS_ErrorGetCode() == 0 && GetLength()>0)
-            {
-                Bass.BASS_ChannelSetPosition(stream, 0d);
-                SetVolume(volume);
-                if (!saveTranspose) transposeChangerNum.Value = 0m;
-                SetFrequency();
-                streamLoaded = true;
-                SetLooping();
-                endSync = new SYNCPROC(playbackEnded);
-                stallSync = new SYNCPROC(playbackStalled);
-                Bass.BASS_ChannelSetSync(stream, BASSSync.BASS_SYNC_END, 0, endSync, IntPtr.Zero);
-                DisplayTrackInfo(nowPlaying);
-                ScrollGridTo(HighlightPlayingTrack());
-                RefreshPlayIcon();
-                if (trackChangePopup) ShowTrackChangedPopup();
-            }
-            else
-            {
-                AdvancePlayer();
             }
         }
 
@@ -2043,25 +1974,6 @@ namespace Echoes
             }
             catch (Exception) { }
             volumeBar.Refresh();
-            /*if (normalizerWorker.IsBusy)
-            {
-                Console.WriteLine("Cancelling normalization of " + toNormalize.title);
-                normalizerRestart = true;
-                normalizerWorker.CancelAsync();
-                while (normalizerWorker.IsBusy)
-                Application.DoEvents();
-                toNormalize = nowPlaying;
-                normalizerWorker.RunWorkerAsync();
-            }
-            else
-            {
-                if (nowPlaying == null) return;
-                toNormalize = nowPlaying;
-                normalizerWorker.RunWorkerAsync();
-            }
-            volumeBar.Refresh();
-            Console.WriteLine("Normalizing "+toNormalize.title);
-            //Console.WriteLine("Peak: " + GetPeak(t.filename));*/
         }
 
         public bool LoadStream(string filename, out int outStream, BASSFlag flags)
@@ -2281,7 +2193,6 @@ namespace Echoes
                     if (File.Exists(t.filename))
                     {
                         OpenFile(t);
-                        Play();
                         break;
                     }
                 }
@@ -2294,7 +2205,6 @@ namespace Echoes
                     if (File.Exists(t.filename))
                     {
                         OpenFile(t);
-                        Play();
                         break;
                     }
                 }
@@ -2743,10 +2653,6 @@ namespace Echoes
                         {
                             OpenFile(theTrack);
                         }
-                        if (nowPlaying != null)
-                        {
-                            Play();
-                        }
                     }
                     catch (Exception zz)
                     {
@@ -3073,8 +2979,14 @@ namespace Echoes
                     {
                         DeleteSelected();
                     };
+                    MenuItem miSync = new MenuItem("Synchronize...");
+                    miSync.Click += (theSender, eventArgs) =>
+                    {
+                        SynchronizePlaylist();
+                    };
                     cm.MenuItems.Add(miShowExplorer);
                     cm.MenuItems.Add(miDelete);
+                    cm.MenuItems.Add(miSync);
                     if (displayedItems != ItemType.Playlist)
                     {
                         MenuItem miAddToPlaylist = new MenuItem("Add to playlist");
@@ -3237,11 +3149,7 @@ namespace Echoes
                         miMove.MenuItems.Add(miMoveToTop);
                         miMove.MenuItems.Add(miMoveToBottom);
 
-                        MenuItem miSync = new MenuItem("Synchronize...");
-                        miSync.Click += (theSender, eventArgs) =>
-                        {
-                            SynchronizePlaylist();
-                        };
+                        
 
                         MenuItem miInvertSelection = new MenuItem("Invert selection");
                         miInvertSelection.Click += (theSender, eventArgs) =>
@@ -3253,7 +3161,6 @@ namespace Echoes
                         cm.MenuItems.Add(miRemove);
                         cm.MenuItems.Add(miEditTags);
                         cm.MenuItems.Add(miConvert);
-                        cm.MenuItems.Add(miSync);
                         if (includeFindFrom)
                         {
                             cm.MenuItems.Add(miFindFrom);
@@ -3284,23 +3191,42 @@ namespace Echoes
                     {
                         string playlistPath;
                         bool abort = false;
-                        if (!File.Exists(currentPlaylist))
+                        if (displayedItems != ItemType.Playlist)
                         {
-                            EnterTextForm etf = new EnterTextForm("Enter playlist name", "");
-                            if (etf.ShowDialog() != DialogResult.OK)
+                            if (!File.Exists(currentPlaylist))
                             {
-                                abort = true;
+                                EnterTextForm etf = new EnterTextForm("Enter playlist name", "");
+                                if (etf.ShowDialog() != DialogResult.OK)
+                                {
+                                    abort = true;
+                                }
+                                else
+                                {
+                                    playlistPath = etf.enteredText.Text;
+                                }
+                            }
+                            else playlistPath = currentPlaylist;
+                        }
+                        if (!abort)
+                        {
+                            List<List<Track>> listOfLists = new List<List<Track>>();
+                            List<string> playlistNames = new List<string>();
+                            if (displayedItems == ItemType.Playlist)
+                            {
+                                foreach (DataGridViewRow rw in trackGrid.SelectedRows)
+                                {
+                                    Track t = (Track)rw.DataBoundItem;
+                                    List<Track> readPlist = ReadM3u(t.filename);
+                                    listOfLists.Add(readPlist);
+                                    playlistNames.Add(Path.GetFileName(t.filename));
+                                }
                             }
                             else
                             {
-                                playlistPath = etf.enteredText.Text;
+                                listOfLists.Add(playlist);
+                                playlistNames.Add(Path.GetFileName(currentPlaylist));
                             }
-                        }
-                        else playlistPath = currentPlaylist;
-                        if (!abort)
-                        {
-                            Exporter xporter = new Exporter(playlist, fbd.SelectedPath);
-                            Exporter.playlistName = Path.GetFileName(currentPlaylist);
+                            Exporter xporter = new Exporter(listOfLists, playlistNames, fbd.SelectedPath);
                             xporter.ShowDialog();
                         }
                     }
@@ -3980,8 +3906,6 @@ namespace Echoes
             ShowEq();
         }
 
-        DateTime normalizationBenchmark;
-
         private void normalizerWorker_DoWork(object sender, DoWorkEventArgs e)
         {
 
@@ -4027,7 +3951,6 @@ namespace Echoes
             //Console.WriteLine("----------------------------");
             Console.Write("Peak: " + peak);
             Console.Write(" | Gain: " + normGain);
-            Console.Write(" | Processed in " + (normBenchmarkEnd - normalizationBenchmark).TotalSeconds + " seconds.");
             if (!e.Cancelled)
             {
                 try
@@ -4073,6 +3996,71 @@ namespace Echoes
         private void Echoes_Enter(object sender, EventArgs e)
         {
             kh.SetForegroundWindow();
+        }
+
+        private void loadTrackWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            Console.WriteLine(trackToLoad.filename);
+            LoadAudioFile(trackToLoad);
+        }
+
+        private void loadTrackWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            //after-load sequence
+            if (showWaveform || normalize) CreateWaveform();
+
+            DefineEQ();
+            ApplyEQ();
+            if (Bass.BASS_ErrorGetCode() == 0 && GetLength() > 0)
+            {
+                Bass.BASS_ChannelSetPosition(stream, 0d);
+                SetVolume(volume);
+                if (!saveTranspose) transposeChangerNum.Value = 0m;
+                SetFrequency();
+                streamLoaded = true;
+                SetLooping();
+                endSync = new SYNCPROC(playbackEnded);
+                stallSync = new SYNCPROC(playbackStalled);
+                Bass.BASS_ChannelSetSync(stream, BASSSync.BASS_SYNC_END, 0, endSync, IntPtr.Zero);
+                DisplayTrackInfo(nowPlaying);
+                ScrollGridTo(HighlightPlayingTrack());
+                RefreshPlayIcon();
+                if (trackChangePopup) ShowTrackChangedPopup();
+            }
+            else
+            {
+                AdvancePlayer();
+            }
+            //
+
+            if (trackToReload != null)
+            {
+                trackToLoad = trackToReload;
+                trackToReload = null;
+                loadTrackWorker.RunWorkerAsync();
+            }
+            else
+            {
+                if (nowPlaying != null) Play();
+            }
+        }
+
+        public void LoadAudio(Track t)
+        {
+            if (loadTrackWorker.IsBusy)
+            {
+                trackToReload = t;
+            }
+            else
+            {
+                trackText.Text = "Loading...";
+                trackToReload = null;
+                trackToLoad = t;
+
+                PrepareToLoadFile(t);
+
+                loadTrackWorker.RunWorkerAsync();
+            }
         }
     }
 }

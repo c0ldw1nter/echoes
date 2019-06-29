@@ -23,7 +23,7 @@ namespace Echoes
                 this.name = name;
             }
         }
-        List<StatsItem> stats;
+        SortableBindingList<StatsItem> stats;
         List<Track> tracks;
         public Statistics(List<Track> tracks)
         {
@@ -43,7 +43,7 @@ namespace Echoes
 
         void CalcTracks()
         {
-            stats = new List<StatsItem>();
+            stats = new SortableBindingList<StatsItem>();
             foreach (Track t in tracks)
             {
                 StatsItem itm=new StatsItem(t.title);
@@ -52,14 +52,14 @@ namespace Echoes
                 itm.listened = t.listened;
                 stats.Add(itm);
             }
-            stats = stats.OrderByDescending(x => x.listened).ToList();
+            stats = new SortableBindingList<StatsItem>(stats.OrderByDescending(x => x.listened).ToList());
             RenumberStats();
             topTracksGrid.DataSource = stats;
         }
 
         void CalcArtists()
         {
-            stats = new List<StatsItem>();
+            stats = new SortableBindingList<StatsItem>();
             foreach (Track t in tracks)
             {
                 if (String.IsNullOrWhiteSpace(t.artist)) continue;
@@ -75,14 +75,14 @@ namespace Echoes
                     itm.listened = itm.listened + t.listened;
                 }
             }
-            stats = stats.OrderByDescending(x => x.listened).ToList();
+            stats = new SortableBindingList<StatsItem>(stats.OrderByDescending(x => x.listened).ToList());
             RenumberStats();
             topArtistsGrid.DataSource = stats;
         }
 
         void CalcAlbums()
         {
-            stats = new List<StatsItem>();
+            stats = new SortableBindingList<StatsItem>();
             foreach (Track t in tracks)
             {
                 if (String.IsNullOrWhiteSpace(t.album)) continue;
@@ -98,7 +98,7 @@ namespace Echoes
                     itm.listened = itm.listened + t.listened;
                 }
             }
-            stats = stats.OrderByDescending(x => x.listened).ToList();
+            stats = new SortableBindingList<StatsItem>(stats.OrderByDescending(x => x.listened).ToList());
             RenumberStats();
             topAlbumsGrid.DataSource = stats;
         }
@@ -171,8 +171,7 @@ namespace Echoes
             if (e.RowIndex < 0) return;
             DataGridViewRow rw = topTracksGrid.Rows[e.RowIndex];
             Program.mainWindow.StopPlayer();
-            Program.mainWindow.LoadAudioFile(((StatsItem)rw.DataBoundItem).track);
-            Program.mainWindow.Play();
+            Program.mainWindow.LoadAudio(((StatsItem)rw.DataBoundItem).track);
         }
 
         void FilterList(DataGridView dgv, string word)

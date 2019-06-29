@@ -264,7 +264,6 @@ namespace Echoes
             }
             Program.mainWindow.StopPlayer();
             Program.mainWindow.OpenFile(t);
-            if (Program.mainWindow.nowPlaying != null) Program.mainWindow.Play();
         }
 
         private void button1_Click(object sender, EventArgs e)

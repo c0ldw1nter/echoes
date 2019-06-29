@@ -15,21 +15,23 @@ namespace Echoes
     public partial class Exporter : Form
     {
         public static bool inProgress = false;
-        public static int progress, total;
+        public static int progress, total, playlistIndex;
         static List<ExporterMessage> messagesToLog = new List<ExporterMessage>();
         public static string playlistName;
         int updatedCount;
-        List<Track> playlist;
+        List<List<Track>> listOfLists;
+        List<string> playlistNames;
         string outPath;
         List<Track> newPlaylist = new List<Track>();
         List<PathAndSize> pathsNSizes = new List<PathAndSize>();
-        public Exporter(List<Track> playlist, string outPath)
+        public Exporter(List<List<Track>> listOfLists, List<string> playlistNames, string outPath)
         {
-            this.playlist = playlist;
+            this.playlistNames=playlistNames;
+            this.listOfLists = listOfLists;
             this.outPath = outPath;
             InitializeComponent();
             this.SetColors();
-            if (playlist.Count == 0 || !Directory.Exists(outPath))
+            if (listOfLists.Count == 0 || !Directory.Exists(outPath))
             {
                 infoLabel.Text = "Playlist empty or directory doesn't exist.";
                 return;
@@ -41,10 +43,8 @@ namespace Echoes
                 pns.size = new FileInfo(s).Length;
                 pathsNSizes.Add(pns);
             }
-            foreach (Track t in playlist) t.GetSize();
+            
             exporterWorker.RunWorkerAsync();
-            total = playlist.Count;
-            updatedCount = 0;
         }
 
         string GetMD5(string filename)
@@ -93,39 +93,49 @@ namespace Echoes
         private void exporterWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             inProgress = true;
-            foreach (Track t in playlist)
+            updatedCount = 0;
+            for (int i = 0; i < listOfLists.Count; i++)
             {
-                progress = playlist.IndexOf(t)+1;
-                string maybePath=PathHasFile(t);
-                if (maybePath.Equals(String.Empty))
-                {
-                    //doesnt have file, copy
-                    messagesToLog.Add(new ExporterMessage(progress + ". " + Path.GetFileName(t.filename) + " not found.", Color.Red));
-                    maybePath = GetFreeFilename(outPath, Path.GetFileName(t.filename));
-                    try
-                    {
-                        File.Copy(t.filename, maybePath);
-                        updatedCount++;
-                    }
-                    catch (Exception exc)
-                    {
-                        maybePath = String.Empty;
-                        messagesToLog.Add(new ExporterMessage(progress + ". " + Path.GetFileName(t.filename) + " error copying!!", Color.Magenta));
-                        //MessageBox.Show(exc.StackTrace);
-                    }
-                }
-                else
-                {
-                    //already in
-                    messagesToLog.Add(new ExporterMessage(progress + ". " + Path.GetFileName(t.filename) + " found.", Color.Lime));
-                    if (!Path.GetFileName(t.filename).Equals(Path.GetFileName(maybePath)))
-                    {
-                        messagesToLog.Add(new ExporterMessage(progress + ". " +"Different filename: "+Path.GetFileName(maybePath), Color.Cyan));
-                    }
-                }
-                //this down here is with double protection so you dont get an unexisting file in playlist (see catch above)
-                if (!maybePath.Equals(String.Empty)) newPlaylist.Add(new Track(maybePath, Path.GetFileName(maybePath)));
+                playlistIndex = i + 1;
                 exporterWorker.ReportProgress(0);
+                List<Track> playlist = listOfLists[i];
+                playlistName = playlistNames[i];
+                foreach (Track t in playlist) t.GetSize();
+                total = playlist.Count;
+                foreach (Track t in playlist)
+                {
+                    progress = playlist.IndexOf(t) + 1;
+                    string maybePath = PathHasFile(t);
+                    if (maybePath.Equals(String.Empty))
+                    {
+                        //doesnt have file, copy
+                        messagesToLog.Add(new ExporterMessage(progress + ". " + Path.GetFileName(t.filename) + " not found.", Color.Red));
+                        maybePath = GetFreeFilename(outPath, Path.GetFileName(t.filename));
+                        try
+                        {
+                            File.Copy(t.filename, maybePath);
+                            updatedCount++;
+                        }
+                        catch (Exception exc)
+                        {
+                            maybePath = String.Empty;
+                            messagesToLog.Add(new ExporterMessage(progress + ". " + Path.GetFileName(t.filename) + " error copying!!", Color.Magenta));
+                            //MessageBox.Show(exc.StackTrace);
+                        }
+                    }
+                    else
+                    {
+                        //already in
+                        messagesToLog.Add(new ExporterMessage(progress + ". " + Path.GetFileName(t.filename) + " found.", Color.Lime));
+                        if (!Path.GetFileName(t.filename).Equals(Path.GetFileName(maybePath)))
+                        {
+                            messagesToLog.Add(new ExporterMessage(progress + ". " + "Different filename: " + Path.GetFileName(maybePath), Color.Cyan));
+                        }
+                    }
+                    //this down here is with double protection so you dont get an unexisting file in playlist (see catch above)
+                    if (!maybePath.Equals(String.Empty)) newPlaylist.Add(new Track(maybePath, Path.GetFileName(maybePath)));
+                    exporterWorker.ReportProgress(0);
+                }
             }
         }
 
@@ -141,7 +151,7 @@ namespace Echoes
 
         void UpdateProgressLabel()
         {
-            infoLabel.Text = "Processing file " + progress + "/" + total+" ...";
+            infoLabel.Text = "[Playlist "+playlistIndex+"/"+listOfLists.Count+"]"+"Processing file " + progress + "/" + total+" ...";
         }
 
         private void exporterWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
