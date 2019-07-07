@@ -54,12 +54,12 @@ namespace Echoes
             this.repeatBtn = new System.Windows.Forms.PictureBox();
             this.normalizerWorker = new System.ComponentModel.BackgroundWorker();
             this.playlistInfoTxt = new System.Windows.Forms.Label();
+            this.loadTrackWorker = new System.ComponentModel.BackgroundWorker();
             this.eqButton = new ModifiedControls.ModifiedButton();
-            this.modifiedButton1 = new ModifiedControls.ModifiedButton();
+            this.saveButton = new ModifiedControls.ModifiedButton();
             this.playlistSelectorCombo = new ModifiedControls.ModifiedComboBox();
             this.volumeBar = new ModifiedControls.ModifiedProgressBarVol();
             this.seekBar = new ModifiedControls.ModifiedProgressBarSeek();
-            this.loadTrackWorker = new System.ComponentModel.BackgroundWorker();
             ((System.ComponentModel.ISupportInitialize)(this.trackGrid)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.transposeChangerNum)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.fwdBtn)).BeginInit();
@@ -394,6 +394,11 @@ namespace Echoes
             this.playlistInfoTxt.TabIndex = 43;
             this.playlistInfoTxt.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
+            // loadTrackWorker
+            // 
+            this.loadTrackWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.loadTrackWorker_DoWork);
+            this.loadTrackWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.loadTrackWorker_RunWorkerCompleted);
+            // 
             // eqButton
             // 
             this.eqButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(48)))), ((int)(((byte)(48)))));
@@ -409,20 +414,20 @@ namespace Echoes
             this.eqButton.UseVisualStyleBackColor = false;
             this.eqButton.Click += new System.EventHandler(this.eqButton_Click);
             // 
-            // modifiedButton1
+            // saveButton
             // 
-            this.modifiedButton1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(48)))), ((int)(((byte)(48)))));
-            this.modifiedButton1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.modifiedButton1.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.modifiedButton1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(200)))), ((int)(((byte)(200)))));
-            this.modifiedButton1.Location = new System.Drawing.Point(513, 40);
-            this.modifiedButton1.Margin = new System.Windows.Forms.Padding(2);
-            this.modifiedButton1.Name = "modifiedButton1";
-            this.modifiedButton1.Size = new System.Drawing.Size(76, 30);
-            this.modifiedButton1.TabIndex = 24;
-            this.modifiedButton1.Text = "Save";
-            this.modifiedButton1.UseVisualStyleBackColor = false;
-            this.modifiedButton1.Click += new System.EventHandler(this.modifiedButton1_Click);
+            this.saveButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(48)))), ((int)(((byte)(48)))));
+            this.saveButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.saveButton.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.saveButton.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(200)))), ((int)(((byte)(200)))));
+            this.saveButton.Location = new System.Drawing.Point(513, 40);
+            this.saveButton.Margin = new System.Windows.Forms.Padding(2);
+            this.saveButton.Name = "saveButton";
+            this.saveButton.Size = new System.Drawing.Size(76, 30);
+            this.saveButton.TabIndex = 24;
+            this.saveButton.Text = "Save";
+            this.saveButton.UseVisualStyleBackColor = false;
+            this.saveButton.Click += new System.EventHandler(this.modifiedButton1_Click);
             // 
             // playlistSelectorCombo
             // 
@@ -463,11 +468,6 @@ namespace Echoes
             this.seekBar.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseMove);
             this.seekBar.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseUp);
             // 
-            // loadTrackWorker
-            // 
-            this.loadTrackWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.loadTrackWorker_DoWork);
-            this.loadTrackWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.loadTrackWorker_RunWorkerCompleted);
-            // 
             // Echoes
             // 
             this.AllowDrop = true;
@@ -489,7 +489,7 @@ namespace Echoes
             this.Controls.Add(this.stopBtn);
             this.Controls.Add(this.playBtn);
             this.Controls.Add(this.visualsPicture);
-            this.Controls.Add(this.modifiedButton1);
+            this.Controls.Add(this.saveButton);
             this.Controls.Add(this.transposeTxt);
             this.Controls.Add(this.transposeChangerNum);
             this.Controls.Add(this.searchBox);
@@ -501,7 +501,7 @@ namespace Echoes
             this.Controls.Add(this.trackGrid);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
-            this.MinimumSize = new System.Drawing.Size(1086, 300);
+            this.MinimumSize = new System.Drawing.Size(640, 300);
             this.Name = "Echoes";
             this.Text = "Echoes";
             this.Activated += new System.EventHandler(this.Echoes_Enter);
@@ -546,7 +546,7 @@ namespace Echoes
         private System.Windows.Forms.TextBox searchBox;
         private System.Windows.Forms.NumericUpDown transposeChangerNum;
         private System.Windows.Forms.Label transposeTxt;
-        private ModifiedButton modifiedButton1;
+        private ModifiedButton saveButton;
         private System.Windows.Forms.PictureBox visualsPicture;
         private System.Windows.Forms.PictureBox playBtn;
         private System.Windows.Forms.PictureBox stopBtn;

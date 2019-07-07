@@ -2499,7 +2499,41 @@ namespace Echoes
             spaceForRows -= spaceForRows % trackGrid.RowTemplate.Height;
             trackGrid.Height = spaceForOther + spaceForRows;
             echoesLogo.Location = new Point(this.Width - 85, echoesLogo.Location.Y);
-            visualsPicture.Width = echoesLogo.Location.X - visualsPicture.Location.X - 5;
+            if (Width > transposeChangerNum.Width + transposeChangerNum.Location.X + echoesLogo.Width + 15)
+            {
+                transposeChangerNum.Visible = true;
+                transposeTxt.Visible = true;
+            }
+            else
+            {
+                transposeChangerNum.Visible = false;
+                transposeTxt.Visible = false;
+            }
+            if (Width > eqButton.Width + eqButton.Location.X + echoesLogo.Width + 15)
+            {
+                eqButton.Visible = true;
+            }
+            else
+            {
+                eqButton.Visible = false;
+            }
+            if (Width > saveButton.Width + saveButton.Location.X + echoesLogo.Width+15)
+            {
+                saveButton.Visible = true;
+            }
+            else
+            {
+                saveButton.Visible = false;
+            }
+            if (Width > visualsPicture.Location.X + echoesLogo.Width + 265)
+            {
+                visualsPicture.Width = echoesLogo.Location.X - visualsPicture.Location.X - 5;
+                visualsPicture.Visible = true;
+            }
+            else
+            {
+                visualsPicture.Visible = false;
+            }
             //last column auto resize thingy
             /*int estimatedWidth = 0;
             foreach (DataColumnInfo dci in currentColumnInfo)
