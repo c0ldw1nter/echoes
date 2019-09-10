@@ -14,6 +14,7 @@ namespace Echoes
 {
     public partial class Exporter : Form
     {
+        static Track currentTrackIteration;
         public static bool inProgress = false;
         public static int progress, total, playlistIndex;
         static List<ExporterMessage> messagesToLog = new List<ExporterMessage>();
@@ -46,14 +47,14 @@ namespace Echoes
             
             exporterWorker.RunWorkerAsync();
         }
-
+             
         string GetMD5(string filename)
         {
             using (var md5 = MD5.Create())
             {
                 using (var stream = File.OpenRead(filename))
                 {
-                    return Encoding.Default.GetString(md5.ComputeHash(stream));
+                    return BitConverter.ToString(md5.ComputeHash(stream)).Replace("-", "").ToLowerInvariant();
                 }
             }
         }
@@ -78,14 +79,12 @@ namespace Echoes
 
         string GetFreeFilename(string path, string file)
         {
-
             string newPath = Path.Combine(path, Path.GetFileName(file));
-            int counter=1;
-            while (File.Exists(newPath))
+            if (File.Exists(newPath))
             {
-                messagesToLog.Add(new ExporterMessage(progress + ". " + file + " name already exists. change attempt " + counter, Color.Yellow));
-                newPath = Path.Combine(path, Path.GetFileNameWithoutExtension(file) + "_" + counter + Path.GetExtension(file));
-                counter++;
+                string newName=Path.GetFileNameWithoutExtension(file) + "_" + GetMD5(currentTrackIteration.filename) + Path.GetExtension(file);
+                messagesToLog.Add(new ExporterMessage(progress + ". " + file + " name already exists. Renaming to "+newName, Color.Yellow));
+                newPath = Path.Combine(path, newName);
             }
             return newPath;
         }
@@ -104,6 +103,7 @@ namespace Echoes
                 total = playlist.Count;
                 foreach (Track t in playlist)
                 {
+                    currentTrackIteration = t;
                     progress = playlist.IndexOf(t) + 1;
                     string maybePath = PathHasFile(t);
                     if (maybePath.Equals(String.Empty))
@@ -116,7 +116,7 @@ namespace Echoes
                             File.Copy(t.filename, maybePath);
                             updatedCount++;
                         }
-                        catch (Exception exc)
+                        catch (Exception)
                         {
                             maybePath = String.Empty;
                             messagesToLog.Add(new ExporterMessage(progress + ". " + Path.GetFileName(t.filename) + " error copying!!", Color.Magenta));

@@ -89,6 +89,14 @@ namespace Echoes
         public int length { get; set; }
         public int num { get; set; }
         public int listened { get; set; }
+        public float timesListened
+        {
+            get
+            {
+                if (length <= 0) return 0;
+                return (float)listened / (float)length;
+            }
+        }
         public int bitrate { get; set; }
         public string filesize { get; set; }
         public int trackNumber { get; set; }

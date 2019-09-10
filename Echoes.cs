@@ -50,7 +50,7 @@ namespace Echoes
     #region Enums
     public enum Hotkey
     {
-        ADVANCEPLAYER, PREVIOUSPLAYER, PLAYPAUSE, VOLUMEUP, VOLUMEDOWN, TRANSPOSEUP, TRANSPOSEDOWN, DELETE, GLOBAL_VOLUMEUP, GLOBAL_VOLUMEDOWN, NEXTLIST, PREVLIST, SHUFFLE, REWIND
+        ADVANCEPLAYER, PREVIOUSPLAYER, PLAYPAUSE, VOLUMEUP, VOLUMEDOWN, TRANSPOSEUP, TRANSPOSEDOWN, DELETE, GLOBAL_VOLUMEUP, GLOBAL_VOLUMEDOWN, NEXTLIST, PREVLIST, SHUFFLE, REWIND, SKIPFORWARD, SKIPBACKWARD
     }
     public enum ItemType
     {
@@ -208,9 +208,9 @@ namespace Echoes
         public DataGridViewCellStyle alternatingCellStyle = new DataGridViewCellStyle();
         public DataGridViewCellStyle highlightedCellStyle = new DataGridViewCellStyle();
 
-        //                                        0      1         2        3          4         5            6        7        8         9         10             11           12         13        14        15
-        readonly string[] COLUMN_PROPERTIES = { "num", "title", "artist", "length", "album", "listened", "filename", "year", "genre", "comment", "bitrate", "trackNumber", "lastOpened", "size", "format", "trueBitrate" };
-        readonly string[] COLUMN_HEADERS = {"#","Title","Artist","Length","Album","Listened","File","Year","Genre","Comment","Bitrate","Track #","Last opened","Size","Format","True Bitrate"};
+        //                                        0      1         2        3          4         5            6        7        8         9         10             11           12         13        14        15             16
+        readonly string[] COLUMN_PROPERTIES = { "num", "title", "artist", "length", "album", "listened", "filename", "year", "genre", "comment", "bitrate", "trackNumber", "lastOpened", "size", "format", "trueBitrate", "timesListened" };
+        readonly string[] COLUMN_HEADERS = {"#","Title","Artist","Length","Album","Listened","File","Year","Genre","Comment","Bitrate","Track #","Last opened","Size","Format","True Bitrate","Times listened"};
         readonly string[] COLUMN_HEADERS_ALLOWED_CUSTOM = { "Title", "Artist", "Length", "Album", "Year", "Genre", "Comment", "Bitrate", "Format" };
         #endregion
 
@@ -534,7 +534,9 @@ namespace Echoes
                 if (displayedItems != ItemType.Playlist) PlayFirst();
             }
             else if (k == Hotkey.SHUFFLE) Shuffle();
-            else if (k == Hotkey.REWIND) SetPosition(0); 
+            else if (k == Hotkey.REWIND) SetPosition(0);
+            else if (k == Hotkey.SKIPFORWARD) SkipSeconds(5);
+            else if (k == Hotkey.SKIPBACKWARD) SkipSeconds(-5);
         }
 
         void RepositionControls()
@@ -551,6 +553,30 @@ namespace Echoes
             trackGrid.Location = new Point(trackGrid.Location.X, searchBox.Location.Y + searchBox.Height + 5);
             //Form1_Resize(null, null);
             //Refresh();
+        }
+
+        public void SkipSeconds(double sekonds)
+        {
+            bool negative = false;
+            if (sekonds < 0)
+            {
+                negative = true;
+                sekonds = -sekonds;
+            }
+            if (!streamLoaded) return;
+            long secsInBytes = Bass.BASS_ChannelSeconds2Bytes(stream, sekonds);
+            if (negative) secsInBytes = -secsInBytes;
+            if (GetPosition() + secsInBytes > GetLength() ) {
+                SetPosition(GetLength());
+            }
+            else if (GetPosition() + secsInBytes < 0)
+            {
+                SetPosition(0);
+            }
+            else
+            {
+                SetPosition(GetPosition() + secsInBytes);
+            } 
         }
 
         public void SetFonts()
@@ -3754,6 +3780,12 @@ namespace Echoes
                 {
                     float val = (float)e.Value;
                     if (val == 0) e.Value = ""; else e.Value = String.Format("{0:0.00}", val) + " kbps";
+                    e.FormattingApplied = true;
+                }
+                else if ((dgv.Columns[e.ColumnIndex].HeaderText == "Times listened"))
+                {
+                    float val = (float)e.Value;
+                    if (val == 0) e.Value = ""; else e.Value = String.Format("{0:0.0}", val);
                     e.FormattingApplied = true;
                 }
             }
