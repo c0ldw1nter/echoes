@@ -113,6 +113,7 @@ namespace Echoes
         public bool saveTranspose;
         public bool autoShuffle;
         public bool autoAdvance;
+        public bool reshuffleAfterListLoop;
         public bool trackChangePopup;
         public bool showWaveform;
         public bool normalize;
@@ -442,6 +443,7 @@ namespace Echoes
             visualisationStyle = Program.visualisationStyleDefault;
             visualfps = Program.visualfpsDefault;
             midiSfLocation = Program.midiSfLocationDefault;
+            reshuffleAfterListLoop = Program.reshuffleAfterListLoopDefault;
         }
 
 
@@ -988,6 +990,15 @@ namespace Echoes
                                     sourceList = sourceList.Where(x => x.album.ToLower().ToLower() == searchWrd).ToList();
                                     break;
                                 }
+                                else if (searchWord.StartsWith("%top="))
+                                {
+                                    searchWrd = searchWrd.Split('=').Last().ToLower();
+                                    int searchInt;
+                                    if(int.TryParse(searchWrd, out searchInt)) {
+                                        sourceList = sourceList.Where(x => x.num<=searchInt).ToList();
+                                    }
+                                    break;
+                                }
 
                                 //default search processor
                                 if (invertSearch) sourceList = sourceList.Where(x => !x.title.ContainsIgnoreCase(searchWrd) && !x.album.ContainsIgnoreCase(searchWrd) && !x.artist.ContainsIgnoreCase(searchWrd)).ToList();
@@ -1319,6 +1330,9 @@ namespace Echoes
             item = new XElement("converterSelectedBitrateIndex");
             item.Value = converterSelectedBitrateIndex.ToString();
             general.Add(item);
+            item = new XElement("reshuffleAfterListLoop");
+            item.Value = reshuffleAfterListLoop.ToString();
+            general.Add(item);
             xml.Root.Add(general);
             //colors
             XElement colors = new XElement("colors");
@@ -1466,6 +1480,9 @@ namespace Echoes
             ele = group.Element("converterSelectedBitrateIndex");
             if (ele != null && Int32.TryParse(ele.Value, out converterSelectedBitrateIndex)) { }
             else converterSelectedBitrateIndex = Program.converterSelectedBitrateIndexDefault;
+            ele = group.Element("reshuffleAfterListLoop");
+            if (ele != null && Boolean.TryParse(ele.Value, out reshuffleAfterListLoop)) { }
+            else reshuffleAfterListLoop = Program.reshuffleAfterListLoopDefault;
             //colors
             group = xml.Root.Element("colors");
             ele=group.Element("background");
@@ -1859,7 +1876,12 @@ namespace Echoes
                 else
                 {
                     int indexToPlay = currentRow.Index + 1;
-                    if (currentRow.Index >= trackGrid.Rows.Count - 1) indexToPlay = 0;
+                    if (currentRow.Index >= trackGrid.Rows.Count - 1)
+                    {
+                        //list loop
+                        if (reshuffleAfterListLoop) Shuffle();
+                        indexToPlay = 0;
+                    }
                     Track t = (Track)trackGrid.Rows[indexToPlay].DataBoundItem;
                     //nowPlaying = t;
                     if (File.Exists(t.filename))

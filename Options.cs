@@ -109,6 +109,7 @@ namespace Echoes
             transposeIncrementChanger.Value = (decimal)Program.mainWindow.hotkeyTransposeIncrement;
             volIncrementChanger.Value = (decimal)Program.mainWindow.hotkeyVolumeIncrement * 100;
             fontPctTxt.Text = Program.mainWindow.fontSizePercentage + "%";
+            reshuffleCheckbox.Checked = Program.mainWindow.reshuffleAfterListLoop;
             RefreshFontText();
 
             //reconnect event
@@ -505,6 +506,11 @@ namespace Echoes
         {
             Program.mainWindow.normalize = normalizeCheckbox.Checked;
             if (normalizeCheckbox.Checked) Program.mainWindow.Normalize();
+        }
+
+        private void reshuffleCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            Program.mainWindow.reshuffleAfterListLoop = reshuffleCheckbox.Checked;
         }
     }
 }

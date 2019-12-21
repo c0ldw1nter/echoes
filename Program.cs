@@ -41,6 +41,7 @@ namespace Echoes
         public readonly static bool trackChangePopupDefault = false;
         public readonly static bool saveTransposeDefault = true;
         public readonly static bool normalizeDefault = false;
+        public readonly static bool reshuffleAfterListLoopDefault = false;
         public readonly static bool showWaveformDefault = false;
         public readonly static bool suppressHotkeysDefault = true;
         public readonly static float hotkeyVolumeIncrementDefault = 0.03f;
