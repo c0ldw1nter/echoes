@@ -126,7 +126,7 @@ namespace Echoes
         public List<HotkeyData> hotkeys;
 
         #endregion
-        
+
         #region Vars
         public string playlistDbLocation = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), "known_playlists.dat");
         public string tagsCacheLocation = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), "track_cache.xml");
@@ -164,7 +164,7 @@ namespace Echoes
         public List<string> supportedModuleTypes = new List<string>() { ".mo3", ".it", ".xm", ".s3m", ".mtm", ".mod", ".umx" };
         public List<string> supportedAudioTypes = new List<string>() { ".mp3", ".mp2", ".mp1", ".wav", ".ogg", ".wma", ".m4a", ".flac" };
         public List<string> supportedWaveformTypes = new List<String>() { ".mp3", ".mp2", ".mp1", ".wav" };
-        public List<string> supportedMidiTypes = new List<string>() { ".midi",".mid" };
+        public List<string> supportedMidiTypes = new List<string>() { ".midi", ".mid" };
 
         Converter theConverter;
         TagEditor te;
@@ -180,14 +180,14 @@ namespace Echoes
         public WaveForm wf;
         public Bitmap waveformImage;
         ItemType displayedItems;
-        
+
         List<string> knownPlaylists = new List<string>();
         List<string> playlistNames = new List<string>();
         List<int> savedSelectionForSort;
 
-        string currentPlaylist=null;
+        string currentPlaylist = null;
         string gridSearchWord = "";
-        
+
         bool draggingSeek = false;
         bool draggingVolume = false;
         bool wasPlaying = false;
@@ -201,7 +201,7 @@ namespace Echoes
 
         int gridSearchTimerRemaining = 0;
         int gridSearchReset = 30;
-        public int waveformCompleted=0;
+        public int waveformCompleted = 0;
         public short[] waveform;
         private AutoResetEvent ResetEvent = new AutoResetEvent(false);
 
@@ -211,7 +211,7 @@ namespace Echoes
 
         //                                        0      1         2        3          4         5            6        7        8         9         10             11           12         13        14        15             16
         readonly string[] COLUMN_PROPERTIES = { "num", "title", "artist", "length", "album", "listened", "filename", "year", "genre", "comment", "bitrate", "trackNumber", "lastOpened", "size", "format", "trueBitrate", "timesListened" };
-        readonly string[] COLUMN_HEADERS = {"#","Title","Artist","Length","Album","Listened","File","Year","Genre","Comment","Bitrate","Track #","Last opened","Size","Format","True Bitrate","Times listened"};
+        readonly string[] COLUMN_HEADERS = { "#", "Title", "Artist", "Length", "Album", "Listened", "File", "Year", "Genre", "Comment", "Bitrate", "Track #", "Last opened", "Size", "Format", "True Bitrate", "Times listened" };
         readonly string[] COLUMN_HEADERS_ALLOWED_CUSTOM = { "Title", "Artist", "Length", "Album", "Year", "Genre", "Comment", "Bitrate", "Format" };
         #endregion
 
@@ -251,7 +251,7 @@ namespace Echoes
             trackGrid.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             trackGrid.RowTemplate.Height = 18;
             trackGrid.DoubleBuffered(true);
-            
+
             Form1_Resize(null, null);
             LoadXmlConfig();
 
@@ -268,11 +268,11 @@ namespace Echoes
         void AddHeaderContextMenu()
         {
             ContextMenuStrip headerContextMenu = new ContextMenuStrip();
-            for(int i=0;i<COLUMN_HEADERS.Length;i++)
+            for (int i = 0; i < COLUMN_HEADERS.Length; i++)
             {
                 ToolStripMenuItem mi = new ToolStripMenuItem(COLUMN_HEADERS[i]);
                 if (currentColumnInfo.Where(x => x.id == i).Count() > 0) mi.Checked = true;
-                mi.Name=i+"";
+                mi.Name = i + "";
                 mi.Click += (theSender, eventArgs) =>
                 {
                     if (mi.Checked)
@@ -329,7 +329,7 @@ namespace Echoes
         public void ApplyEQ()
         {
             if (!eqEnabled) return;
-            for (int i=0;i<eqGains.Length;i++)
+            for (int i = 0; i < eqGains.Length; i++)
             {
                 UpdateEQ(i, eqGains[i]);
             }
@@ -368,7 +368,8 @@ namespace Echoes
             }
             if (dlg.ShowDialog(this) == DialogResult.OK)
             {
-                if(supportedAudioTypes.Contains(Path.GetExtension(dlg.FileName).ToLower())) {
+                if (supportedAudioTypes.Contains(Path.GetExtension(dlg.FileName).ToLower()))
+                {
                     xmlCacher.ChangeFilename(t.filename, dlg.FileName);
                     t.filename = dlg.FileName;
                     t.GetTags();
@@ -388,9 +389,9 @@ namespace Echoes
         {
             List<Track> missingTracks = playlist.Where(x => !File.Exists(x.filename)).ToList();
             SearchOption opt;
-            if(inclSubdirs) opt=SearchOption.AllDirectories;
-            else opt=SearchOption.TopDirectoryOnly;
-            var files=Directory.EnumerateFiles(path, "*", opt);
+            if (inclSubdirs) opt = SearchOption.AllDirectories;
+            else opt = SearchOption.TopDirectoryOnly;
+            var files = Directory.EnumerateFiles(path, "*", opt);
             int foundFiles = 0;
             foreach (Track t in missingTracks)
             {
@@ -403,7 +404,7 @@ namespace Echoes
                     foundFiles++;
                 }
             }
-            MessageBox.Show(foundFiles+"/"+missingTracks.Count+" missing tracks found."+Environment.NewLine+"Save the playlist.");
+            MessageBox.Show(foundFiles + "/" + missingTracks.Count + " missing tracks found." + Environment.NewLine + "Save the playlist.");
         }
 
         public void SetDefaultColors()
@@ -546,7 +547,7 @@ namespace Echoes
             trackText.Location = new Point(trackText.Location.X, playBtn.Location.Y + playBtn.Height + 5);
             seekBar.Location = new Point(seekBar.Location.X, trackText.Location.Y + trackText.Height + 5);
             searchBox.Location = new Point(searchBox.Location.X, seekBar.Location.Y + seekBar.Height + 5);
-            playlistInfoTxt.Location = new Point(searchBox.Location.X+searchBox.Width+20, seekBar.Location.Y + seekBar.Height + 5);
+            playlistInfoTxt.Location = new Point(searchBox.Location.X + searchBox.Width + 20, seekBar.Location.Y + seekBar.Height + 5);
             playlistInfoTxt.Width = playlistSelectorCombo.Location.X - 10 - playlistInfoTxt.Location.X;
             playlistInfoTxt.Height = playlistSelectorCombo.Height;
             playlistSelectorCombo.Location = new Point(playlistSelectorCombo.Location.X, seekBar.Location.Y + seekBar.Height + 5);
@@ -568,7 +569,8 @@ namespace Echoes
             if (!streamLoaded) return;
             long secsInBytes = Bass.BASS_ChannelSeconds2Bytes(stream, sekonds);
             if (negative) secsInBytes = -secsInBytes;
-            if (GetPosition() + secsInBytes > GetLength() ) {
+            if (GetPosition() + secsInBytes > GetLength())
+            {
                 SetPosition(GetLength());
             }
             else if (GetPosition() + secsInBytes < 0)
@@ -578,14 +580,14 @@ namespace Echoes
             else
             {
                 SetPosition(GetPosition() + secsInBytes);
-            } 
+            }
         }
 
         public void SetFonts()
         {
-            trackText.Font = new Font(font1.FontFamily, 12*(float)fontSizePercentage / 100, font1.Style);
+            trackText.Font = new Font(font1.FontFamily, 12 * (float)fontSizePercentage / 100, font1.Style);
             searchBox.Font = new Font(font1.FontFamily, 8.25f * (float)fontSizePercentage / 100, font1.Style);
-            playlistInfoTxt.Font=new Font(font1.FontFamily,8.25f*(float)fontSizePercentage / 100, font1.Style);
+            playlistInfoTxt.Font = new Font(font1.FontFamily, 8.25f * (float)fontSizePercentage / 100, font1.Style);
             playlistSelectorCombo.Font = new Font(font1.FontFamily, 8.25f * (float)fontSizePercentage / 100, font1.Style);
             //trackGrid.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
             trackGrid.Font = new Font(font1.FontFamily, 8.25f * (float)fontSizePercentage / 100, font1.Style);
@@ -614,7 +616,7 @@ namespace Echoes
             this.BackColor = backgroundColor;
             foreach (Control ctrl in this.Controls)
             {
-                if (ctrl is Label || ctrl is PictureBox || ctrl is TextBox && ctrl.Name!="searchBox")
+                if (ctrl is Label || ctrl is PictureBox || ctrl is TextBox && ctrl.Name != "searchBox")
                 {
                     ctrl.BackColor = backgroundColor;
                 }
@@ -654,7 +656,8 @@ namespace Echoes
             trackGrid.Refresh();
         }
 
-        void WaveFormCallback(int framesDone, int framesTotal, TimeSpan elapsedTime, bool finished) {
+        void WaveFormCallback(int framesDone, int framesTotal, TimeSpan elapsedTime, bool finished)
+        {
             if (finished && wf.FileName == nowPlaying.filename)
             {
                 Invoke((MethodInvoker)delegate
@@ -728,14 +731,14 @@ namespace Echoes
 
         public void SetFrequency()
         {
-            if(streamLoaded) Bass.BASS_ChannelSetAttribute(stream, BASSAttribute.BASS_ATTRIB_FREQ, (float)(PitchFreq((int)(transposeChangerNum.Value * 100), Bass.BASS_ChannelGetInfo(stream).freq)));
+            if (streamLoaded) Bass.BASS_ChannelSetAttribute(stream, BASSAttribute.BASS_ATTRIB_FREQ, (float)(PitchFreq((int)(transposeChangerNum.Value * 100), Bass.BASS_ChannelGetInfo(stream).freq)));
             seekBar.Refresh();
         }
 
         public void SetChannels(bool stereo)
         {
             if (!streamLoaded) return;
-            if(stereo) Bass.BASS_ChannelFlags(stream, BASSFlag.BASS_DEFAULT, BASSFlag.BASS_SAMPLE_MONO);
+            if (stereo) Bass.BASS_ChannelFlags(stream, BASSFlag.BASS_DEFAULT, BASSFlag.BASS_SAMPLE_MONO);
             else Bass.BASS_ChannelFlags(stream, BASSFlag.BASS_SAMPLE_MONO, BASSFlag.BASS_SAMPLE_MONO);
         }
 
@@ -751,7 +754,7 @@ namespace Echoes
 
         void SetListenedTime(Track track, int time)
         {
-            track.listened=time;
+            track.listened = time;
             xmlCacher.AddOrUpdate(new List<Track> { track });
         }
 
@@ -767,14 +770,14 @@ namespace Echoes
             //
 
             var loadingPlaylist = new List<Track>();
-            string lastList=null;
+            string lastList = null;
             foreach (string file in files)
             {
                 if (supportedAudioTypes.Contains(Path.GetExtension(file).ToLower()))
                 {
                     loadingPlaylist.Add(new Track(file, Path.GetFileName(file)));
                 }
-                else if(Path.GetExtension(file).ToLower()==".m3u")
+                else if (Path.GetExtension(file).ToLower() == ".m3u")
                 {
                     AddKnownPlaylist(file);
                     lastList = file;
@@ -786,7 +789,7 @@ namespace Echoes
                 if (lastList != null) ImportM3u(lastList);
                 return;
             }
-            
+
             //there were track files
             if (displayedItems != ItemType.Track)
             {
@@ -807,14 +810,15 @@ namespace Echoes
                     {
                         if (askToAddDupes)
                         {
-                            addDupes=MessageBox.Show("There are duplicates. Add them?", "Dupes", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.Yes;
+                            addDupes = MessageBox.Show("There are duplicates. Add them?", "Dupes", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.Yes;
                             askToAddDupes = false;
                             if (addDupes)
                             {
                                 playlist.Insert(0, t);
                             }
                         }
-                    }else playlist.Insert(0, t);
+                    }
+                    else playlist.Insert(0, t);
                 }
                 FixPlaylistNumbers(playlist);
                 RefreshPlaylistGrid();
@@ -844,7 +848,7 @@ namespace Echoes
 
         void AskToSavePlaylistChanges()
         {
-            if (!playlistChanged || displayedItems!=ItemType.Track) return;
+            if (!playlistChanged || displayedItems != ItemType.Track) return;
             if (MessageBox.Show("Playlist has unsaved changes. Save now?", "Playlist", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.Yes)
             {
                 SavePlaylist();
@@ -967,7 +971,7 @@ namespace Echoes
                                     try
                                     {
                                         int dayNumber = Int32.Parse(searchWrd);
-                                        sourceList = sourceList.Where(x => x.lastOpened < DateTime.Now.AddDays(dayNumber*-1)).ToList();
+                                        sourceList = sourceList.Where(x => x.lastOpened < DateTime.Now.AddDays(dayNumber * -1)).ToList();
                                     }
                                     catch (Exception) { }
                                     break;
@@ -994,8 +998,9 @@ namespace Echoes
                                 {
                                     searchWrd = searchWrd.Split('=').Last().ToLower();
                                     int searchInt;
-                                    if(int.TryParse(searchWrd, out searchInt)) {
-                                        sourceList = sourceList.Where(x => x.num<=searchInt).ToList();
+                                    if (int.TryParse(searchWrd, out searchInt))
+                                    {
+                                        sourceList = sourceList.Where(x => x.num <= searchInt).ToList();
                                     }
                                     break;
                                 }
@@ -1023,7 +1028,8 @@ namespace Echoes
 
         void DisplayPlaylistsInGrid()
         {
-            if (knownPlaylists.Count > 0) {
+            if (knownPlaylists.Count > 0)
+            {
                 trackGrid.Columns.Clear();
                 trackGrid.Columns.Add(new DataGridViewTextBoxColumn()
                 {
@@ -1031,10 +1037,11 @@ namespace Echoes
                     DataPropertyName = "num",
                     HeaderText = "#"
                 });
-                trackGrid.Columns.Add(new DataGridViewTextBoxColumn() {
-                    Width=(int)Math.Floor(trackGrid.Width*0.20),
-                    DataPropertyName="title",
-                    HeaderText="Playlist"
+                trackGrid.Columns.Add(new DataGridViewTextBoxColumn()
+                {
+                    Width = (int)Math.Floor(trackGrid.Width * 0.20),
+                    DataPropertyName = "title",
+                    HeaderText = "Playlist"
                 });
                 trackGrid.Columns.Add(new DataGridViewTextBoxColumn()
                 {
@@ -1048,10 +1055,10 @@ namespace Echoes
                     PlaylistComboItem pci = (PlaylistComboItem)playlistSelectorCombo.Items[i];
                     string t = pci.shownName;
                     //MessageBox.Show(knownPlaylists.Count+" must be greater or equal to "+(i-1));
-                    if (t != "<No playlist>" && t!="<Cache>")
+                    if (t != "<No playlist>" && t != "<Cache>")
                     {
                         Track tr = new Track(knownPlaylists[i - 2], t);
-                        tr.num = i-1;
+                        tr.num = i - 1;
                         playlist.Add(tr);
                     }
                 }
@@ -1068,14 +1075,14 @@ namespace Echoes
             foreach (DataGridViewRow r in trackGrid.Rows)
             {
                 Track tt = (Track)r.DataBoundItem;
-                if (tt==t) return r;
+                if (tt == t) return r;
             }
             return null;
         }
 
         DataGridViewRow FindTrackRow(int num)
         {
-            if (playlist.Count<num) return null;
+            if (playlist.Count < num) return null;
             foreach (DataGridViewRow r in trackGrid.Rows)
             {
                 Track tt = (Track)r.DataBoundItem;
@@ -1086,7 +1093,7 @@ namespace Echoes
 
         void MoveTrackInPlaylist(int oldIndex, int newIndex)
         {
-            if (oldIndex > playlist.Count || newIndex > playlist.Count || oldIndex<0 || newIndex<0) return;
+            if (oldIndex > playlist.Count || newIndex > playlist.Count || oldIndex < 0 || newIndex < 0) return;
             Track item = playlist[oldIndex];
             playlist.RemoveAt(oldIndex);
             bool item1Selected = trackGrid.Rows[oldIndex].Selected;
@@ -1107,7 +1114,7 @@ namespace Echoes
         public void DeleteTrack(List<int> nums)
         {
             if (!sortingAllowed) return;
-            int lastInt=0;
+            int lastInt = 0;
             if (displayedItems == ItemType.Track)
             {
                 //if track
@@ -1115,7 +1122,7 @@ namespace Echoes
                 {
                     Track toRemove = GetTrackByNum(i);
                     playlist.Remove(toRemove);
-                    lastInt = i; 
+                    lastInt = i;
                 }
                 RefreshPlaylistGrid();
                 playlistChanged = true;
@@ -1124,11 +1131,11 @@ namespace Echoes
             {
                 //if playlist
                 foreach (int i in nums)
-                {  
+                {
                     Track toRemove = GetTrackByNum(i);
                     playlist.Remove(toRemove);
                     RemoveKnownPlaylist(toRemove.filename);
-                    lastInt = i; 
+                    lastInt = i;
                 }
                 DisplayPlaylistsInGrid();
             }
@@ -1266,13 +1273,13 @@ namespace Echoes
                     colorSchemes = xml.Root.Element("colorSchemes");
                 }
             }
-            catch (Exception){ }
+            catch (Exception) { }
             xml = new XDocument();
             xml.Add(new XElement("config"));
             //general
             XElement general = new XElement("general");
             XElement item = new XElement("volume");
-            item.Value = ((int)(volume*100)).ToString();
+            item.Value = ((int)(volume * 100)).ToString();
             general.Add(item);
             item = new XElement("hotkeyVolumeIncrement");
             item.Value = hotkeyVolumeIncrement.ToString();
@@ -1318,7 +1325,7 @@ namespace Echoes
             item.Add(new XAttribute("Style", (int)font1.Style));
             general.Add(item);
             item = new XElement("font1Size");
-            item.Value = fontSizePercentage+"";
+            item.Value = fontSizePercentage + "";
             general.Add(item);
             item = new XElement("font2");
             item.Value = font2.FontFamily.Name;
@@ -1485,7 +1492,7 @@ namespace Echoes
             else reshuffleAfterListLoop = Program.reshuffleAfterListLoopDefault;
             //colors
             group = xml.Root.Element("colors");
-            ele=group.Element("background");
+            ele = group.Element("background");
             if (ele != null) backgroundColor = ExtensionMethods.ColorFromHex(ele.Value);
             else backgroundColor = Program.backgroundColorDefault.Copy();
             ele = group.Element("controlBack");
@@ -1532,14 +1539,15 @@ namespace Echoes
                 Hotkey hk; Keys k; bool ctrl; bool alt; bool shift; bool enabled;
                 if (elem.Name != null && elem.Attribute("key") != null && elem.Attribute("ctrl") != null && elem.Attribute("shift") != null
                     && elem.Attribute("alt") != null && elem.Attribute("enabled") != null)
-                if(Enum.TryParse<Hotkey>(elem.Name.ToString(),out hk) &&
-                   Enum.TryParse<Keys>(elem.Attribute("key").Value, out k) &&
-                   Boolean.TryParse(elem.Attribute("ctrl").Value, out ctrl) &&
-                   Boolean.TryParse(elem.Attribute("alt").Value, out alt) &&
-                   Boolean.TryParse(elem.Attribute("shift").Value, out shift) &&
-                   Boolean.TryParse(elem.Attribute("enabled").Value, out enabled)) {
-                       hotkeys.Add(new HotkeyData(hk, k, ctrl, alt, shift, enabled));
-                }
+                    if (Enum.TryParse<Hotkey>(elem.Name.ToString(), out hk) &&
+                       Enum.TryParse<Keys>(elem.Attribute("key").Value, out k) &&
+                       Boolean.TryParse(elem.Attribute("ctrl").Value, out ctrl) &&
+                       Boolean.TryParse(elem.Attribute("alt").Value, out alt) &&
+                       Boolean.TryParse(elem.Attribute("shift").Value, out shift) &&
+                       Boolean.TryParse(elem.Attribute("enabled").Value, out enabled))
+                    {
+                        hotkeys.Add(new HotkeyData(hk, k, ctrl, alt, shift, enabled));
+                    }
             }
             SetHotkeySuppression();
             //columns
@@ -1552,7 +1560,7 @@ namespace Echoes
                 {
                     if (Int32.TryParse(elem.Value, out width))
                     {
-                        currentColumnInfo.Add(new ColumnInfo(COLUMN_PROPERTIES.ToList().IndexOf(elem.Name.ToString()),width));
+                        currentColumnInfo.Add(new ColumnInfo(COLUMN_PROPERTIES.ToList().IndexOf(elem.Name.ToString()), width));
                     }
                 }
             }
@@ -1581,10 +1589,10 @@ namespace Echoes
         public void AdjustGlobalVolume(float increment)
         {
             if (Bass.BASS_GetDevice() == -1) InitSoundDevice();
-            float getVol=Bass.BASS_GetVolume();
-            if(getVol+increment>1) getVol=1;
-            else if(getVol+increment<0) getVol=0;
-            else getVol=getVol+increment;
+            float getVol = Bass.BASS_GetVolume();
+            if (getVol + increment > 1) getVol = 1;
+            else if (getVol + increment < 0) getVol = 0;
+            else getVol = getVol + increment;
             Bass.BASS_SetVolume(getVol);
             ShowVolumePopup();
         }
@@ -1604,7 +1612,7 @@ namespace Echoes
             /*SortableBindingList<Track> froms = (SortableBindingList<Track>)dataGridView1.DataSource;
             ShuffleBindingList(froms);*/
             Random rng = new Random();
-            playlist=playlist.OrderBy(x => rng.Next()).ToList();
+            playlist = playlist.OrderBy(x => rng.Next()).ToList();
             //dataGridView1.Columns.RemoveAt(dataGridView1.Columns.Count - 1);
             //playlist = playlist.OrderBy(x => rng.Next()).ToList();
             RefreshPlaylistGrid();
@@ -1617,7 +1625,7 @@ namespace Echoes
             if (invalidNumbaTracks.Count == 0) return;
             for (int i = 0; i < invalidNumbaTracks.Count; i++)
             {
-                invalidNumbaTracks[i].num = i+1;
+                invalidNumbaTracks[i].num = i + 1;
                 p.Remove(invalidNumbaTracks[i]);
             }
             foreach (Track t in p) t.num += invalidNumbaTracks.Count;
@@ -1628,7 +1636,7 @@ namespace Echoes
         {
             for (int i = 0; i < p.Count; i++)
             {
-                p[i].num = i+1;
+                p[i].num = i + 1;
             }
         }
 
@@ -1641,11 +1649,11 @@ namespace Echoes
             {
                 if (playlistFromFile.Where(x => x.filename == t[i].filename).Count() > 0)
                 {
-                    if(MessageBox.Show("Playlist '"+Path.GetFileName(playlistFile)+"' already has this track: "+Environment.NewLine+
+                    if (MessageBox.Show("Playlist '" + Path.GetFileName(playlistFile) + "' already has this track: " + Environment.NewLine +
                         t[i].filename + ". Add regardless?", "Dupe", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.No)
                     {
                         continue;
-                    } 
+                    }
                 }
                 Track newTrack = new Track(t[i].filename, t[i].title);
                 newTrack.length = t[i].length;
@@ -1720,30 +1728,32 @@ namespace Echoes
             }
         }
 
-        class PlaylistComboItem {
-            public string filepath {get;set;}
-            public string shownName {get;set;}
+        class PlaylistComboItem
+        {
+            public string filepath { get; set; }
+            public string shownName { get; set; }
             public override string ToString()
             {
                 return shownName;
             }
-            public PlaylistComboItem(string filepath, string shownName) {
-                this.filepath=filepath;
-                this.shownName=shownName;
+            public PlaylistComboItem(string filepath, string shownName)
+            {
+                this.filepath = filepath;
+                this.shownName = shownName;
             }
         }
 
         private void PopulatePlaylistList()
         {
-            BindingList<PlaylistComboItem> playlistItems=new BindingList<PlaylistComboItem>();
-            playlistItems.Add(new PlaylistComboItem(null,"<No playlist>"));
+            BindingList<PlaylistComboItem> playlistItems = new BindingList<PlaylistComboItem>();
+            playlistItems.Add(new PlaylistComboItem(null, "<No playlist>"));
             playlistItems.Add(new PlaylistComboItem(null, "<Cache>"));
             LoadPlaylistDb();
             foreach (string s in knownPlaylists)
             {
                 playlistItems.Add(new PlaylistComboItem(s, Path.GetFileNameWithoutExtension(s)));
             }
-            
+
             playlistSelectorCombo.ValueMember = "filepath";
             playlistSelectorCombo.DisplayMember = "shownName";
             playlistSelectorCombo.DataSource = playlistItems;
@@ -1788,12 +1798,13 @@ namespace Echoes
         private List<Track> ReadM3u(string filename)
         {
             List<Track> ret = new List<Track>();
-            try {
+            try
+            {
                 List<M3UTrack> tracks = SuperM3U.Reader.GetTracks(filename);
-                for (int i=0;i<tracks.Count;i++)
+                for (int i = 0; i < tracks.Count; i++)
                 {
-                    Track t = new Track(tracks[i].filename,tracks[i].title);
-                    t.num = i+1;
+                    Track t = new Track(tracks[i].filename, tracks[i].title);
+                    t.num = i + 1;
                     t.length = tracks[i].length;
                     ret.Add(t);
                 }
@@ -1820,7 +1831,8 @@ namespace Echoes
             }
             searchBox.Text = "";
             System.Diagnostics.Process.GetCurrentProcess().StartInfo.WorkingDirectory = Path.GetDirectoryName(filename);
-            try{
+            try
+            {
                 displayedItems = ItemType.Track;
                 playlist = new List<Track>();
                 currentPlaylist = filename;
@@ -1830,13 +1842,15 @@ namespace Echoes
                 {
                     Track t = new Track(plist[i].filename, plist[i].title);
                     t.length = plist[i].length;
-                    t.num = i+1;
+                    t.num = i + 1;
                     playlist.Add(t);
                 }
-                foreach(object o in playlistSelectorCombo.Items) {
-                    PlaylistComboItem pci = (PlaylistComboItem) o;
-                    if(pci.filepath==currentPlaylist) {
-                        playlistSelectorCombo.SelectedItem=o;
+                foreach (object o in playlistSelectorCombo.Items)
+                {
+                    PlaylistComboItem pci = (PlaylistComboItem)o;
+                    if (pci.filepath == currentPlaylist)
+                    {
+                        playlistSelectorCombo.SelectedItem = o;
                         break;
                     }
                 }
@@ -1872,7 +1886,7 @@ namespace Echoes
             {
                 StopPlayer();
                 DataGridViewRow currentRow = FindTrackRow(nowPlaying);
-                if (currentRow.Index >= trackGrid.Rows.Count - 1 && repeat==0) return;
+                if (currentRow.Index >= trackGrid.Rows.Count - 1 && repeat == 0) return;
                 else
                 {
                     int indexToPlay = currentRow.Index + 1;
@@ -1904,7 +1918,7 @@ namespace Echoes
             {
                 StopPlayer();
                 DataGridViewRow currentRow = FindTrackRow(nowPlaying);
-                if (currentRow.Index<=0) return;
+                if (currentRow.Index <= 0) return;
                 else
                 {
                     Track t = (Track)trackGrid.Rows[currentRow.Index - 1].DataBoundItem;
@@ -1931,7 +1945,8 @@ namespace Echoes
             timeListenedTracker.Stop();
             if (streamLoaded)
             {
-                if(repeat<2) advanceFlag = true;
+                if (repeat < 2)
+                    advanceFlag = true;
             }
             RefreshPlayIcon();
         }
@@ -2002,7 +2017,7 @@ namespace Echoes
         {
             if (DSPGain != null && DSPGain.IsAssigned) DSPGain.Stop();
             if (wf == null || !wf.IsRendered) return;
-            float peak=0;
+            float peak = 0;
             normGain = wf.GetNormalizationGain(-1, -1, ref peak);
             try
             {
@@ -2041,9 +2056,10 @@ namespace Echoes
             }
             else if (supportedMidiTypes.Contains(ext))
             {
-                if (!InitMidi()) {
+                if (!InitMidi())
+                {
                     outStream = -1;
-                    return false; 
+                    return false;
                 }
                 BassMidi.BASS_MIDI_StreamSetFonts(0, midiFonts, midiFonts.Length);
                 outStream = BassMidi.BASS_MIDI_StreamCreateFile(filename, 0, 0, flags, 0);
@@ -2074,7 +2090,7 @@ namespace Echoes
         void SetLooping()
         {
             if (!streamLoaded) return;
-            if (repeat>1)
+            if (repeat > 1)
             {
                 Bass.BASS_ChannelFlags(stream, BASSFlag.BASS_SAMPLE_LOOP, BASSFlag.BASS_SAMPLE_LOOP);
                 Bass.BASS_ChannelFlags(stream, BASSFlag.BASS_MUSIC_LOOP, BASSFlag.BASS_MUSIC_LOOP);
@@ -2114,7 +2130,7 @@ namespace Echoes
             }
             var font = BassMidi.BASS_MIDI_FontInit(midiSfLocation);
             midiFonts = new BASS_MIDI_FONT[1];
-            midiFonts[0]=new BASS_MIDI_FONT(font, -1, 0);
+            midiFonts[0] = new BASS_MIDI_FONT(font, -1, 0);
             return true;
         }
 
@@ -2139,7 +2155,7 @@ namespace Echoes
         private void ScrollGridTo(DataGridViewRow theRow)
         {
             if (theRow == null) return;
-            if(!theRow.Displayed) trackGrid.FirstDisplayedScrollingRowIndex = theRow.Index;
+            if (!theRow.Displayed) trackGrid.FirstDisplayedScrollingRowIndex = theRow.Index;
             /*int halfWay = (dataGridView1.DisplayedRowCount(false) / 2);
             if (dataGridView1.FirstDisplayedScrollingRowIndex + halfWay > theRow.Index ||
                 (dataGridView1.FirstDisplayedScrollingRowIndex + dataGridView1.DisplayedRowCount(false) - halfWay) <= theRow.Index)
@@ -2157,7 +2173,7 @@ namespace Echoes
             {
                 if (highlightedRow.Index % 2 == 0)
                     highlightedRow.DefaultCellStyle = defaultCellStyle;
-                else highlightedRow.DefaultCellStyle=alternatingCellStyle;
+                else highlightedRow.DefaultCellStyle = alternatingCellStyle;
             }
             DataGridViewRow rw = FindTrackRow(nowPlaying);
             if (rw == null) return null;
@@ -2183,7 +2199,7 @@ namespace Echoes
 
         private void ExportPlaylist()
         {
-            if (displayedItems==ItemType.Playlist) return;
+            if (displayedItems == ItemType.Playlist) return;
             SaveFileDialog dlg = new SaveFileDialog();
             dlg.Title = "Save Playlist";
             dlg.Filter = "M3U playlists (*.m3u)|*.m3u";
@@ -2202,7 +2218,7 @@ namespace Echoes
         private void ChooseFile()
         {
             OpenFileDialog dlg = new OpenFileDialog();
-            dlg.Title="Open File";
+            dlg.Title = "Open File";
             dlg.Filter = "Supported files|";
             foreach (string s in supportedAudioTypes)
             {
@@ -2211,7 +2227,7 @@ namespace Echoes
             dlg.Filter += "*.m3u;";
             if (dlg.ShowDialog(this) == DialogResult.OK)
             {
-                LoadFiles(new List<string>{dlg.FileName.ToString()});
+                LoadFiles(new List<string> { dlg.FileName.ToString() });
             }
             dlg.Dispose();
         }
@@ -2220,14 +2236,60 @@ namespace Echoes
         {
             if (Bass.BASS_ChannelIsActive(stream) != BASSActive.BASS_ACTIVE_PLAYING)
             {
-                playBtn.Image = global::Echoes.Properties.Resources.play1;
+                playBtn.Image = LoadImage("play1");
                 showingPlayIcon = true;
             }
             else
             {
-                playBtn.Image = global::Echoes.Properties.Resources.pause1;
+                playBtn.Image = LoadImage("pause1");
                 showingPlayIcon = false;
             }
+        }
+
+        Dictionary<string, Image> btnImages;
+        string[] btnNames = new string[] { "play","pause","forward","back","stop","rewind","import","export","shuffle","options","repeatNone","repeatList","repeatTrack" };
+
+        void ReadImages()
+        {
+            btnImages = new Dictionary<string, Image>();
+            foreach (string n in btnNames) {
+                for (int i = 1; i <= 4; i++)
+                {
+                    string name = $"{n}{i}";
+                    btnImages.Add(name, ReadImage(name));
+                }
+            }
+            btnImages.Add("echoesLogoWhiteDim", ReadImage("echoesLogoWhiteDim"));
+            btnImages.Add("echoesLogoWhite", ReadImage("echoesLogoWhite"));
+            btnImages.Add("vol", ReadImage("vol"));
+        }
+
+        Image ReadImage(string name)
+        {
+            string path = Path.Combine("Resources", name + ".png");
+            try
+            {
+                using (FileStream i_Stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                {
+                    using (Bitmap i_Bmp = new Bitmap(i_Stream))
+                    {
+                        return new Bitmap(i_Bmp);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+                return null;
+            }
+        }
+
+        Image LoadImage(string name)
+        {
+            if (btnImages == null)
+                ReadImages();
+
+            return btnImages[name];
         }
 
         void PlayFirst()
@@ -2305,11 +2367,11 @@ namespace Echoes
         {
             if (!AskToQuitWorker())
             {
-                e.Cancel=true;
+                e.Cancel = true;
                 return;
             }
             AskToSavePlaylistChanges();
-            if(displayedItems!=ItemType.Playlist) SaveColumnInfos();
+            if (displayedItems != ItemType.Playlist) SaveColumnInfos();
             try { SaveXmlConfig(); }
             catch (Exception zx)
             {
@@ -2321,13 +2383,13 @@ namespace Echoes
 
         private void button1_Click(object sender, MouseEventArgs e)
         {
-            if (showingPlayIcon) playBtn.Image = global::Echoes.Properties.Resources.play3;
-            else playBtn.Image = global::Echoes.Properties.Resources.pause3;
+            if (showingPlayIcon) playBtn.Image = LoadImage("play3");
+            else playBtn.Image = LoadImage("pause3");
         }
 
         private void button2_Click(object sender, MouseEventArgs e)
         {
-            stopBtn.Image = global::Echoes.Properties.Resources.stop3;
+            stopBtn.Image = LoadImage("stop3");
         }
 
         private void button3_Click(object sender, MouseEventArgs e)
@@ -2344,7 +2406,7 @@ namespace Echoes
         {
             if (streamLoaded)
             {
-                if (Bass.BASS_ChannelIsActive(stream) == BASSActive.BASS_ACTIVE_PLAYING )
+                if (Bass.BASS_ChannelIsActive(stream) == BASSActive.BASS_ACTIVE_PLAYING)
                 {
                     //-- row flashing --
 
@@ -2369,7 +2431,8 @@ namespace Echoes
 
                     //-- row flashing end <<TOO MUCH CPU USAGE>> WTF setting control BackColor/ForeColor strains cpu
 
-                    switch (visualisationStyle) {
+                    switch (visualisationStyle)
+                    {
                         case 1:
                             visualsPicture.Image = vs.CreateSpectrumLine(stream, visualsPicture.Width, visualsPicture.Height, spectrumColor, spectrumColor, backgroundColor, 5, 1, false, true, true);
                             break;
@@ -2388,7 +2451,7 @@ namespace Echoes
                 {
                     visualsPicture.Image = null;
                 }
-                if (advanceFlag || GetPosition()>GetLength())
+                if (advanceFlag || GetPosition() > GetLength())
                 {
                     AdvancePlayer();
                     advanceFlag = false;
@@ -2412,8 +2475,8 @@ namespace Echoes
             DataGridViewRow currRow = FindTrackRow(nowPlaying);
             notifyText += ">";
 
-            notifyText += nowPlaying.title+" - ";
-            if (!String.IsNullOrWhiteSpace(nowPlaying.artist)) notifyText += nowPlaying.artist+Environment.NewLine;
+            notifyText += nowPlaying.title + " - ";
+            if (!String.IsNullOrWhiteSpace(nowPlaying.artist)) notifyText += nowPlaying.artist + Environment.NewLine;
 
             if (currRow.Index < trackGrid.Rows.Count - 1)
             {
@@ -2421,18 +2484,18 @@ namespace Echoes
                 t = (Track)trackGrid.Rows[FindTrackRow(nowPlaying).Index + 1].DataBoundItem;
                 notifyText += t.title + " - ";
                 if (!String.IsNullOrWhiteSpace(t.artist)) notifyText += t.artist + Environment.NewLine;
-                
+
             }
-            Font ft=new Font(font2.FontFamily,20,FontStyle.Bold);
-            Size sz=TextRenderer.MeasureText(notifyText,ft);
-            Rectangle screenSize=Screen.PrimaryScreen.WorkingArea;
-            Point pt=new Point(screenSize.Width-sz.Width-10,screenSize.Height-sz.Height-10);
+            Font ft = new Font(font2.FontFamily, 20, FontStyle.Bold);
+            Size sz = TextRenderer.MeasureText(notifyText, ft);
+            Rectangle screenSize = Screen.PrimaryScreen.WorkingArea;
+            Point pt = new Point(screenSize.Width - sz.Width - 10, screenSize.Height - sz.Height - 10);
             popupWindow.Show(pt, 255, trackTitleColor, ft, 5000, FloatingWindow.AnimateMode.Blend, 3500, notifyText);
         }
 
         void ShowVolumePopup()
         {
-            var str = "Volume: " + (int)(Bass.BASS_GetVolume() * 100)+"%";
+            var str = "Volume: " + (int)(Bass.BASS_GetVolume() * 100) + "%";
             Font ft = new Font(font2.FontFamily, 20, FontStyle.Bold);
             Size sz = TextRenderer.MeasureText(str, ft);
             Rectangle screenSize = Screen.PrimaryScreen.WorkingArea;
@@ -2444,7 +2507,7 @@ namespace Echoes
         {
             if (streamLoaded)
             {
-                if (Bass.BASS_ChannelIsActive(stream)==BASSActive.BASS_ACTIVE_PLAYING)
+                if (Bass.BASS_ChannelIsActive(stream) == BASSActive.BASS_ACTIVE_PLAYING)
                 {
                     Bass.BASS_ChannelPause(stream);
                     timeListenedTracker.Stop();
@@ -2500,7 +2563,7 @@ namespace Echoes
             {
                 x = seekBar.Width;
             }
-            seekBar.Value = (int)((float)x / (float)seekBar.Width*seekBar.Maximum);
+            seekBar.Value = (int)((float)x / (float)seekBar.Width * seekBar.Maximum);
             SetPosition((GetLength() * seekBar.Value) / seekBar.Maximum);
         }
 
@@ -2537,13 +2600,13 @@ namespace Echoes
             seekBar.Width = seekBar.Maximum = this.Width - 40;
             trackText.Width = this.Width - 40;
             volumeBar.Maximum = volumeBar.Width;
-            volumeBar.Location = new Point(this.Width - 180,volumeBar.Location.Y);
+            volumeBar.Location = new Point(this.Width - 180, volumeBar.Location.Y);
             playlistSelectorCombo.Location = new Point(this.Width - 350, playlistSelectorCombo.Location.Y);
             //playlistInfoTxt.Location = new Point(playlistSelectorCombo.Location.X - playlistInfoTxt.Width - 5, playlistInfoTxt.Location.Y);
             trackGrid.Width = this.Width - 40;
-            int spaceForOther=trackGrid.ColumnHeadersHeight+2;
+            int spaceForOther = trackGrid.ColumnHeadersHeight + 2;
             if (trackGrid.Controls.OfType<HScrollBar>().First().Visible) spaceForOther += SystemInformation.HorizontalScrollBarHeight;
-            int spaceForRows = Height-210-spaceForOther;
+            int spaceForRows = Height - 210 - spaceForOther;
             spaceForRows -= spaceForRows % trackGrid.RowTemplate.Height;
             trackGrid.Height = spaceForOther + spaceForRows;
             echoesLogo.Location = new Point(this.Width - 85, echoesLogo.Location.Y);
@@ -2565,7 +2628,7 @@ namespace Echoes
             {
                 eqButton.Visible = false;
             }
-            if (Width > saveButton.Width + saveButton.Location.X + echoesLogo.Width+15)
+            if (Width > saveButton.Width + saveButton.Location.X + echoesLogo.Width + 15)
             {
                 saveButton.Visible = true;
             }
@@ -2602,7 +2665,7 @@ namespace Echoes
 
         private void dataGridView1_CellMouseDoubleClick(object sender, DataGridViewCellMouseEventArgs e)
         {
-            if (e.RowIndex<0 || e.RowIndex>=trackGrid.Rows.Count || trackGrid.Rows[e.RowIndex] == null || trackGrid.Rows[e.RowIndex].DataBoundItem==null) return;
+            if (e.RowIndex < 0 || e.RowIndex >= trackGrid.Rows.Count || trackGrid.Rows[e.RowIndex] == null || trackGrid.Rows[e.RowIndex].DataBoundItem == null) return;
             Track t = (Track)trackGrid.Rows[e.RowIndex].DataBoundItem;
             if (streamLoaded) SetPosition(0);
             StopPlayer();
@@ -2617,17 +2680,17 @@ namespace Echoes
 
         private void button5_Click(object sender, MouseEventArgs e)
         {
-            fwdBtn.Image = global::Echoes.Properties.Resources.forward3;
+            fwdBtn.Image = LoadImage("forward3");
         }
 
         private void button7_Click(object sender, MouseEventArgs e)
         {
-            rewBtn.Image = global::Echoes.Properties.Resources.rewind3;
+            rewBtn.Image = LoadImage("rewind3");
         }
 
         private void button6_Click(object sender, MouseEventArgs e)
         {
-            backBtn.Image = global::Echoes.Properties.Resources.back3;
+            backBtn.Image = LoadImage("back3");
         }
 
         void LoadCustomPlaylist(List<Track> lst)
@@ -2681,14 +2744,15 @@ namespace Echoes
 
         void CopySelectedToClipboard()
         {
-            
-            StringCollection paths=new StringCollection();
-            foreach(DataGridViewRow row in trackGrid.Rows) {
+
+            StringCollection paths = new StringCollection();
+            foreach (DataGridViewRow row in trackGrid.Rows)
+            {
                 if (!row.Selected) continue;
-                Track t=(Track)row.DataBoundItem;
+                Track t = (Track)row.DataBoundItem;
                 paths.Add(t.filename);
             }
-            MessageBox.Show(paths.Count+" files copied");
+            MessageBox.Show(paths.Count + " files copied");
             Clipboard.SetFileDropList(paths);
         }
 
@@ -2754,20 +2818,21 @@ namespace Echoes
             /*if (rebuildCache==false)
             {*/
             tracksToLoadForTags = new List<Track>();
-                for(int z=0;z<playlist.Count;z++){
-                    if (e.Cancel) break;
+            for (int z = 0; z < playlist.Count; z++)
+            {
+                if (e.Cancel) break;
 
-                    Track t = playlist[z];
-                    if (!xmlCacher.GetCacheInfo(t) || reloadTagsFlag)
-                    {
-                        t.GetTags();
-                        //xmlCacher.AddOrUpdate(new List<Track>(){t});
-                        tracksToLoadForTags.Add(t);
-                    }
-                    trackGrid.InvalidateRow(z);
-                    tagsLoaderWorker.ReportProgress((int)(((float)z / (float)playlist.Count) * 100));
+                Track t = playlist[z];
+                if (!xmlCacher.GetCacheInfo(t) || reloadTagsFlag)
+                {
+                    t.GetTags();
+                    //xmlCacher.AddOrUpdate(new List<Track>(){t});
+                    tracksToLoadForTags.Add(t);
                 }
-                tagsLoaderWorker.ReportProgress(100);
+                trackGrid.InvalidateRow(z);
+                tagsLoaderWorker.ReportProgress((int)(((float)z / (float)playlist.Count) * 100));
+            }
+            tagsLoaderWorker.ReportProgress(100);
             /*}
             else
             {
@@ -2806,7 +2871,7 @@ namespace Echoes
         public TimeSpan TotalPlaylistListened(SortableBindingList<Track> list)
         {
             TimeSpan ret = new TimeSpan();
-            int kount=0;
+            int kount = 0;
             foreach (Track t in list)
             {
                 kount++;
@@ -2849,10 +2914,10 @@ namespace Echoes
 
         void RefreshTotalTimeLabel()
         {
-            SortableBindingList <Track> tehList= (SortableBindingList<Track>)(trackGrid.DataSource);
+            SortableBindingList<Track> tehList = (SortableBindingList<Track>)(trackGrid.DataSource);
             if (displayedItems != ItemType.Playlist)
             {
-                playlistInfoTxt.Text = tehList.Count + " tracks ("+ TotalFileSize(tehList).BytesToString()+ "), " + TotalPlaylistTime(tehList).ProperTimeFormat();
+                playlistInfoTxt.Text = tehList.Count + " tracks (" + TotalFileSize(tehList).BytesToString() + "), " + TotalPlaylistTime(tehList).ProperTimeFormat();
                 playlistInfoTxt.Text += " [" + TotalPlaylistListened(tehList).ProperTimeFormat() + " listened]";
             }
         }
@@ -2866,14 +2931,14 @@ namespace Echoes
         {
             if (trackGrid.Rows.Count > 0)
             {
-                
+
                 gridSearchWord += e.KeyChar;
                 if (gridSearchWord == " ")
                 {
                     gridSearchWord = "";
                     return;
                 }
-                
+
                 DataGridViewRow currentRow;
                 Track currentTrack;
                 int currentIndex;
@@ -2891,7 +2956,7 @@ namespace Echoes
                     currentRow = trackGrid.Rows[currentIndex];
                     currentTrack = (Track)currentRow.DataBoundItem;
                     int currentColumnIndex = 0;
-                    if (highlightedColumn == null || highlightedColumn.ValueType!=typeof(string))
+                    if (highlightedColumn == null || highlightedColumn.ValueType != typeof(string))
                     {
                         foreach (DataGridViewColumn col in trackGrid.Columns)
                         {
@@ -2907,7 +2972,7 @@ namespace Echoes
                         currentColumnIndex = highlightedColumn.Index;
                     }
                     string matchString = (string)currentRow.Cells[currentColumnIndex].Value;
-                    if(matchString.StartsWith(gridSearchWord, true, null))
+                    if (matchString.StartsWith(gridSearchWord, true, null))
                     {
                         trackGrid.ClearSelection();
                         trackGrid.CurrentCell = currentRow.Cells[0];
@@ -2943,7 +3008,7 @@ namespace Echoes
                         currentColumnIndex = highlightedColumn.Index;
                     }
                     string matchString = (string)currentRow.Cells[currentColumnIndex].Value;
-                    if (matchString !=null && matchString.StartsWith(gridSearchWord, true, null))
+                    if (matchString != null && matchString.StartsWith(gridSearchWord, true, null))
                     {
                         trackGrid.ClearSelection();
                         trackGrid.Rows[currentIndex].Selected = true;
@@ -3020,7 +3085,7 @@ namespace Echoes
 
         void OpenDupeFinder()
         {
-            df = new DupeFinder(playlist);
+            df = new DupeFinder((trackGrid.DataSource as SortableBindingList<Track>).ToList());
             df.Show(this);
             df.Location = new Point(this.Location.X + this.Width / 2 - df.Width / 2, this.Location.Y + this.Height / 2 - df.Height / 2);
         }
@@ -3078,7 +3143,7 @@ namespace Echoes
                         for (int i = 0; i < knownPlaylists.Count; i++)
                         {
                             int z = i;
-                            if (playlistSelectorCombo.SelectedIndex>1 && knownPlaylists[i] == knownPlaylists[playlistSelectorCombo.SelectedIndex - 2])
+                            if (playlistSelectorCombo.SelectedIndex > 1 && knownPlaylists[i] == knownPlaylists[playlistSelectorCombo.SelectedIndex - 2])
                                 continue;
                             string displayName = knownPlaylists[z];
                             if (knownPlaylists.Except(displayName).Where(x => Path.GetFileName(x) == Path.GetFileName(displayName)).Count() == 0)
@@ -3098,14 +3163,14 @@ namespace Echoes
                                 int before = playlist.Count;
                                 playlist = playlist.Where(x => !thatPlaylist.Contains(x.filename)).ToList();
                                 RefreshPlaylistGrid();
-                                MessageBox.Show("Removed " + (before-playlist.Count) + " entries.", "Removed");
+                                MessageBox.Show("Removed " + (before - playlist.Count) + " entries.", "Removed");
                             };
                             miRemoveEntriesContainedIn.MenuItems.Add(itm);
                         }
                         MenuItem npItem = new MenuItem("New playlist");
                         npItem.Click += (theSender, eventArgs) =>
                         {
-                            string newList=CreateNewPlaylist();
+                            string newList = CreateNewPlaylist();
                             CopyTrackToPlaylist(selectedTracks, newList);
                         };
                         miAddToPlaylist.MenuItems.Add(npItem);
@@ -3125,7 +3190,7 @@ namespace Echoes
                         MenuItem miRemoveWith = miFindFrom;
                         MenuItem miRemoveWithout = miFindFrom;
                         bool includeFindFrom = false;
-                        DataGridViewColumn columnClicked=trackGrid.Columns[trackGrid.HitTest(e.X, e.Y).ColumnIndex];
+                        DataGridViewColumn columnClicked = trackGrid.Columns[trackGrid.HitTest(e.X, e.Y).ColumnIndex];
                         if (COLUMN_HEADERS_ALLOWED_CUSTOM.Contains<string>(columnClicked.HeaderText))
                         {
                             string columnProperty = COLUMN_PROPERTIES[COLUMN_HEADERS.IndexOf(columnClicked.HeaderText)];
@@ -3141,7 +3206,7 @@ namespace Echoes
                                 List<Track> customPlaylist = xmlCacher.GetAllTracks().Where(x => selectedTracksProperties.Contains(typeof(Track).GetProperty(columnProperty).GetValue(x, null))).ToList();
                                 LoadCustomPlaylist(customPlaylist);
                             };
-                            miRemoveWith = new MenuItem("Everything with this "+columnClicked.HeaderText);
+                            miRemoveWith = new MenuItem("Everything with this " + columnClicked.HeaderText);
                             miRemoveWith.Click += (theSender, eventArgs) =>
                             {
                                 List<object> selectedTracksProperties = new List<object>();
@@ -3231,7 +3296,7 @@ namespace Echoes
                         miMove.MenuItems.Add(miMoveToTop);
                         miMove.MenuItems.Add(miMoveToBottom);
 
-                        
+
 
                         MenuItem miInvertSelection = new MenuItem("Invert selection");
                         miInvertSelection.Click += (theSender, eventArgs) =>
@@ -3256,7 +3321,8 @@ namespace Echoes
                     }
                     cm.Show(trackGrid, e.Location);
                 }
-                catch (Exception) {
+                catch (Exception)
+                {
                 }
             }
         }
@@ -3337,7 +3403,7 @@ namespace Echoes
             if (!File.Exists(lameExeLocation))
             {
                 if (MessageBox.Show("No lame.exe found. The converter needs the encoder executable placed in the same directory as the Echoes executable."
-                    +Environment.NewLine+Environment.NewLine+"Would you like to visit a third party website to download LAME encoder?"
+                    + Environment.NewLine + Environment.NewLine + "Would you like to visit a third party website to download LAME encoder?"
                     , "LAME encoder needed.", MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.Yes)
                 {
                     System.Diagnostics.Process.Start(lameExeDownloadSite);
@@ -3413,7 +3479,7 @@ namespace Echoes
             selectedTracks = selectedTracks.OrderBy(x => FindTrackRow(x).Index).ToList();
             foreach (Track tr in selectedTracks)
             {
-                MoveTrackInPlaylist(FindTrackRow(tr).Index, playlist.Count-1);
+                MoveTrackInPlaylist(FindTrackRow(tr).Index, playlist.Count - 1);
             }
             foreach (Track t in selectedTracks)
             {
@@ -3450,10 +3516,10 @@ namespace Echoes
                 selectedShit.Add(rw.Index);
                 selectedTracks.Add((Track)rw.DataBoundItem);
             }
-            selectedShit=selectedShit.OrderBy(x => x).ToList();
+            selectedShit = selectedShit.OrderBy(x => x).ToList();
             foreach (int rw in selectedShit)
             {
-                MoveTrackInPlaylist(rw, rw-1);
+                MoveTrackInPlaylist(rw, rw - 1);
             }
             foreach (Track t in selectedTracks)
             {
@@ -3513,7 +3579,7 @@ namespace Echoes
                 {
                     foreach (string okType in supportedAudioTypes)
                     {
-                        ret.AddRange(Directory.EnumerateFiles(str, "*"+okType, SearchOption.AllDirectories));
+                        ret.AddRange(Directory.EnumerateFiles(str, "*" + okType, SearchOption.AllDirectories));
                     }
                 }
                 else
@@ -3525,7 +3591,7 @@ namespace Echoes
         }
 
         private void Echoes_DragDrop(object sender, DragEventArgs e)
-        { 
+        {
             string[] droppedInfo = (string[])e.Data.GetData(DataFormats.FileDrop);
             LoadFiles(GetFilesFromDrag(droppedInfo));
         }
@@ -3547,7 +3613,8 @@ namespace Echoes
 
         void SavePlaylist()
         {
-            if(!File.Exists(currentPlaylist)) {
+            if (!File.Exists(currentPlaylist))
+            {
                 ExportPlaylist();
                 return;
             }
@@ -3638,7 +3705,7 @@ namespace Echoes
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
-            
+
         }
 
         private void textBox2_TextChanged(object sender, EventArgs e)
@@ -3667,20 +3734,20 @@ namespace Echoes
 
         private void button1_MouseEnter(object sender, EventArgs e)
         {
-            if (showingPlayIcon) playBtn.Image = global::Echoes.Properties.Resources.play2;
-            else playBtn.Image = global::Echoes.Properties.Resources.pause2;
+            if (showingPlayIcon) playBtn.Image = LoadImage("play2");
+            else playBtn.Image = LoadImage("pause2");
         }
 
         private void button1_MouseLeave(object sender, EventArgs e)
         {
-            if(showingPlayIcon) playBtn.Image = global::Echoes.Properties.Resources.play1;
-            else playBtn.Image = global::Echoes.Properties.Resources.pause1;
+            if (showingPlayIcon) playBtn.Image = LoadImage("play1");
+            else playBtn.Image = LoadImage("pause1");
         }
 
         private void button1_MouseUp(object sender, MouseEventArgs e)
         {
-            if (showingPlayIcon) playBtn.Image = global::Echoes.Properties.Resources.play2;
-            else playBtn.Image = global::Echoes.Properties.Resources.pause2;
+            if (showingPlayIcon) playBtn.Image = LoadImage("play2");
+            else playBtn.Image = LoadImage("pause2");
             if (Bass.BASS_ChannelIsActive(stream) == BASSActive.BASS_ACTIVE_PLAYING)
             {
                 PausePlayer();
@@ -3693,65 +3760,65 @@ namespace Echoes
 
         private void button2_MouseEnter(object sender, EventArgs e)
         {
-            stopBtn.Image = global::Echoes.Properties.Resources.stop2;
+            stopBtn.Image = LoadImage("stop2");
         }
 
         private void button2_MouseLeave(object sender, EventArgs e)
         {
-            stopBtn.Image = global::Echoes.Properties.Resources.stop1;
+            stopBtn.Image = LoadImage("stop1");
         }
 
         private void button2_MouseUp(object sender, MouseEventArgs e)
         {
-            stopBtn.Image = global::Echoes.Properties.Resources.stop2;
+            stopBtn.Image = LoadImage("stop2");
             StopPlayer();
         }
 
         private void button3_MouseEnter(object sender, EventArgs e)
         {
-            backBtn.Image = global::Echoes.Properties.Resources.back2;
+            backBtn.Image = LoadImage("back2");
         }
 
         private void button3_MouseLeave(object sender, EventArgs e)
         {
-            backBtn.Image = global::Echoes.Properties.Resources.back1;
+            backBtn.Image = LoadImage("back1");
         }
 
         private void button3_MouseUp(object sender, MouseEventArgs e)
         {
-            backBtn.Image = global::Echoes.Properties.Resources.back2;
+            backBtn.Image = LoadImage("back2");
             PlayerPrevious();
         }
 
         private void button7_MouseEnter(object sender, EventArgs e)
         {
-            rewBtn.Image = global::Echoes.Properties.Resources.rewind2;
+            rewBtn.Image = LoadImage("rewind2");
         }
 
         private void button7_MouseLeave(object sender, EventArgs e)
         {
-            rewBtn.Image = global::Echoes.Properties.Resources.rewind1;
+            rewBtn.Image = LoadImage("rewind1");
         }
 
         private void button7_MouseUp(object sender, MouseEventArgs e)
         {
-            rewBtn.Image = global::Echoes.Properties.Resources.rewind2;
+            rewBtn.Image = LoadImage("rewind2");
             SetPosition(0);
         }
 
         private void button5_MouseEnter(object sender, EventArgs e)
         {
-            fwdBtn.Image = global::Echoes.Properties.Resources.forward2;
+            fwdBtn.Image = LoadImage("forward2");
         }
 
         private void button5_MouseLeave(object sender, EventArgs e)
         {
-            fwdBtn.Image = global::Echoes.Properties.Resources.forward1;
+            fwdBtn.Image = LoadImage("forward1");
         }
 
         private void button5_MouseUp(object sender, MouseEventArgs e)
         {
-            fwdBtn.Image = global::Echoes.Properties.Resources.forward2;
+            fwdBtn.Image = LoadImage("forward2");
             AdvancePlayer();
         }
 
@@ -3761,7 +3828,7 @@ namespace Echoes
             if (visualisationStyle > 4) visualisationStyle = 1;
         }
 
-        private void dataGridView1_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        public static void TrackCellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
             if (e.Value == null) return;
             DataGridView dgv = (DataGridView)sender;
@@ -3772,26 +3839,32 @@ namespace Echoes
                     int val = (int)e.Value;
                     e.Value = val.ToTime();
                     e.FormattingApplied = true;
-                }else if((dgv.Columns[e.ColumnIndex].HeaderText == "Bitrate")) {
+                }
+                else if ((dgv.Columns[e.ColumnIndex].HeaderText == "Bitrate"))
+                {
                     int val = (int)e.Value;
-                    if(val==0) e.Value=""; else e.Value = val+" kbps";
+                    if (val == 0) e.Value = ""; else e.Value = val + " kbps";
                     e.FormattingApplied = true;
-                }else if ((dgv.Columns[e.ColumnIndex].HeaderText == "Year"))
+                }
+                else if ((dgv.Columns[e.ColumnIndex].HeaderText == "Year"))
                 {
                     int val = (int)e.Value;
                     if (val == 0) e.Value = ""; else e.Value = val + "";
                     e.FormattingApplied = true;
-                }else if ((dgv.Columns[e.ColumnIndex].HeaderText == "Track #"))
+                }
+                else if ((dgv.Columns[e.ColumnIndex].HeaderText == "Track #"))
                 {
                     int val = (int)e.Value;
                     if (val == 0) e.Value = ""; else e.Value = val + "";
                     e.FormattingApplied = true;
-                }else if ((dgv.Columns[e.ColumnIndex].HeaderText == "Size"))
+                }
+                else if ((dgv.Columns[e.ColumnIndex].HeaderText == "Size"))
                 {
                     long val = (long)e.Value;
                     if (val == 0) e.Value = ""; else e.Value = val.BytesToString();
                     e.FormattingApplied = true;
-                }else if ((dgv.Columns[e.ColumnIndex].HeaderText == "Last opened"))
+                }
+                else if ((dgv.Columns[e.ColumnIndex].HeaderText == "Last opened"))
                 {
                     DateTime val = (DateTime)e.Value;
                     if (val == DateTime.MinValue) e.Value = "";
@@ -3813,87 +3886,92 @@ namespace Echoes
             }
         }
 
+        private void dataGridView1_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            TrackCellFormatting(sender, e);
+        }
+
         private void openBtn_MouseDown(object sender, MouseEventArgs e)
         {
-            openBtn.Image = global::Echoes.Properties.Resources.import3;
+            openBtn.Image = LoadImage("import3");
         }
 
         private void openBtn_MouseEnter(object sender, EventArgs e)
         {
-            openBtn.Image = global::Echoes.Properties.Resources.import2;
+            openBtn.Image = LoadImage("import2");
         }
 
         private void openBtn_MouseLeave(object sender, EventArgs e)
         {
-            openBtn.Image = global::Echoes.Properties.Resources.import1;
+            openBtn.Image = LoadImage("import1");
         }
 
         private void openBtn_MouseUp(object sender, MouseEventArgs e)
         {
-            openBtn.Image = global::Echoes.Properties.Resources.import2;
+            openBtn.Image = LoadImage("import2");
             ChooseFile();
         }
 
         private void exportBtn_MouseDown(object sender, MouseEventArgs e)
         {
-            exportBtn.Image = global::Echoes.Properties.Resources.export3;
+            exportBtn.Image = LoadImage("export3");
         }
 
         private void exportBtn_MouseEnter(object sender, EventArgs e)
         {
-            exportBtn.Image = global::Echoes.Properties.Resources.export2;
+            exportBtn.Image = LoadImage("export2");
         }
 
         private void exportBtn_MouseLeave(object sender, EventArgs e)
         {
-            exportBtn.Image = global::Echoes.Properties.Resources.export1;
+            exportBtn.Image = LoadImage("export1");
         }
 
         private void exportBtn_MouseUp(object sender, MouseEventArgs e)
         {
-            exportBtn.Image = global::Echoes.Properties.Resources.export2;
+            exportBtn.Image = LoadImage("export2");
             ExportPlaylist();
         }
 
         private void shuffleBtn_MouseDown(object sender, MouseEventArgs e)
         {
-            shuffleBtn.Image = global::Echoes.Properties.Resources.shuffle3;
+            shuffleBtn.Image = LoadImage("shuffle3");
         }
 
         private void shuffleBtn_MouseEnter(object sender, EventArgs e)
         {
-            shuffleBtn.Image = global::Echoes.Properties.Resources.shuffle2;
+            shuffleBtn.Image = LoadImage("shuffle2");
         }
 
         private void shuffleBtn_MouseLeave(object sender, EventArgs e)
         {
-            shuffleBtn.Image = global::Echoes.Properties.Resources.shuffle1;
+            shuffleBtn.Image = LoadImage("shuffle1");
         }
 
         private void shuffleBtn_MouseUp(object sender, MouseEventArgs e)
         {
-            shuffleBtn.Image = global::Echoes.Properties.Resources.shuffle2;
+            shuffleBtn.Image = LoadImage("shuffle2");
             Shuffle();
         }
 
         private void optionsBtn_MouseDown(object sender, MouseEventArgs e)
         {
-            optionsBtn.Image = global::Echoes.Properties.Resources.options3;
+            optionsBtn.Image = LoadImage("options3");
         }
 
         private void optionsBtn_MouseEnter(object sender, EventArgs e)
         {
-            optionsBtn.Image = global::Echoes.Properties.Resources.options2;
+            optionsBtn.Image = LoadImage("options2");
         }
 
         private void optionsBtn_MouseLeave(object sender, EventArgs e)
         {
-            optionsBtn.Image = global::Echoes.Properties.Resources.options1;
+            optionsBtn.Image = LoadImage("options1");
         }
 
         private void optionsBtn_MouseUp(object sender, MouseEventArgs e)
         {
-            optionsBtn.Image = global::Echoes.Properties.Resources.options2;
+            optionsBtn.Image = LoadImage("options2");
             ShowOptions();
         }
 
@@ -3902,13 +3980,13 @@ namespace Echoes
             switch (repeat)
             {
                 case 0:
-                    repeatBtn.Image = global::Echoes.Properties.Resources.repeatNone3;
+                    repeatBtn.Image = LoadImage("repeatNone3");
                     break;
                 case 1:
-                    repeatBtn.Image = global::Echoes.Properties.Resources.repeatList3;
+                    repeatBtn.Image = LoadImage("repeatList3");
                     break;
                 default:
-                    repeatBtn.Image = global::Echoes.Properties.Resources.repeatTrack3;
+                    repeatBtn.Image = LoadImage("repeatTrack3");
                     break;
             }
         }
@@ -3918,13 +3996,13 @@ namespace Echoes
             switch (repeat)
             {
                 case 0:
-                    repeatBtn.Image = global::Echoes.Properties.Resources.repeatNone2;
+                    repeatBtn.Image = LoadImage("repeatNone2");
                     break;
                 case 1:
-                    repeatBtn.Image = global::Echoes.Properties.Resources.repeatList2;
+                    repeatBtn.Image = LoadImage("repeatList2");
                     break;
                 default:
-                    repeatBtn.Image = global::Echoes.Properties.Resources.repeatTrack2;
+                    repeatBtn.Image = LoadImage("repeatTrack2");
                     break;
             }
         }
@@ -3934,13 +4012,13 @@ namespace Echoes
             switch (repeat)
             {
                 case 0:
-                    repeatBtn.Image = global::Echoes.Properties.Resources.repeatNone1;
+                    repeatBtn.Image = LoadImage("repeatNone1");
                     break;
                 case 1:
-                    repeatBtn.Image = global::Echoes.Properties.Resources.repeatList1;
+                    repeatBtn.Image = LoadImage("repeatList1");
                     break;
                 default:
-                    repeatBtn.Image = global::Echoes.Properties.Resources.repeatTrack1;
+                    repeatBtn.Image = LoadImage("repeatTrack1");
                     break;
             }
         }
@@ -3962,13 +4040,13 @@ namespace Echoes
             switch (repeat)
             {
                 case 0:
-                    repeatBtn.Image = global::Echoes.Properties.Resources.repeatNone2;
+                    repeatBtn.Image = LoadImage("repeatNone2");
                     break;
                 case 1:
-                    repeatBtn.Image = global::Echoes.Properties.Resources.repeatList2;
+                    repeatBtn.Image = LoadImage("repeatList2");
                     break;
                 default:
-                    repeatBtn.Image = global::Echoes.Properties.Resources.repeatTrack2;
+                    repeatBtn.Image = LoadImage("repeatTrack2");
                     break;
             }
             SetLooping();
@@ -4034,7 +4112,7 @@ namespace Echoes
 
         private void normalizerWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            if (DSPGain!=null && DSPGain.IsAssigned) DSPGain.Stop();
+            if (DSPGain != null && DSPGain.IsAssigned) DSPGain.Stop();
             DateTime normBenchmarkEnd = DateTime.Now;
             //Console.WriteLine("----------------------------");
             Console.Write("Peak: " + peak);
@@ -4073,12 +4151,12 @@ namespace Echoes
 
         private void echoesLogo_MouseLeave(object sender, EventArgs e)
         {
-            echoesLogo.BackgroundImage = global::Echoes.Properties.Resources.echoesLogoWhiteDim;
+            echoesLogo.BackgroundImage = LoadImage("echoesLogoWhiteDim");
         }
 
         private void echoesLogo_MouseEnter(object sender, EventArgs e)
         {
-            echoesLogo.BackgroundImage = global::Echoes.Properties.Resources.echoesLogoWhite;
+            echoesLogo.BackgroundImage = LoadImage("echoesLogoWhite");
         }
 
         private void Echoes_Enter(object sender, EventArgs e)

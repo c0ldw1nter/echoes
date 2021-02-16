@@ -31,6 +31,14 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DupeFinder));
             this.dupeFinderWorker = new System.ComponentModel.BackgroundWorker();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.buttonStart = new System.Windows.Forms.Button();
+            this.radioHash = new System.Windows.Forms.RadioButton();
+            this.radioTitle = new System.Windows.Forms.RadioButton();
+            this.radioFilepath = new System.Windows.Forms.RadioButton();
+            this.button1 = new System.Windows.Forms.Button();
+            this.button2 = new System.Windows.Forms.Button();
+            this.button3 = new System.Windows.Forms.Button();
+            this.modifiedProgressBarLoading1 = new ModifiedControls.ModifiedProgressBarLoading();
             this.checkboxes = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.num = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.title = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -39,14 +47,7 @@
             this.file = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.bitrate = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.size = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.buttonStart = new System.Windows.Forms.Button();
-            this.radioHash = new System.Windows.Forms.RadioButton();
-            this.radioTitle = new System.Windows.Forms.RadioButton();
-            this.radioFilepath = new System.Windows.Forms.RadioButton();
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
-            this.modifiedProgressBarLoading1 = new ModifiedControls.ModifiedProgressBarLoading();
-            this.button3 = new System.Windows.Forms.Button();
+            this.listened = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -71,17 +72,101 @@
             this.length,
             this.file,
             this.bitrate,
-            this.size});
+            this.size,
+            this.listened});
             this.dataGridView1.EnableHeadersVisualStyles = false;
             this.dataGridView1.Location = new System.Drawing.Point(12, 12);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowHeadersVisible = false;
             this.dataGridView1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView1.Size = new System.Drawing.Size(728, 339);
+            this.dataGridView1.Size = new System.Drawing.Size(744, 339);
             this.dataGridView1.TabIndex = 0;
+            this.dataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick);
+            this.dataGridView1.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dataGridView1_CellFormatting);
             this.dataGridView1.CellMouseDoubleClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridView1_CellMouseDoubleClick);
-            this.dataGridView1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.dataGridView1_MouseDoubleClick);
             this.dataGridView1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.dataGridView1_MouseDown);
+            // 
+            // buttonStart
+            // 
+            this.buttonStart.Location = new System.Drawing.Point(763, 12);
+            this.buttonStart.Name = "buttonStart";
+            this.buttonStart.Size = new System.Drawing.Size(87, 23);
+            this.buttonStart.TabIndex = 1;
+            this.buttonStart.Text = "Start";
+            this.buttonStart.UseVisualStyleBackColor = true;
+            this.buttonStart.Click += new System.EventHandler(this.buttonStart_Click);
+            // 
+            // radioHash
+            // 
+            this.radioHash.AutoSize = true;
+            this.radioHash.Checked = true;
+            this.radioHash.Location = new System.Drawing.Point(763, 69);
+            this.radioHash.Name = "radioHash";
+            this.radioHash.Size = new System.Drawing.Size(76, 17);
+            this.radioHash.TabIndex = 2;
+            this.radioHash.TabStop = true;
+            this.radioHash.Text = "MD5 Hash";
+            this.radioHash.UseVisualStyleBackColor = true;
+            this.radioHash.CheckedChanged += new System.EventHandler(this.radioHash_CheckedChanged);
+            // 
+            // radioTitle
+            // 
+            this.radioTitle.AutoSize = true;
+            this.radioTitle.Location = new System.Drawing.Point(763, 92);
+            this.radioTitle.Name = "radioTitle";
+            this.radioTitle.Size = new System.Drawing.Size(45, 17);
+            this.radioTitle.TabIndex = 3;
+            this.radioTitle.Text = "Title";
+            this.radioTitle.UseVisualStyleBackColor = true;
+            this.radioTitle.CheckedChanged += new System.EventHandler(this.radioTitle_CheckedChanged);
+            // 
+            // radioFilepath
+            // 
+            this.radioFilepath.AutoSize = true;
+            this.radioFilepath.Location = new System.Drawing.Point(763, 115);
+            this.radioFilepath.Name = "radioFilepath";
+            this.radioFilepath.Size = new System.Drawing.Size(65, 17);
+            this.radioFilepath.TabIndex = 5;
+            this.radioFilepath.Text = "File path";
+            this.radioFilepath.UseVisualStyleBackColor = true;
+            this.radioFilepath.CheckedChanged += new System.EventHandler(this.radioFilepath_CheckedChanged);
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(762, 151);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(87, 38);
+            this.button1.TabIndex = 6;
+            this.button1.Text = "Show in Windows";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(762, 195);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(87, 38);
+            this.button2.TabIndex = 7;
+            this.button2.Text = "Delete Files";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
+            // button3
+            // 
+            this.button3.Location = new System.Drawing.Point(762, 239);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(87, 38);
+            this.button3.TabIndex = 8;
+            this.button3.Text = "Uncheck All";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
+            // 
+            // modifiedProgressBarLoading1
+            // 
+            this.modifiedProgressBarLoading1.Location = new System.Drawing.Point(12, 357);
+            this.modifiedProgressBarLoading1.Name = "modifiedProgressBarLoading1";
+            this.modifiedProgressBarLoading1.Size = new System.Drawing.Size(744, 23);
+            this.modifiedProgressBarLoading1.TabIndex = 4;
             // 
             // checkboxes
             // 
@@ -105,7 +190,7 @@
             this.title.HeaderText = "Title";
             this.title.Name = "title";
             this.title.ReadOnly = true;
-            this.title.Width = 250;
+            this.title.Width = 200;
             // 
             // artist
             // 
@@ -113,7 +198,7 @@
             this.artist.HeaderText = "Artist";
             this.artist.Name = "artist";
             this.artist.ReadOnly = true;
-            this.artist.Width = 140;
+            this.artist.Width = 120;
             // 
             // length
             // 
@@ -140,99 +225,25 @@
             // 
             // size
             // 
-            this.size.DataPropertyName = "filesize";
+            this.size.DataPropertyName = "size";
             this.size.HeaderText = "Size";
             this.size.Name = "size";
             this.size.ReadOnly = true;
             this.size.Width = 70;
             // 
-            // buttonStart
+            // listened
             // 
-            this.buttonStart.Location = new System.Drawing.Point(746, 12);
-            this.buttonStart.Name = "buttonStart";
-            this.buttonStart.Size = new System.Drawing.Size(87, 23);
-            this.buttonStart.TabIndex = 1;
-            this.buttonStart.Text = "Start";
-            this.buttonStart.UseVisualStyleBackColor = true;
-            this.buttonStart.Click += new System.EventHandler(this.buttonStart_Click);
-            // 
-            // radioHash
-            // 
-            this.radioHash.AutoSize = true;
-            this.radioHash.Checked = true;
-            this.radioHash.Location = new System.Drawing.Point(746, 69);
-            this.radioHash.Name = "radioHash";
-            this.radioHash.Size = new System.Drawing.Size(76, 17);
-            this.radioHash.TabIndex = 2;
-            this.radioHash.TabStop = true;
-            this.radioHash.Text = "MD5 Hash";
-            this.radioHash.UseVisualStyleBackColor = true;
-            this.radioHash.CheckedChanged += new System.EventHandler(this.radioHash_CheckedChanged);
-            // 
-            // radioTitle
-            // 
-            this.radioTitle.AutoSize = true;
-            this.radioTitle.Location = new System.Drawing.Point(746, 92);
-            this.radioTitle.Name = "radioTitle";
-            this.radioTitle.Size = new System.Drawing.Size(45, 17);
-            this.radioTitle.TabIndex = 3;
-            this.radioTitle.Text = "Title";
-            this.radioTitle.UseVisualStyleBackColor = true;
-            this.radioTitle.CheckedChanged += new System.EventHandler(this.radioTitle_CheckedChanged);
-            // 
-            // radioFilepath
-            // 
-            this.radioFilepath.AutoSize = true;
-            this.radioFilepath.Location = new System.Drawing.Point(746, 115);
-            this.radioFilepath.Name = "radioFilepath";
-            this.radioFilepath.Size = new System.Drawing.Size(65, 17);
-            this.radioFilepath.TabIndex = 5;
-            this.radioFilepath.Text = "File path";
-            this.radioFilepath.UseVisualStyleBackColor = true;
-            this.radioFilepath.CheckedChanged += new System.EventHandler(this.radioFilepath_CheckedChanged);
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(745, 151);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(87, 38);
-            this.button1.TabIndex = 6;
-            this.button1.Text = "Show in Windows";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
-            // button2
-            // 
-            this.button2.Location = new System.Drawing.Point(745, 195);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(87, 38);
-            this.button2.TabIndex = 7;
-            this.button2.Text = "Delete Files";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
-            // 
-            // modifiedProgressBarLoading1
-            // 
-            this.modifiedProgressBarLoading1.Location = new System.Drawing.Point(12, 357);
-            this.modifiedProgressBarLoading1.Name = "modifiedProgressBarLoading1";
-            this.modifiedProgressBarLoading1.Size = new System.Drawing.Size(728, 23);
-            this.modifiedProgressBarLoading1.TabIndex = 4;
-            // 
-            // button3
-            // 
-            this.button3.Location = new System.Drawing.Point(745, 239);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(87, 38);
-            this.button3.TabIndex = 8;
-            this.button3.Text = "Uncheck All";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
+            this.listened.DataPropertyName = "listened";
+            this.listened.HeaderText = "Listened";
+            this.listened.Name = "listened";
+            this.listened.ReadOnly = true;
+            this.listened.Width = 50;
             // 
             // DupeFinder
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(844, 388);
+            this.ClientSize = new System.Drawing.Size(862, 388);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
@@ -260,6 +271,9 @@
         private System.Windows.Forms.RadioButton radioTitle;
         private ModifiedControls.ModifiedProgressBarLoading modifiedProgressBarLoading1;
         private System.Windows.Forms.RadioButton radioFilepath;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button button3;
         private System.Windows.Forms.DataGridViewCheckBoxColumn checkboxes;
         private System.Windows.Forms.DataGridViewTextBoxColumn num;
         private System.Windows.Forms.DataGridViewTextBoxColumn title;
@@ -268,8 +282,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn file;
         private System.Windows.Forms.DataGridViewTextBoxColumn bitrate;
         private System.Windows.Forms.DataGridViewTextBoxColumn size;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.DataGridViewTextBoxColumn listened;
     }
 }

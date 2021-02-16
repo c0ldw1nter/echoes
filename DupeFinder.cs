@@ -246,11 +246,6 @@ namespace Echoes
             }
         }
 
-        private void dataGridView1_MouseDoubleClick(object sender, MouseEventArgs e)
-        {
-
-        }
-
         private void dataGridView1_CellMouseDoubleClick(object sender, DataGridViewCellMouseEventArgs e)
         {
             if (e.RowIndex < 0 || e.RowIndex >= dataGridView1.Rows.Count || dataGridView1.Rows[e.RowIndex] == null || dataGridView1.Rows[e.RowIndex].DataBoundItem == null) return;
@@ -318,6 +313,16 @@ namespace Echoes
         private void button3_Click(object sender, EventArgs e)
         {
             UncheckAll();
+        }
+
+        private void dataGridView1_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            Echoes.TrackCellFormatting(sender, e);
+        }
+
+        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
         }
     }
 }

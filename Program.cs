@@ -16,6 +16,8 @@ namespace Echoes
         /// 
 
 
+        public static string logsLocation = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location), "log.txt");
+
         #region Default values for the program
 
         public readonly static List<ColumnInfo> defaultColumnInfo = new List<ColumnInfo>() {
@@ -107,6 +109,12 @@ namespace Echoes
         [STAThread]
         static void Main(string[] args)
         {
+            AppDomain.CurrentDomain.UnhandledException += (sender, eargs) =>
+            {
+                Exception e = (Exception)eargs.ExceptionObject;
+                if (!File.Exists(logsLocation)) File.Create(logsLocation);
+                File.AppendAllText(logsLocation, DateTime.Now.ToString() + ": " + e.ToString()+Environment.NewLine);
+            };
             foreach (string s in args)
             {
                 if (Directory.Exists(Path.GetDirectoryName(s)))

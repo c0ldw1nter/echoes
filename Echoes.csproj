@@ -283,55 +283,135 @@
     <Content Include="lib\Bass.Net.xml" />
     <Content Include="lib\SuperM3U.dll" />
     <Content Include="lib\taglib-sharp.dll" />
-    <Content Include="Resources\echoesLogoWhiteDim.png" />
-    <None Include="Resources\import3.png" />
-    <None Include="Resources\export1.png" />
-    <None Include="Resources\export2.png" />
-    <None Include="Resources\export3.png" />
-    <None Include="Resources\import1.png" />
-    <None Include="Resources\import2.png" />
-    <None Include="Resources\echoesLogoWhite.ico" />
-    <None Include="Resources\echoesLogoWhite.png" />
-    <None Include="Resources\vol.png" />
-    <None Include="Resources\stop3.png" />
-    <None Include="Resources\stop2.png" />
-    <None Include="Resources\stop1.png" />
-    <None Include="Resources\shuffle3.png" />
-    <None Include="Resources\shuffle2.png" />
-    <None Include="Resources\shuffle1.png" />
-    <None Include="Resources\rewind3.png" />
-    <None Include="Resources\rewind2.png" />
-    <None Include="Resources\rewind1.png" />
-    <None Include="Resources\repeatTrack3.png" />
-    <None Include="Resources\repeatTrack2.png" />
-    <None Include="Resources\repeatTrack1.png" />
-    <None Include="Resources\repeatNone3.png" />
-    <None Include="Resources\repeatNone2.png" />
-    <None Include="Resources\repeatNone1.png" />
-    <None Include="Resources\repeatList3.png" />
-    <None Include="Resources\repeatList2.png" />
-    <None Include="Resources\repeatList1.png" />
-    <None Include="Resources\play3.png" />
-    <None Include="Resources\play2.png" />
-    <None Include="Resources\play1.png" />
-    <None Include="Resources\pause3.png" />
-    <None Include="Resources\pause2.png" />
-    <None Include="Resources\pause1.png" />
-    <None Include="Resources\options3.png" />
-    <None Include="Resources\options2.png" />
-    <None Include="Resources\options1.png" />
-    <None Include="Resources\openfile3.png" />
-    <None Include="Resources\openfile2.png" />
-    <None Include="Resources\openfile1.png" />
-    <None Include="Resources\forward3.png" />
-    <None Include="Resources\forward2.png" />
-    <None Include="Resources\forward1.png" />
-    <None Include="Resources\exportPlaylist3.png" />
-    <None Include="Resources\exportPlaylist2.png" />
-    <None Include="Resources\exportPlaylist1.png" />
-    <None Include="Resources\back3.png" />
-    <None Include="Resources\back2.png" />
-    <None Include="Resources\back1.png" />
+    <Content Include="Resources\echoesLogoWhiteDim.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Include="Resources\import3.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\export1.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\export2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\export3.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\import1.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\import2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\echoesLogoWhite.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\echoesLogoWhite.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\vol.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\stop3.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\stop2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\stop1.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\shuffle3.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\shuffle2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\shuffle1.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\rewind3.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\rewind2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\rewind1.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\repeatTrack3.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\repeatTrack2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\repeatTrack1.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\repeatNone3.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\repeatNone2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\repeatNone1.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\repeatList3.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\repeatList2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\repeatList1.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\play3.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\play2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\play1.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\pause3.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\pause2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\pause1.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\options3.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\options2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\options1.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\forward3.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\forward2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\forward1.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\back3.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\back2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\back1.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="bin\Debug\icons\vol.png" />
     <None Include="bin\Debug\icons\back1.png" />
     <None Include="bin\Debug\icons\back2.png" />
